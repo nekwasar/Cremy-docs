@@ -8,21 +8,76 @@
 
 ## Overview
 
-This document provides extremely detailed technical specifications for building Cremy Docs, organized into milestones (M1-M15). Each milestone contains major features arranged in build order with complete technical details, edge cases, and implementation specifications.
+This document provides extremely detailed technical specifications for building Cremy Docs.
+
+**Development Approach:** Backend First - Minimal frontend only when necessary for testing.
 
 ---
 
-## M1: Core Infrastructure & Authentication
+## Milestone Order (Backend First)
 
-### M1.1 Project Setup
+### Phase 1: Infrastructure
+- **M1:** Infrastructure & Docker ✅ (Issues: 10)
+
+### Phase 2: Core Backend
+- **M2:** Authentication System
+- **M3:** Database & Data Models
+- **M4:** Credit System Backend
+
+### Phase 3: File Processing  
+- **M5:** File Upload/Download
+- **M6:** File Conversion Engine
+- **M7:** PDF Tools (Merge/Split/Compress)
+
+### Phase 4: AI Integration
+- **M8:** AI Client Setup
+- **M9:** Document Generation AI
+- **M10:** AI Editing
+- **M11:** Translation & OCR
+
+### Phase 5: Frontend (Minimal)
+- **M12:** Frontend Core & Routing
+- **M13:** Homepage
+- **M14:** Document Generation Page
+- **M15:** Preview/Edit Page
+
+### Phase 6: Features
+- **M16:** Templates System
+- **M17:** Voice-to-Document
+- **M18:** Change Style Feature
+
+### Phase 7: User Features
+- **M19:** Dashboard (Pro)
+- **M20:** Save Banner
+- **M21:** Admin Panel
+
+### Phase 8: Monetization
+- **M22:** Payments & Subscriptions
+- **M23:** Credit System Frontend
+
+### Phase 9: SEO & Launch
+- **M24:** SEO Pages (200+ pages)
+- **M25:** Edge Cases & Error Handling
+6. Features (M6-M15)
+
+---
+
+## M1: Infrastructure & Docker
+
+### M1.1 Project Setup (Docker + Backend Foundation)
+
+**Approach:** Backend first, minimal frontend for testing only
 
 **Tech Stack:**
-- Frontend: Next.js 14 (App Router) with TypeScript
-- Styling: Tailwind CSS + shadcn/ui
-- Backend: Next.js API Routes
-- Database: MongoDB (for Pro users who save documents)
-- Auth: Custom JWT with httpOnly cookies + Google OAuth
-- File Storage: Local file system (minio/S3 for production)
+- Backend: Next.js 14 API Routes with TypeScript
+- Database: MongoDB
+- Container: Docker + Docker Compose
+- Frontend: Minimal HTML/JSON endpoints for testing
+
+**Docker Setup Required:**
+- `Dockerfile` - Next.js app container
+- `docker-compose.yml` - MongoDB + Redis + App
+- `.dockerignore` - Exclude node_modules, build files
 
 **Directory Structure:**
 ```
