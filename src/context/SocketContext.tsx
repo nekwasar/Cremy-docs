@@ -1,41 +1,73 @@
 'use client';
 
-import { createContext } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-interface SocketContextValue {
+interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
   connect: () => void;
   disconnect: () => void;
-  emit: (event: string, data?: unknown) => void;
-  on: (event: string, callback: (data: unknown) => void) => void;
-  off: (event: string) => void;
 }
 
-export const SocketContext = createContext<SocketContextValue | null>(null);
-
-let socketInstance: Socket | null = null;
+const SocketContext = createContext<SocketContextType | null>(null);
 
 export function useSocket() {
-  return socketInstance;
+  const context = useContext(SocketContext);
+  if (!context) {
+    throw new Error('useSocket must be used within SocketProvider');
+  }
+  return context;
 }
 
-export function connectSocket(url?: string) {
-  if (!socketInstance) {
-    socketInstance = io(url || process.env.NEXT_PUBLIC_SOCKET_URL || '', {
-      autoConnect: false,
+interface SocketProviderProps {
+  children: ReactNode;
+}
+
+export function SocketProvider({ children }: SocketProviderProps) {
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+
+  const connect = () => {
+    if (socket?.connected) return;
+
+    const newSocket = io(process.env.NEXT_PUBLIC_API_URL || '', {
+      autoConnect: true,
       reconnection: true,
       reconnectionAttempts: 3,
       reconnectionDelay: 1000,
     });
-  }
-  return socketInstance;
-}
 
-export function disconnectSocket() {
-  if (socketInstance) {
-    socketInstance.disconnect();
-    socketInstance = null;
-  }
+    newSocket.on('connect', () => {
+      setIsConnected(true);
+    });
+
+    newSocket.on('disconnect', () => {
+      setIsConnected(false);
+    });
+
+    setSocket(newSocket);
+  };
+
+  const disconnect = () => {
+    if (socket) {
+      socket.disconnect();
+      setSocket(null);
+      setIsConnected(false);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, [socket]);
+
+  return (
+    <SocketContext.Provider value={{ socket, isConnected, connect, disconnect }}>
+      {children}
+    </SocketContext.Provider>
+  );
 }
