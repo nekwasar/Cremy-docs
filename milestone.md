@@ -992,6 +992,76 @@ interface FormatPrompt {
 
 ---
 
+### M5.5 Tool-Specific Preview Behaviors
+
+**Note:** Each tool has unique preview behavior. All previews are shown in the preview section (except where noted).
+
+#### Generate (from Text or Command)
+- Skeleton of document loads first until fully loaded
+- User sees quick preview (frontpage) of document
+- Always: Preview + Download buttons under preview section
+
+#### Edit Tool
+- Editing done in preview page if any tool produces unexpected outcome
+- Exception: OCR - NO preview available
+
+#### Convert Tool
+- Before and After preview (first page only)
+- Shows "100% quality as promised" message
+- User sees nothing changed in their file (conversion is lossless)
+- Preview button opens new doc to be previewed
+
+#### Translate Tool
+- Before and After preview (first page of old + new document)
+- Preview button opens new translated doc
+- Download + Preview buttons under preview section
+
+#### Voice Tool
+- Shows only the document first page preview
+- Download + Preview buttons under preview section
+- New doc can be previewed in preview page
+
+#### Extract (OCR)
+- NO preview - just extracted text
+- Copy button for text copy
+- Try Again button next to Copy button
+- Click Try Again: opens input for user to specify corrections/mistakes
+
+#### Merge Tool
+- **Agent ALWAYS asks which file first** to avoid errors
+- User specifies order (e.g., "which file goes first?")
+- Files arranged in specified order
+- Preview + Download buttons under preview section
+
+#### Split Tool
+- **Agent asks what has to be split:**
+  - "Page 1 to 3 separate from page 4 to 6?"
+  - Or "pages 1,3,5 separate from pages 2,4,6?"
+- Files arranged in specified order
+- Preview + Download buttons under preview section
+
+#### Compress Tool
+- Shows PDF icon for two files (original + compressed)
+- Shows file size for both: original size vs new size
+- Download + Preview buttons under preview section
+
+#### Change Style Tool
+- Agent comes in **AFTER user selects style**
+- Converts existing document to text first (all pages have doc-to-text tool)
+- Recreates document in new selected style
+- Preview + Download buttons under preview section
+
+---
+
+### M5.6 Upload Dash Replacement
+
+**On pages with agent:**
+- Upload dash disappears
+- Replaced with visual indicators for tools
+- Shown at top of page
+
+---
+
 ## M8: Document Generation Features
 
 ### M6.1 Generation from Text Input
