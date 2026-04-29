@@ -1,17 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import RefreshToken from '@/models/RefreshToken';
+import jwt from 'jsonwebtoken';
+import { revokeToken } from '@/lib/token-rotation';
+
+const REFRESH_SECRET = process.env.REFRESH_SECRET || process.env.JWT_SECRET + '-refresh';
 
 export async function POST(request: NextRequest) {
   try {
     const refreshToken = request.cookies.get('refreshToken')?.value;
 
     if (refreshToken) {
-      await connectDB();
-      await RefreshToken.findOneAndUpdate(
-        { token: refreshToken },
-        { isRevoked: true, revokedAt: new Date() }
-      );
+      try {
+        const decoded = jwt.verify(refreshToken, REFRESH_SECRET, {
+          issuer: 'cremy-docs',
+        }) as { jti: string };
+        await revokeToken(decoded.jti);
+      } catch {
+      }
     }
 
     const response = NextResponse.json({

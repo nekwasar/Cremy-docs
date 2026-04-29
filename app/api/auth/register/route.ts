@@ -3,6 +3,7 @@ import { z } from 'zod';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 import { jwtService } from '@/services/jwt';
+import { generateAccessToken, generateRefreshToken } from '@/lib/token-rotation';
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -47,8 +48,8 @@ export async function POST(request: NextRequest) {
       isEmailVerified: user.isEmailVerified,
     };
 
-    const accessToken = jwtService.generateAccessToken(payload);
-    const refreshToken = jwtService.generateRefreshToken(payload);
+    const accessToken = await generateAccessToken(payload);
+    const { token: refreshToken } = await generateRefreshToken(user._id.toString(), user.email);
 
     const response = NextResponse.json(
       {

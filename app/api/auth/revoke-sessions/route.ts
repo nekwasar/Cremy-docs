@@ -1,16 +1,10 @@
-import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import RefreshToken from '@/models/RefreshToken';
+import { NextRequest, NextResponse } from 'next/server';
+import { destroyAllUserSessions } from '@/lib/session-store';
 import { withAuth, AuthUser } from '@/lib/auth';
 
 async function revokeSessionsHandler(request: NextRequest, user: AuthUser) {
   try {
-    await connectDB();
-
-    await RefreshToken.updateMany(
-      { userId: user.sub, isRevoked: false },
-      { isRevoked: true, revokedAt: new Date() }
-    );
+    await destroyAllUserSessions(user.sub);
 
     const response = NextResponse.json({
       success: true,

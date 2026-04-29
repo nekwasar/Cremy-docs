@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
-import RefreshToken from '@/models/RefreshToken';
 import { jwtService } from '@/services/jwt';
+import { generateAccessToken, generateRefreshToken } from '@/lib/token-rotation';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -40,19 +40,8 @@ export async function POST(request: NextRequest) {
       isEmailVerified: user.isEmailVerified,
     };
 
-    const accessToken = jwtService.generateAccessToken(payload);
-    const refreshToken = jwtService.generateRefreshToken(payload);
-
-    const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown';
-    const userAgent = request.headers.get('user-agent') || 'unknown';
-
-    await RefreshToken.create({
-      userId: user._id,
-      token: refreshToken,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      ipAddress,
-      userAgent,
-    });
+    const accessToken = await generateAccessToken(payload);
+    const { token: refreshToken } = await generateRefreshToken(user._id.toString(), user.email);
 
     const response = NextResponse.json({
       success: true,

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
-import RefreshToken from '@/models/RefreshToken';
-import { jwtService } from '@/services/jwt';
+import { verifyRefreshToken, rotateRefreshToken } from '@/lib/token-rotation';
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,23 +14,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await connectDB();
-
-    const storedToken = await RefreshToken.findOne({
-      token: refreshToken,
-      isRevoked: false,
-    });
-
-    if (!storedToken || storedToken.expiresAt < new Date()) {
+    const tokenData = await verifyRefreshToken(refreshToken);
+    if (!tokenData) {
       return NextResponse.json(
         { error: { message: 'Invalid or expired refresh token', code: 'INVALID_TOKEN' } },
         { status: 401 }
       );
     }
 
-    const payload = jwtService.verifyRefreshToken(refreshToken);
+    await connectDB();
 
-    const user = await User.findById(payload.sub);
+    const user = await User.findById(tokenData.uid);
     if (!user) {
       return NextResponse.json(
         { error: { message: 'User not found', code: 'USER_NOT_FOUND' } },
@@ -39,20 +32,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newPayload = {
-      sub: user._id.toString(),
-      email: user.email,
-      role: user.role,
-      isEmailVerified: user.isEmailVerified,
-    };
-
-    const accessToken = jwtService.generateAccessToken(newPayload);
-    const newRefreshToken = jwtService.generateRefreshToken(newPayload);
-
-    await RefreshToken.findByIdAndUpdate(storedToken._id, {
-      isRevoked: true,
-      revokedAt: new Date(),
-    });
+    const result = await rotateRefreshToken(refreshToken);
+    if (!result) {
+      return NextResponse.json(
+        { error: { message: 'Token rotation failed', code: 'ROTATION_FAILED' } },
+        { status: 401 }
+      );
+    }
 
     const response = NextResponse.json({
       success: true,
@@ -64,11 +50,11 @@ export async function POST(request: NextRequest) {
           role: user.role,
           isEmailVerified: user.isEmailVerified,
         },
-        accessToken,
+        accessToken: result.accessToken,
       },
     });
 
-    response.cookies.set('refreshToken', newRefreshToken, {
+    response.cookies.set('refreshToken', result.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

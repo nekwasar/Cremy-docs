@@ -1,27 +1,20 @@
-import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import RefreshToken from '@/models/RefreshToken';
+import { NextRequest, NextResponse } from 'next/server';
+import { getUserSessions } from '@/lib/session-store';
 import { withAuth, AuthUser } from '@/lib/auth';
 
 async function sessionsHandler(request: NextRequest, user: AuthUser) {
   try {
-    await connectDB();
-
-    const sessions = await RefreshToken.find({ userId: user.sub })
-      .sort({ createdAt: -1 })
-      .limit(10)
-      .select('-token');
+    const sessions = await getUserSessions(user.sub);
 
     return NextResponse.json({
       success: true,
       data: sessions.map((session) => ({
-        id: session._id,
-        isRevoked: session.isRevoked,
-        revokedAt: session.revokedAt,
-        ipAddress: session.ipAddress,
-        userAgent: session.userAgent,
-        createdAt: session.createdAt,
-        expiresAt: session.expiresAt,
+        id: session.sid,
+        uid: session.uid,
+        ip: session.ip,
+        ua: session.ua,
+        createdAt: session.iat,
+        expiresAt: session.exp,
       })),
     });
   } catch (error) {
