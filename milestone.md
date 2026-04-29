@@ -1671,14 +1671,16 @@ The 12 Tools:
 
 ## M15: Payments & Subscriptions
 
-### Payment Processor
+### Payment Processors
 
-**Selected:** User wants less limiting than Stripe (had issues with international cards)
+**Supported:**
+- **Paddle** - Handles global tax/compliance (recommended)
+- **Stripe** - Simple card payments
+- **PayPal** - PayPal wallet payments
 
-**Options to Consider:**
-- Paddle (handles global tax/compliance)
-- LemonSqueezy (developer-friendly, handles taxes)
-- Stripe with alternatives configured
+**User Selection:** At checkout, user chooses: Card (Stripe), Card (Paddle), or PayPal
+
+**Admin Config:** In M14 settings, set default processor
 
 ### Pricing Models
 
@@ -1696,7 +1698,9 @@ User clicks "Subscribe" or "Buy Credits"
     ↓
 Select plan/pack
     ↓
-Payment processor checkout
+Select payment method: Card (Stripe), Card (Paddle), or PayPal
+    ↓
+Selected processor checkout
     ↓
 On success: Update user credits in DB
     ↓
