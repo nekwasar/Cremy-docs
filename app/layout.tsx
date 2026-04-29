@@ -1,3 +1,11 @@
+import type { Metadata } from 'next';
+import './globals.css';
+
+export const metadata: Metadata = {
+  title: 'Cremy Docs - AI-Powered Document Platform',
+  description: 'Generate, convert, and edit documents with AI. Free credits available.',
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -5,16 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <header className="header">
-          <a href="/" className="logo">Cremy Docs</a>
-          <nav className="header-nav">
-            <a href="/auth/login">Login</a>
-            <a href="/auth/register">Sign Up</a>
-          </nav>
-        </header>
-        <main className="main-content">{children}</main>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
