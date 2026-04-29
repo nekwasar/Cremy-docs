@@ -1,39 +1,63 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { io, Socket } from 'socket.io-client';
 
-export function useSocket() {
-  const [connected, setConnected] = useState(false);
-
-  const connect = () => {
-    setConnected(true);
-  };
-
-  const disconnect = () => {
-    setConnected(false);
-  };
-
-  return { connected, connect, disconnect };
+interface UseSocketOptions {
+  autoConnect?: boolean;
+  reconnection?: boolean;
 }
 
-export function useDocument() {
-  const [document, setDocument] = useState<unknown>(null);
-  const [loading, setLoading] = useState(false);
+interface UseSocketReturn {
+  socket: Socket | null;
+  isConnected: boolean;
+  connect: () => void;
+  disconnect: () => void;
+}
 
-  const fetchDocument = async (id: string) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/documents/${id}`);
-      const data = await response.json();
-      if (data.success) {
-        setDocument(data.data.document);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+export function useSocket(options: UseSocketOptions = {}): UseSocketReturn {
+  const { autoConnect = true, reconnection = true } = options;
+  const [isConnected, setIsConnected] = useState(false);
+  const socketRef = useRef<Socket | null>(null);
+
+  const connect = useCallback(() => {
+    if (socketRef.current?.connected) return;
+
+    const socket = io(process.env.NEXT_PUBLIC_API_URL || '', {
+      autoConnect,
+      reconnection,
+      reconnectionAttempts: 3,
+      reconnectionDelay: 1000,
+    });
+
+    socket.on('connect', () => setIsConnected(true));
+    socket.on('disconnect', () => setIsConnected(false));
+
+    socketRef.current = socket;
+  }, [autoConnect, reconnection]);
+
+  const disconnect = useCallback(() => {
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+      socketRef.current = null;
+      setIsConnected(false);
     }
-  };
+  }, []);
 
-  return { document, loading, fetchDocument };
+  useEffect(() => {
+    if (autoConnect) {
+      connect();
+    }
+
+    return () => {
+      disconnect();
+    };
+  }, [autoConnect, connect, disconnect]);
+
+  return {
+    socket: socketRef.current,
+    isConnected,
+    connect,
+    disconnect,
+  };
 }
