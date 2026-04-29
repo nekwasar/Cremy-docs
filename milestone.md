@@ -49,6 +49,9 @@ This document provides extremely detailed technical specifications for building 
 - **M17:** SEO Tool Pages
 - **M18:** Edge Cases & Error Handling
 
+### Phase 8: AI Agent (M19)
+- **M19:** Intelligent Document Agent
+
 ---
 
 ## M1.1: Project Setup & Docker
