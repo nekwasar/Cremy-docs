@@ -1,12 +1,14 @@
 import Redis from 'ioredis';
 
 const REDIS_URL = process.env.REDIS_URL || 'redis://redis:6379';
+const REDIS_PASSWORD = process.env.REDIS_PASSWORD;
 
 let redis: Redis | null = null;
 
 export function getRedis(): Redis {
   if (!redis) {
     redis = new Redis(REDIS_URL, {
+      password: REDIS_PASSWORD,
       maxRetriesPerRequest: 3,
       retryStrategy(times) {
         const delay = Math.min(times * 50, 2000);
