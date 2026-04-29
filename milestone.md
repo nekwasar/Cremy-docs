@@ -2510,14 +2510,2435 @@ interface ConversionPageProps {
 
 ---
 
-## Summary
+## APPENDIX A: Enterprise-Level Implementation Details
 
-Cremy Docs is an AI-powered document platform with:
-- **Credit-based system**: Document generation costs credits, conversions are free
-- **Format templates**: Video/demo previews with AI generation
-- **No stored prompts**: All AI interactions via natural language
-- **Pro features**: MongoDB storage, analytics, unlimited generation
-- **Admin control**: Configurable pricing, API key management
-- **WebSocket streaming**: Skeleton + fill progressive rendering
+This appendix provides the complete enterprise-level fill-ins for all issues that were identified as missing implementation details.
 
-This milestone document provides the complete technical blueprint for building the platform.
+---
+
+### A.1: M1.1.004 - SSL Certificate Generation
+
+**What's Defined:** SSL config exists in nginx.conf (lines 221-256), commented HTTPS server block
+
+**What's Missing:** Automated certificate generation, renewal logic
+
+**Implementation:**
+
+```bash
+# certbot-auto-renewal.sh
+#!/bin/bash
+# Auto-renewal certificate script
+# Add to crontab: 0 0 * * * /path/to/certbot-auto-renewal.sh
+
+# Use Let's Encrypt ACME challenge
+certbot renew --non-interactive \
+  --webroot -w /var/www/html \
+  --deploy-hook "nginx -s reload"
+
+# Certificate paths:
+# /etc/nginx/ssl/cert.pem      # Server certificate
+# /etc/nginx/ssl/key.pem       # Private key
+# /etc/nginx/ssl/fullchain.pem # Full chain (cert + intermediates)
+# /etc/nginx/ssl/chain.pem    # Certificate chain
+
+# DH parameters for perfect forward secrecy:
+# openssl dhparam -out /etc/nginx/ssl/dhparam.pem 4096
+```
+
+---
+
+### A.2: M1.1.008 - Redis Authentication Config
+
+**What's Defined:** Redis service in docker-compose.yml
+
+**What's Missing:** Redis password authentication, session key structure
+
+**Implementation:**
+
+```yaml
+# docker-compose.yml - redis service additions:
+redis:
+  image: redis:7-alpine
+  command: redis-server --requirepass ${REDIS_PASSWORD} --maxmemory 512mb --maxmemory-policy allkeys-lru
+  # requirepass: Redis password authentication
+  # maxmemory: Memory limit
+  # maxmemory-policy: Eviction policy when memory reached
+```
+
+```typescript
+// Session key structure:
+interface SessionKey {
+  sid: string;      // session ID (UUID v4)
+  uid: string;     // user ID
+  exp: number;    // expiry timestamp (Unix)
+  iat: number;    // issued at timestamp
+  ip: string;      // IP address
+  ua: string;      // user agent
+}
+
+// Format: "sess:{sid}:{uid}:{exp}"
+// Example: "sess:a1b2c3d4:e5f6g7h8:1735689600"
+// TTL: 7 days (604800 seconds)
+
+// Redis session operations:
+interface SessionStore {
+  create(uid: string, ip: string, ua: string): Promise<SessionKey>;
+  get(sid: string): Promise<SessionKey | null>;
+  refresh(sid: string): Promise<SessionKey>;
+  destroy(sid: string): Promise<void>;
+  cleanup(): Promise<void>;  // Remove expired sessions
+}
+```
+
+---
+
+### A.3: M1.2.004 - JWT Refresh Token Rotation & Blacklisting
+
+**What's Defined:** JWT service in src/services/jwt.ts
+
+**What's Missing:** Token rotation logic, token blacklisting, refresh token reuse detection
+
+**Implementation:**
+
+```typescript
+// Refresh token structure:
+interface RefreshToken {
+  jti: string;           // unique token ID (UUID v4)
+  uid: string;          // user ID
+  sub: string;          // subject (user email)
+  exp: number;         // expiry timestamp
+  iat: number;         // issued at timestamp
+  rot: number;         // rotation count
+  revoked: boolean;   // revoked flag
+  replacedBy: string; // replaced by token ID
+  family: string;     // token family for rotation chain
+}
+
+// Token rotation logic:
+async function rotateRefreshToken(oldToken: string): Promise<{ accessToken: string; refreshToken: string }> {
+  const decoded = jwt.verify(oldToken, REFRESH_SECRET);
+  
+  // Check if token already revoked
+  const isRevoked = await redis.get(`revoked:${decoded.jti}`);
+  if (isRevoked) {
+    throw new Error('Token revoked');
+  }
+  
+  // Mark old token as replaced
+  await redis.set(`revoked:${decoded.jti}`, '1', { EX: 86400 }); // Keep in blacklist for 24h
+  
+  // Generate new refresh token
+  const newJti = uuidv4();
+  const newToken = jwt.sign({
+    sub: decoded.sub,
+    uid: decoded.uid,
+    jti: newJti,
+    family: decoded.family || decoded.jti
+  }, REFRESH_SECRET, { expiresIn: '7d' });
+  
+  // Store new token
+  await storeRefreshToken(newJti, decoded.uid, decoded.sub);
+  
+  // Generate new access token
+  const accessToken = jwt.sign({
+    sub: decoded.sub,
+    uid: decoded.uid,
+  }, ACCESS_SECRET, { expiresIn: '15m' });
+  
+  return { accessToken, refreshToken: newToken };
+}
+
+// Token blacklisting (Redis):
+// Key: "revoked:{jti}", Value: "1", TTL: 86400 (24 hours)
+// Also store in MongoDB for persistence across restarts
+interface TokenBlacklist {
+  jti: string;
+  revokedAt: Date;
+  reason: 'rotation' | 'logout' | 'expired' | 'security';
+}
+```
+
+---
+
+### A.4: M1.2.006 - Google OAuth CSRF & Scope
+
+**What's Defined:** Google OAuth route in app/api/auth/google/route.ts
+
+**What's Missing:** OAuth state CSRF protection, scope details
+
+**Implementation:**
+
+```typescript
+// OAuth state CSRF protection:
+function generateOAuthState(userId: string): string {
+  const state = {
+    uid: userId,
+    nonce: crypto.randomBytes(32).toString('hex'),
+    exp: Date.now() + 600000, // 10 minute expiry
+    redir: '/dashboard'       // redirect after auth
+  };
+  // Encrypt state for URL
+  return Buffer.from(JSON.stringify(state)).toString('base64url');
+}
+
+function verifyOAuthState(state: string): { uid: string; nonce: string; redir: string } | null {
+  try {
+    const decoded = JSON.parse(Buffer.from(state, 'base64url').toString());
+    if (decoded.exp < Date.now()) return null;
+    return decoded;
+  } catch {
+    return null;
+  }
+}
+
+// Google OAuth scope:
+const OAUTH_SCOPE = [
+  'openid',           // Required: OpenID Connect
+  'email',           // Required: Access email
+  'profile',         // Required: Access name and photo
+  // Optional scopes:
+  // 'https://www.googleapis.com/auth/userinfo.email',
+  // 'https://www.googleapis.com/auth/userinfo.profile',
+].join(' ')
+
+// OAuth parameters:
+interface OAuthConfig {
+  client_id: string;
+  redirect_uri: string;
+  response_type: 'code';
+  scope: string;
+  state: string;          // CSRF state
+  access_type: 'offline';  // Get refresh token
+  prompt: 'consent';       // Force consent for refresh token
+}
+```
+
+---
+
+### A.5: M1.2.010 - Rate Limiting Per Endpoint
+
+**What's Defined:** Basic rate limiting in nginx.conf
+
+**What's Missing:** Per-endpoint rate limiting algorithm, endpoint-specific limits
+
+**Implementation:**
+
+```typescript
+// Rate limiting configuration:
+interface RateLimitConfig {
+  endpoint: string;
+  windowMs: number;      // Time window in milliseconds
+  maxRequests: number;  // Max requests per window
+  strategy: 'sliding' | 'fixed';
+}
+
+const RATE_LIMITS: RateLimitConfig[] = [
+  // Auth endpoints - stricter
+  { endpoint: '/api/auth/login', windowMs: 60000, maxRequests: 5, strategy: 'sliding' },
+  { endpoint: '/api/auth/register', windowMs: 3600000, maxRequests: 3, strategy: 'sliding' },
+  { endpoint: '/api/auth/forgot-password', windowMs: 86400000, maxRequests: 3, strategy: 'fixed' },
+  // API endpoints - standard
+  { endpoint: '/api/generate', windowMs: 60000, maxRequests: 10, strategy: 'sliding' },
+  { endpoint: '/api/edit', windowMs: 60000, maxRequests: 20, strategy: 'sliding' },
+  { endpoint: '/api/convert', windowMs: 60000, maxRequests: 10, strategy: 'sliding' },
+  // Public endpoints - lenient
+  { endpoint: '/api/translate', windowMs: 60000, maxRequests: 15, strategy: 'sliding' },
+  { endpoint: '/api/voice', windowMs: 60000, maxRequests: 5, strategy: 'sliding' },
+];
+
+// Rate limiting algorithm (Redis):
+// Key format: "ratelimit:{endpoint}:{ip}"
+// Value: JSON array of timestamps
+// Sliding window: Remove timestamps outside window, count remaining
+
+interface RateLimitResult {
+  allowed: boolean;
+  remaining: number;
+  resetAt: number;
+  retryAfter: number;
+}
+```
+
+---
+
+### A.6: M1.3.010 - Socket.io Rooms/Namespaces Structure
+
+**What's Defined:** WebSocket support in nginx.conf
+
+**What's Missing:** Socket.io rooms, namespaces structure, event types
+
+**Implementation:**
+
+```typescript
+// Socket.io namespaces:
+const NAMESPACES = {
+  '/generation': {
+    // Document generation namespace
+    rooms: ['generation:{sessionId}'],
+    auth: true,
+  },
+  '/realtime': {
+    // Real-time collaboration
+    rooms: ['document:{docId}', 'user:{userId}'],
+    auth: true,
+  },
+  '/admin': {
+    // Admin events
+    rooms: ['admin'],
+    auth: true,
+    role: 'admin',
+  },
+};
+
+// Socket.io rooms:
+const ROOMS = {
+  // Generation rooms
+  'generation:{sessionId}': {
+    maxUsers: 1,
+    autoLeave: true,
+  },
+  // Document rooms (for real-time)
+  'document:{docId}': {
+    maxUsers: 10,
+    autoLeave: false,
+  },
+  // User rooms
+  'user:{userId}': {
+    maxUsers: 5,
+    autoLeave: true,
+  },
+};
+
+// Connection management:
+interface SocketConnection {
+  sid: string;           // socket ID
+  uid: string;          // user ID
+  namespace: string;
+  room: string;
+  connectedAt: number;
+  lastHeartbeat: number;
+}
+```
+
+---
+
+### A.7: M1.3.011 - Event Types Enum & Reconnection Logic
+
+**What's Defined:** WebSocket events mentioned in M4
+
+**What's Missing:** Event types enum, reconnection logic
+
+**Implementation:**
+
+```typescript
+// WebSocket event types:
+// Client → Server
+enum ClientEventType {
+  GENERATE = 'generate',
+  EDIT = 'edit',
+  FORMAT = 'format',
+  TRANSLATE = 'translate',
+  SUMMARIZE = 'summarize',
+  CANCEL = 'cancel',
+  HEARTBEAT = 'heartbeat',
+  JOIN_ROOM = 'join_room',
+  LEAVE_ROOM = 'leave_room',
+}
+
+// Server → Client
+enum ServerEventType {
+  START = 'start',
+  CHUNK = 'chunk',
+  COMPLETE = 'complete',
+  ERROR = 'error',
+  CREDIT_UPDATE = 'credit_update',
+  PROGRESS = 'progress',
+  HEARTBEAT_ACK = 'heartbeat_ack',
+  USER_JOINED = 'user_joined',
+  USER_LEFT = 'user_left',
+}
+
+// Event payload structures:
+interface GenerateEvent {
+  type: 'generate';
+  payload: {
+    text: string;
+    format: string;
+    tone: string;
+    options: GenerateOptions;
+  };
+}
+
+interface ChunkEvent {
+  type: 'chunk';
+  payload: {
+    content: string;
+    elementId: string;
+    isFinal: boolean;
+  };
+}
+
+// Reconnection logic:
+interface ReconnectionConfig {
+  maxRetries: number;         // 3 retries
+  retryDelay: number;        // 1000ms initial
+  maxRetryDelay: number;     // 30000ms max
+  backoffMultiplier: number; // 2x
+  onRetry: (attempt: number, delay: number) => void;
+}
+
+// Reconnection algorithm:
+async function withReconnection<T>(
+  fn: () => Promise<T>,
+  config: ReconnectionConfig
+): Promise<T> {
+  let lastError: Error;
+  let delay = config.retryDelay;
+  
+  for (let attempt = 0; attempt <= config.maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error as Error;
+      if (attempt < config.maxRetries) {
+        config.onRetry(attempt + 1, delay);
+        await sleep(delay);
+        delay = Math.min(delay * config.backoffMultiplier, config.maxRetryDelay);
+      }
+    }
+  }
+  throw lastError;
+}
+```
+
+---
+
+### A.8: M4.001 & M4.005 - Generation API Route & Streaming
+
+**What's Defined:** WebSocket protocol (lines 580-595)
+
+**What's Missing:** API route structure, streaming implementation
+
+**Implementation:**
+
+```typescript
+// API route structure:
+// POST /api/generate
+// Request:
+interface GenerateRequest {
+  text: string;
+  format?: string;
+  tone?: 'professional' | 'casual' | 'formal';
+  structure?: 'auto' | 'business' | 'academic' | 'legal' | 'personal' | 'creative';
+  options?: {
+    wordCount?: number;
+    includeImages?: boolean;
+    style?: string;
+  };
+}
+
+// Response (non-streaming for API):
+interface GenerateResponse {
+  document: GeneratedDocument;
+  creditsUsed: number;
+  creditsRemaining: number;
+  processingTime: number;
+}
+
+// Streaming via WebSocket:
+interface GenerationPayload {
+  sessionId: string;
+  text: string;
+  format: string;
+  tone: string;
+  options: GenerateOptions;
+}
+
+// Streaming chunks:
+interface ChunkPayload {
+  type: 'start' | 'chunk' | 'complete' | 'error' | 'progress';
+  data: {
+    sessionId: string;
+    content?: string;
+    elementId?: string;
+    isFinal?: boolean;
+    progress?: number;
+    error?: string;
+    creditsUsed?: number;
+  };
+}
+
+// WebSocket message protocol:
+interface WSMessage {
+  type: ClientEventType | ServerEventType;
+  payload: any;
+  timestamp: number;
+  messageId: string;
+}
+```
+
+---
+
+### A.9: M4.009 - Language Detection Algorithm
+
+**What's Defined:** Translate feature mentioned (lines 1155-1170)
+
+**What's Missing:** Language detection algorithm
+
+**Implementation:**
+
+```typescript
+// Language detection algorithm:
+// Use langdetect library or cld3 for detection
+// Primary: langdetect library
+// Fallback: cld3 (CLD3 for more准确)
+
+import langdetect from 'langdetect';
+import cld3 from 'cld3';
+
+interface LanguageDetection {
+  language: string;      // ISO 639-1 code (e.g., 'en')
+  languageName: string;   // Full name (e.g., 'English')
+  confidence: number;    // 0-1 confidence score
+  reliable: boolean;    // Is detection reliable
+}
+
+// Detection algorithm:
+async function detectLanguage(text: string): Promise<LanguageDetection> {
+  // Step 1: Use langdetect for initial detection
+  const langdetectResult = langdetect.detect(text);
+  if (!langdetectResult || langdetectResult.length === 0) {
+    return { language: 'en', languageName: 'English', confidence: 0, reliable: false };
+  }
+  
+  const primaryLang = langdetectResult[0].lang;
+  const confidence = langdetectResult[0].prob;
+  
+  // Step 2: Use cld3 for verification
+  const cld3Result = cld3.findLanguage(text);
+  
+  // Step 3: Compare results
+  const languages = [
+    { code: primaryLang, confidence: confidence },
+    { code: cld3Result.language, confidence: cld3Result.probability },
+  ];
+  
+  // Use weighted average
+  const finalConfidence = (languages[0].confidence + languages[1].confidence) / 2;
+  const language = finalConfidence > 0.7 ? primaryLang : 'en';
+  
+  return {
+    language,
+    languageName: getLanguageName(language), // Map code to name
+    confidence: finalConfidence,
+    reliable: finalConfidence > 0.7,
+  };
+}
+
+// Supported languages:
+const SUPPORTED_LANGUAGES = [
+  { code: 'en', name: 'English', supported: true },
+  { code: 'es', name: 'Spanish', supported: true },
+  { code: 'fr', name: 'French', supported: true },
+  { code: 'de', name: 'German', supported: true },
+  { code: 'it', name: 'Italian', supported: true },
+  { code: 'pt', name: 'Portuguese', supported: true },
+  { code: 'zh', name: 'Chinese', supported: true },
+  { code: 'ja', name: 'Japanese', supported: true },
+  { code: 'ko', name: 'Korean', supported: true },
+  { code: 'ru', name: 'Russian', supported: true },
+  { code: 'ar', name: 'Arabic', supported: true },
+  { code: 'hi', name: 'Hindi', supported: true },
+];
+```
+
+---
+
+### A.10: M4.024 - Intent Detection Schema & M7.012
+
+**What's Defined:** Intent analyzer mentioned in M19
+
+**What's Missing:** Intent detection schema
+
+**Implementation:**
+
+```typescript
+// Intent detection schema:
+interface IntentAnalysis {
+  intent: 'generate' | 'edit' | 'convert' | 'translate' | 'voice' | 'extract' | 'merge' | 'split' | 'compress' | 'style' | 'unknown';
+  confidence: number;           // 0-1 confidence score
+  entities: IntentEntity[];  // Extracted entities
+  options: IntentOptions;     // Parsed options
+  clarificationNeeded: boolean;
+  clarificationOptions?: ClarificationOption[];
+}
+
+interface IntentEntity {
+  type: 'format' | 'tone' | 'language' | 'structure' | 'wordCount' | 'action';
+  value: string;
+  confidence: number;
+}
+
+interface IntentOptions {
+  format?: string;
+  tone?: string;
+  language?: string;
+  structure?: string;
+  wordCount?: number;
+}
+
+interface ClarificationOption {
+  id: string;
+  label: string;
+  description: string;
+  icon?: string;
+}
+
+// Intent detection algorithm:
+async function analyzeIntent(text: string): Promise<IntentAnalysis> {
+  const prompt = `
+    Analyze this user message and extract the intent.
+    
+    Message: "${text}"
+    
+    Return JSON with:
+    - intent: The primary intent (generate, edit, convert, translate, voice, extract, merge, split, compress, style)
+    - confidence: 0-1 confidence score
+    - entities: Extracted entities (format, tone, language, etc.)
+    - options: Parsed options
+    - clarificationNeeded: Whether clarification is needed
+    - clarificationOptions: Array of options if clarification needed
+    
+    Intent keywords:
+    - generate: "create", "make", "generate", "write"
+    - edit: "edit", "change", "modify", "update", "fix"
+    - convert: "convert", "change to", "transform"
+    - translate: "translate", "in [language]"
+    - voice: "voice", "dictate", "record"
+    - extract: "extract", "pull text", "OCR"
+    - merge: "merge", "combine", "join"
+    - split: "split", "separate", "divide"
+    - compress: "compress", "reduce", "smaller"
+    - style: "style", "redesign", "change look"
+  `;
+  
+  // Use LLM for intent detection
+  const result = await llm.generate(prompt);
+  return JSON.parse(result);
+}
+
+// Default confidence threshold:
+const INTENT_CONFIDENCE_THRESHOLD = 0.7;
+```
+
+---
+
+### A.11: M7.012 - AI Edit Streaming & API Route & M7.035 - Element ID Generation Strategy
+
+**What's Defined:** Document structure defined (lines 622-640)
+
+**What's Missing:** AI edit streaming, API route, element ID generation
+
+**Implementation:**
+
+```typescript
+// AI Edit API route:
+// POST /api/edit
+interface EditRequest {
+  documentId: string;
+  elementId: string;
+  instruction: string;
+  mode: 'preview_edit' | 'set_editable';
+}
+
+interface EditResponse {
+  document: GeneratedDocument;
+  editedElementIds: string[];
+  creditsUsed: number;
+}
+
+// AI Edit streaming:
+interface EditChunkEvent {
+  type: 'edit_start' | 'edit_chunk' | 'edit_complete' | 'edit_error';
+  data: {
+    elementId: string;
+    originalContent: string;
+    newContent: string;
+    progress: number;
+    editingreditsUsed?: number;
+  };
+}
+
+// Element ID generation strategy:
+// Use ULID (Universally Unique Lexicographically Sortable Identifier)
+// ULID format: 01ARZ3NDEKTSV4RRFFQ69G7VKYV
+// - Timestamp component (first 10 chars): Sortable by time
+// - Random component (last 16 chars): Unique
+
+// ULID structure:
+interface ElementId {
+  prefix: string;      // 'hdr', 'para', 'list', 'table', 'img'
+  timestamp: string;   // 10 char base32 timestamp
+  random: string;      // 16 char base32 random
+  full: string;        // Full ULID: '{prefix}_{timestamp}{random}'
+}
+
+const ELEMENT_PREFIXES = {
+  heading: 'hdr',
+  paragraph: 'para',
+  list: 'list',
+  table: 'tbl',
+  image: 'img',
+};
+
+// ID generation function:
+function generateElementId(type: keyof typeof ELEMENT_PREFIXES): string {
+  const prefix = ELEMENT_PREFIXES[type];
+  const timestamp = ulid.slice(0, 10);
+  const random = ulid.slice(10);
+  return `${prefix}_${timestamp}${random}`;
+}
+
+// Example output:
+// heading_01ARZ3NDEKTSV4RR
+// para_01ARZ3NDEKTSV4RRFFQ69G7VKY
+// table_01ARZ3NDEKTSV4RRFFQ69G7VKYV
+```
+
+---
+
+### A.12: M8.001 & M8.004-005 - Edit API & Streaming
+
+**What's Defined:** Edit types defined (lines 1127-1143)
+
+**What's Missing:** Edit API endpoint structure, streaming
+
+**Implementation:**
+
+```typescript
+// Edit API: /api/edit/route.ts
+// POST /api/edit
+
+// Request schema:
+const editSchema = z.object({
+  documentId: z.string().ulid(),
+  elementId: z.string(),
+  instruction: z.string().min(1).max(500),
+  mode: z.enum(['preview_edit', 'set_editable']),
+  options: z.object({
+    preserveFormatting: z.boolean().default(true),
+    tone: z.enum(['same', 'more_confident', 'more_casual', 'more_formal']).default('same'),
+  }).optional(),
+});
+
+// Response (streaming via WebSocket):
+// Connect to /generation namespace, room: document:{documentId}
+// Send: { type: 'edit', payload: { elementId, instruction, options } }
+// Receive: EditChunkEvent stream
+```
+
+---
+
+### A.13: M8.013 - Summarization Options Structure
+
+**What's Defined:** Options: brief/medium/detailed (line 1175)
+
+**What's Missing:** Options structure
+
+**Implementation:**
+
+```typescript
+// Summarization options:
+enum SummarizationLength {
+  BRIEF = 'brief',      // 20% of original
+  MEDIUM = 'medium',    // 40% of original
+  DETAILED = 'detailed', // 60% of original
+}
+
+interface SummarizationOptions {
+  length: SummarizationLength;
+  format: 'paragraph' | 'bullet' | 'outline';
+  includeKeyPoints: boolean;  // Extract key points as bullets
+  preserveTone: boolean;    // Keep original tone
+}
+
+interface SummarizationResult {
+  summary: string;
+  wordCount: number;
+  originalWordCount: number;
+  compressionRatio: number;
+  keyPoints?: string[];
+}
+
+// Summarization prompt templates:
+const SUMMARIZATION_PROMPTS = {
+  brief: `Summarize the following text in 2-3 sentences, capturing the main points:`,
+  medium: `Summarize the following text in a concise paragraph, covering the key information:`,
+  detailed: `Create a detailed summary of the following text, preserving important details and examples:`,
+  bullet: `Extract the key points from the following text as bullet points:`,
+};
+```
+
+---
+
+### A.14: M9.007-008 - Whisper API Endpoint & Streaming Transcription
+
+**What's Defined:** Self-hosted Whisper mentioned (line 1215)
+
+**What's Missing:** API endpoint structure, streaming transcription
+
+**Implementation:**
+
+```typescript
+// Whisper API: /api/voice/transcribe
+// POST /api/voice/transcribe
+
+interface TranscribeRequest {
+  audio: FormData;  // Audio file
+  language?: string; // Optional language hint
+  responseFormat: 'text' | 'json' | 'srt' | 'vtt';
+}
+
+interface TranscribeResponse {
+  text: string;
+  language: string;
+  duration: number;
+  segments?: TranscriptionSegment[];
+}
+
+interface TranscriptionSegment {
+  id: number;
+  start: number;
+  end: number;
+  text: string;
+  avg_logprob: number;
+  no_speech_prob: number;
+}
+
+// Streaming transcription:
+interface TranscribeStreamEvent {
+  type: 'transcribe_start' | 'transcribe_chunk' | 'transcribe_complete' | 'transcribe_error';
+  data: {
+    text?: string;
+    duration?: number;
+    segments?: TranscriptionSegment[];
+    progress?: number;
+  };
+}
+
+// Audio format specifications:
+// Supported: mp3, wav, m4a, webm, ogg
+// Max duration: 2 minutes (120 seconds)
+// Max file size: 10MB
+// Sample rate: 16kHz (auto-resample if different)
+
+// Processing pipeline:
+// 1. Validate audio format and size
+// 2. Convert to WAV if needed (ffmpeg)
+// 3. Resample to 16kHz if needed
+// 4. Send to Whisper API
+// 5. Stream results back
+```
+
+---
+
+### A.15: M9.016 - Recording Visual Feedback Animation System
+
+**What's Defined:** UI mentioned (lines 1197-1211)
+
+**What's Missing:** Animation specification
+
+**Implementation:**
+
+```typescript
+// Recording feedback animations:
+// 1. Idle state: Pulsing microphone icon
+// 2. Recording state: Waveform visualization + red pulsing dot
+// 3. Processing state: Spinning loader + "Processing..."
+
+// Animation CSS:
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+@keyframes waveform {
+  0% { height: 20%; }
+  25% { height: 60%; }
+  50% { height: 100%; }
+  75% { height: 40%; }
+  100% { height: 20%; }
+}
+
+@keyframes recording-dot {
+  0%, 100% { background-color: #ef4444; }
+  50% { background-color: #fca5a5; }
+}
+
+// Recording states:
+type RecordingState = 'idle' | 'recording' | 'processing' | 'complete' | 'error';
+
+interface RecordingFeedback {
+  state: RecordingState;
+  duration: number;         // Current duration in seconds
+  waveformData: number[]; // Waveform amplitude data
+  audioLevel: number;     // Current audio level (0-100)
+}
+```
+
+---
+
+### A.16: M10.007 - Image Placement Parsing Algorithm
+
+**What's Defined:** Description examples (lines 1281-1285)
+
+**What's Missing:** Parsing algorithm for placement
+
+**Implementation:**
+
+```typescript
+// Image placement parsing algorithm:
+interface ImagePlacement {
+  position: 'top-left' | 'top-center' | 'top-right' | 'center-left' | 'center' | 'center-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+  reference?: string;    // e.g., "after paragraph 2"
+  offset?: { x: number; y: number };
+  alignment: 'left' | 'center' | 'right';
+}
+
+interface PlacementResult {
+  placement: ImagePlacement;
+  confidence: number;
+  originalText: string;
+}
+
+// Parsing algorithm:
+function parseImagePlacement(text: string): PlacementResult {
+  const placementPatterns = {
+    position: /(top|bottom|center)-(left|center|right)/i,
+    reference: /after\s+(paragraph\s+\d+|section\s+\d+)/i,
+    offset: /offset\s+(\d+)px\s+(x|-)\s+(\d+)px/i,
+  };
+  
+  let position: ImagePlacement['position'] = 'center';
+  
+  // Match position
+  const positionMatch = text.match(placementPatterns.position);
+  if (positionMatch) {
+    position = `${positionMatch[1].toLowerCase()}-${positionMatch[2].toLowerCase()}` as ImagePlacement['position'];
+  }
+  
+  // Match reference
+  let reference: string | undefined;
+  const refMatch = text.match(placementPatterns.reference);
+  if (refMatch) {
+    reference = refMatch[0];
+  }
+  
+  // Match offset
+  let offset: { x: number; y: number } | undefined;
+  const offsetMatch = text.match(placementPatterns.offset);
+  if (offsetMatch) {
+    offset = { x: parseInt(offsetMatch[1]), y: parseInt(offsetMatch[3]) };
+  }
+  
+  return {
+    placement: {
+      position,
+      reference,
+      offset,
+      alignment: position.includes('right') ? 'right' : position.includes('left') ? 'left' : 'center',
+    },
+    confidence: positionMatch ? 0.9 : reference ? 0.7 : 0.5,
+    originalText: text,
+  };
+}
+
+// AI placement interpretation prompt:
+const PLACEMENT_PROMPT = `
+Extract the image placement from this description: "{description}"
+
+Return JSON:
+{
+  "position": "top-left|top-center|top-right|center-left|center|center-right|bottom-left|bottom-center|bottom-right",
+  "reference": "after paragraph X" | null,
+  "alignment": "left|center|right"
+}
+`;
+```
+
+---
+
+### A.17: M10.019 - Image Storage DB Schema/API
+
+**What's Defined:** Image described (lines 1252-1259)
+
+**What's Missing:** Database schema, API endpoints
+
+**Implementation:**
+
+```typescript
+// Image storage MongoDB schema:
+interface ImageDocument {
+  _id: ObjectId;
+  userId: ObjectId;
+  documentId: ObjectId | null;
+  fileName: string;
+  originalName: string;
+  mimeType: string;
+  size: number;
+  storageUrl: string;      // S3/GCS URL or local path
+  thumbnailUrl: string;
+  width: number;
+  height: number;
+  placement?: ImagePlacement;
+  createdAt: Date;
+  expiresAt: Date;        // For temporary storage
+  status: 'processing' | 'ready' | 'deleted';
+}
+
+// Image API: /api/images
+// - POST /api/images/upload
+// - GET /api/images
+// - GET /api/images/:id
+// - DELETE /api/images/:id
+// - POST /api/images/:id/place
+
+interface ImageUploadResponse {
+  imageId: string;
+  uploadUrl: string;      // Pre-signed URL for direct upload
+  expiresAt: number;
+}
+
+interface ImageListResponse {
+  images: ImageDocument[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+// Storage cleanup triggers:
+// 1. On document generation complete: Keep for 24h
+// 2. On document deletion: Delete immediately
+// 3. On user logout: Delete temp images
+// 4. Cron job: Delete images where expiresAt < now
+// 5. On storage limit reached: Delete oldest first
+
+// Cleanup API: /api/images/cleanup
+interface CleanupRequest {
+  mode: 'expired' | 'oldest' | 'all';
+  limit?: number;
+}
+```
+
+---
+
+### A.18: M10.026 - Alt Text Generation AI Call Structure
+
+**What's Defined:** Feature mentioned
+
+**What's Missing:** AI call structure
+
+**Implementation:**
+
+```typescript
+// Alt text generation:
+// POST /api/images/:id/alt-text
+
+interface AltTextRequest {
+  imageId: string;
+  context?: string;  // Optional document context
+}
+
+interface AltTextResponse {
+  altText: string;
+  confidence: number;
+  keywords: string[];
+}
+
+// AI prompt for alt text:
+const ALT_TEXT_PROMPT = `
+Analyze this image and generate descriptive alt text for accessibility.
+
+Context: {context}
+
+Requirements:
+1. Describe the main subject and action
+2. Include relevant details (colors, objects, people)
+3. Keep it concise (under 125 characters)
+4. Avoid redundancy ("image of...")
+
+Return JSON:
+{
+  "altText": "A person typing on a laptop at a desk",
+  "keywords": ["person", "laptop", "desk", "typing", "technology"],
+  "confidence": 0.9
+}
+`;
+```
+
+---
+
+### A.19: M11.010 - Conversion API Request/Response Schema
+
+**What's Defined:** Feature described (lines 1295-1349)
+
+**What's Missing:** Request/response schema
+
+**Implementation:**
+
+```typescript
+// Conversion API: /api/convert
+// POST /api/convert
+
+interface ConvertRequest {
+  file: File;                          // Uploaded file
+  fromFormat: string;                 // Source format (e.g., 'pdf')
+  toFormat: string;                  // Target format (e.g., 'docx')
+  quality: 'standard' | 'high';     // Conversion quality
+  options?: {
+    preserveLayout: boolean;        // Default: true
+    ocrEnabled: boolean;             // Default: true for scanned
+    preserveImages: boolean;         // Default: true
+  };
+}
+
+interface ConvertResponse {
+  taskId: string;
+  status: 'queued' | 'processing' | 'completed' | 'failed';
+  result?: {
+    outputUrl: string;
+    originalSize: number;
+    convertedSize: number;
+    pages: number;
+  };
+  error?: {
+    code: string;
+    message: string;
+  };
+}
+
+// Webhook notification:
+interface ConvertWebhook {
+  event: 'convert.completed' | 'convert.failed';
+  taskId: string;
+  result: ConvertResponse['result'];
+  timestamp: number;
+}
+```
+
+---
+
+### A.20: M11.019 - Format Validation Function for 200 Paths
+
+**What's Defined:** Dynamic route described (lines 1844-1859)
+
+**What's Missing:** Validation function
+
+**Implementation:**
+
+```typescript
+// Format conversion matrix:
+const CONVERSION_MATRIX: Record<string, string[]> = {
+  // PDF conversions (10)
+  pdf: ['docx', 'doc', 'jpg', 'png', 'xlsx', 'csv', 'pptx', 'txt', 'html', 'odt'],
+  // DOCX conversions (10)
+  docx: ['pdf', 'doc', 'jpg', 'png', 'xlsx', 'csv', 'pptx', 'txt', 'html', 'odt'],
+  // Continue for all 20 formats...
+};
+
+// Validation function:
+function validateConversionPath(fromFormat: string, toFormat: string): { valid: boolean; error?: string } {
+  const from = fromFormat.toLowerCase();
+  const to = toFormat.toLowerCase();
+  
+  // Check if source format exists
+  if (!CONVERSION_MATRIX[from]) {
+    return { valid: false, error: `Unsupported source format: ${fromFormat}` };
+  }
+  
+  // Check if target format is supported for source
+  if (!CONVERSION_MATRIX[from].includes(to)) {
+    return { 
+      valid: false, 
+      error: `Cannot convert from ${fromFormat} to ${toFormat}. Supported conversions: ${CONVERSION_MATRIX[from].join(', ')}` 
+    };
+  }
+  
+  return { valid: true };
+}
+
+// All valid format pairs (200 total):
+const VALID_CONVERSION_PAIRS = [
+  // 10 x 10 core formats = 100
+  // 10 x 10 medium priority = 100
+  // Total: 200 unique paths
+];
+
+// Get all valid pairs:
+function getAllValidPairs(): Array<{ from: string; to: string; url: string }> {
+  const pairs: Array<{ from: string; to: string; url: string }> = [];
+  
+  for (const from of Object.keys(CONVERSION_MATRIX)) {
+    for (const to of CONVERSION_MATRIX[from]) {
+      pairs.push({ from, to, url: `/convert/${from}-to-${to}` });
+    }
+  }
+  
+  return pairs;
+}
+```
+
+---
+
+### A.21: M11.021 - Conversion Quality Verification Approach
+
+**What's Defined:** Mentioned in M11
+
+**What's Missing:** Verification algorithm
+
+**Implementation:**
+
+```typescript
+// Quality verification algorithm:
+interface QualityMetrics {
+  elementsPreserved: number;    // Headings, tables, images
+  elementsTotal: number;
+  formattingScore: number;       // 0-100
+  layoutScore: number;           // 0-100
+  overallScore: number;           // 0-100
+}
+
+interface QualityVerification {
+  originalDocument: DocumentMetadata;
+  convertedDocument: DocumentMetadata;
+  metrics: QualityMetrics;
+  issues: QualityIssue[];
+}
+
+interface QualityIssue {
+  type: 'missing_element' | 'formatting_loss' | 'layout_shift' | 'content_loss';
+  severity: 'low' | 'medium' | 'high';
+  description: string;
+  location?: string;
+}
+
+// Verification algorithm:
+async function verifyConversionQuality(
+  originalUrl: string,
+  convertedUrl: string
+): Promise<QualityVerification> {
+  // 1. Parse original document
+  const original = await parseDocument(originalUrl);
+  
+  // 2. Parse converted document
+  const converted = await parseDocument(convertedUrl);
+  
+  // 3. Compare elements
+  const elementsPreserved = compareElements(original, converted);
+  
+  // 4. Calculate formatting score
+  const formattingScore = compareFormatting(original, converted);
+  
+  // 5. Calculate layout score
+  const layoutScore = compareLayout(original, converted);
+  
+  // 6. Identify issues
+  const issues = identifyIssues(original, converted);
+  
+  return {
+    originalDocument: original.metadata,
+    convertedDocument: converted.metadata,
+    metrics: {
+      elementsPreserved,
+      elementsTotal: original.elements.length,
+      formattingScore,
+      layoutScore,
+      overallScore: (formattingScore + layoutScore) / 2,
+    },
+    issues,
+  };
+}
+
+// Quality thresholds:
+// Pass: overallScore >= 80
+// Warning: overallScore >= 60 && < 80
+// Fail: overallScore < 60
+```
+
+---
+
+### A.22: M11.033 - Fallback Trigger Criteria
+
+**What's Defined:** Fallback described
+
+**What's Missing:** Trigger criteria
+
+**Implementation:**
+
+```typescript
+// Fallback trigger criteria:
+interface FallbackCriteria {
+  aiConversionFailed: boolean;      // AI service returned error
+  timeoutExceeded: boolean;        // Processing > 120 seconds
+  qualityScoreBelow: number;       // Quality score < 50 (default)
+  networkError: boolean;            // Network failure
+  retryCountExceeded: number;     // Retries > 3 (default)
+}
+
+interface FallbackConfig {
+  maxRetries: number;              // Default: 3
+  timeoutMs: number;               // Default: 120000 (120s)
+  minQualityScore: number;        // Default: 50
+  fallbackOnError: boolean;       // Default: true
+}
+
+// Check and trigger fallback:
+async function shouldTriggerFallback(
+  error: Error,
+  attempt: number,
+  qualityScore?: number
+): Promise<{ shouldFallback: boolean; reason: string }> {
+  const config: FallbackConfig = {
+    maxRetries: 3,
+    timeoutMs: 120000,
+    minQualityScore: 50,
+    fallbackOnError: true,
+  };
+  
+  // Check retry count
+  if (attempt >= config.maxRetries) {
+    return { shouldFallback: true, reason: 'max_retries_exceeded' };
+  }
+  
+  // Check quality score
+  if (qualityScore !== undefined && qualityScore < config.minQualityScore) {
+    return { shouldFallback: true, reason: 'quality_score_below_threshold' };
+  }
+  
+  // Check error type
+  const errorTypes = {
+    AI_SERVICE_ERROR: true,
+    TIMEOUT: true,
+    NETWORK_ERROR: true,
+    PARSE_ERROR: true,
+  };
+  
+  if (errorTypes[error.name] && config.fallbackOnError) {
+    return { shouldFallback: true, reason: error.name };
+  }
+  
+  return { shouldFallback: false, reason: '' };
+}
+```
+
+---
+
+### A.23: M11.035-037 - Parser/Formatter/Metadata Approaches
+
+**What's Defined:** Mentioned in M11
+
+**What's Missing:** Implementation approaches
+
+**Implementation:**
+
+```typescript
+// A.23.1: Input Parser (Convert Input Parser)
+interface InputParser {
+  parse(file: Buffer, format: string): Promise<ParsedDocument>;
+}
+
+interface ParsedDocument {
+  text: string;
+  elements: DocumentElement[];
+  metadata: DocumentMetadata;
+  errors: ParseError[];
+}
+
+// Parser implementations:
+const PARSERS: Record<string, InputParser> = {
+  pdf: pdfParser,         // pdf-parse library
+  docx: docxParser,       // mammoth library
+  xlsx: xlsxParser,       // xlsx library
+  pptx: pptxParser,       // pptxjs
+  image: imageParser,    // sharp + tesseract
+  // ... etc
+};
+
+// A.23.2: Output Formatter (Convert Output Formatter)
+interface OutputFormatter {
+  format(document: ParsedDocument, targetFormat: string): Promise<Buffer>;
+}
+
+interface FormattingOptions {
+  pageSize: 'letter' | 'a4' | 'legal';
+  margins: { top: number; right: number; bottom: number; left: number };
+  header?: string;
+  footer?: string;
+  pageNumbers: boolean;
+}
+
+const FORMATTERS: Record<string, OutputFormatter> = {
+  pdf: pdfFormatter,       // puppeteer/pdfkit
+  docx: docxFormatter,    // docx library
+  xlsx: xlsxFormatter,    // xlsx library
+  // ... etc
+};
+
+// A.23.3: Metadata Preservation
+interface MetadataPreservation {
+  extract(source: ParsedDocument): DocumentMetadata;
+  apply(target: ParsedDocument, metadata: DocumentMetadata): ParsedDocument;
+}
+
+interface DocumentMetadata {
+  title: string;
+  author: string;
+  subject: string;
+  keywords: string[];
+  createdDate: Date;
+  modifiedDate: Date;
+  pageCount: number;
+  customProperties: Record<string, string>;
+}
+
+// Preservation rules:
+// 1. Title: Extract from first heading or filename
+// 2. Author: Document properties or user
+// 3. Keywords: Extract from content
+// 4. Dates: Preserve original creation date
+// 5. Custom: Map to target format properties
+```
+
+---
+
+### A.24: M12.007-011 - Document CRUD API Endpoints
+
+**What's Defined:** Dashboard features (lines 1352-1377)
+
+**What's Missing:** API endpoints
+
+**Implementation:**
+
+```typescript
+// M12.007: Document Management View - GET /api/documents
+interface GetDocumentsRequest {
+  page?: number;
+  limit?: number;
+  sortBy?: 'createdAt' | 'updatedAt' | 'title';
+  sortOrder?: 'asc' | 'desc';
+  folderId?: string;
+  search?: string;
+}
+
+interface GetDocumentsResponse {
+  documents: Document[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+// M12.008: Document Open - GET /api/documents/:id
+interface GetDocumentResponse {
+  document: Document;
+  versions: DocumentVersion[];
+}
+
+// M12.009: Document Edit - PUT /api/documents/:id
+interface UpdateDocumentRequest {
+  title?: string;
+  content?: object;
+  folderId?: string;
+}
+
+// M12.010: Document Regenerate - POST /api/documents/:id/regenerate
+interface RegenerateRequest {
+  originalText: string;
+  format?: string;
+}
+
+// M12.011: Document Download - GET /api/documents/:id/download
+interface DownloadRequest {
+  format: 'pdf' | 'docx' | 'txt' | 'html';
+}
+
+// M12.012: Document Delete - DELETE /api/documents/:id
+interface DeleteDocumentRequest {
+  permanently?: boolean; // false = soft delete
+}
+```
+
+---
+
+### A.25: M12.018-020 - Version Storage Schema, Restore API, Diff Algorithm
+
+**What's Defined:** Version history mentioned
+
+**What's Missing:** Schema, restore API, diff algorithm
+
+**Implementation:**
+
+```typescript
+// M12.018: Version storage MongoDB schema:
+interface DocumentVersion {
+  _id: ObjectId;
+  documentId: ObjectId;
+  versionNumber: number;
+  content: object;
+  createdAt: Date;
+  trigger: 'generation' | 'edit' | 'manual' | 'regenerate';
+  createdBy: ObjectId;
+  changeDescription?: string;
+}
+
+// Version restore API: POST /api/documents/:id/versions/:versionId/restore
+interface RestoreVersionRequest {
+  targetVersionId: string;
+  createNewVersion: boolean; // Create new version before restore
+}
+
+interface RestoreVersionResponse {
+  document: Document;
+  restoredVersion: number;
+}
+
+// M12.020: Version diff algorithm:
+interface VersionDiff {
+  added: DiffElement[];
+  removed: DiffElement[];
+  modified: DiffChange[];
+}
+
+interface DiffElement {
+  id: string;
+  type: string;
+  content: string;
+}
+
+interface DiffChange {
+  id: string;
+  before: string;
+  after: string;
+  type: 'content' | 'format' | 'position';
+}
+
+// Diff algorithm using diff library:
+function diffVersions(versionA: Document, versionB: Document): VersionDiff {
+  const diff = require('diff');
+  
+  // Compare JSON content
+  const changes = diff.diffJson(versionA.content, versionB.content);
+  
+  const result: VersionDiff = {
+    added: [],
+    removed: [],
+    modified: [],
+  };
+  
+  changes.forEach((change: any) => {
+    if (change.added) {
+      result.added.push({ id: generateElementId('paragraph'), content: change.value });
+    } else if (change.removed) {
+      result.removed.push({ id: generateElementId('paragraph'), content: change.value });
+    } else {
+      result.modified.push({
+        id: generateElementId('paragraph'),
+        before: change.value[0],
+        after: change.value[1],
+        type: 'content',
+      });
+    }
+  });
+  
+  return result;
+}
+```
+
+---
+
+### A.26: M12.021-025 - Analytics Aggregation Approach
+
+**What's Defined:** Analytics mentioned
+
+**What's Missing:** Aggregation approach
+
+**Implementation:**
+
+```typescript
+// Analytics aggregation approach:
+// M12.021: Usage Analytics (Pro)
+
+// Daily aggregation (run at 00:00 UTC):
+async function aggregateDailyAnalytics(date: Date): Promise<void> {
+  const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+  const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+  
+  // Aggregate by user
+  const userStats = await AnalyticsEvent.aggregate([
+    {
+      $match: {
+        createdAt: { $gte: startOfDay, $lte: endOfDay }
+      }
+    },
+    {
+      $group: {
+        _id: '$userId',
+        documentsGenerated: { $sum: { $cond: [{ $eq: ['$eventType', 'generate'], 1, 0] } },
+        creditsUsed: { $sum: '$credits' },
+        actions: { $sum: 1 }
+      }
+    }
+  ]);
+  
+  // Store daily summary
+  await DailyAnalytics.create({
+    date: startOfDay,
+    userStats,
+    totalDocuments: userStats.reduce((sum, u) => sum + u.documentsGenerated, 0),
+    totalCredits: userStats.reduce((sum, u) => sum + u.creditsUsed, 0),
+  });
+}
+
+// M12.022-025: Various analytics queries:
+// - Get by date range: /api/analytics?from=...&to=...
+// - Get by user: /api/analytics/user/:userId
+// - Get by format: /api/analytics/formats
+// - Get by tool: /api/analytics/tools
+
+interface AnalyticsQuery {
+  from?: Date;
+  to?: Date;
+  groupBy?: 'day' | 'week' | 'month';
+  userId?: string;
+  eventType?: string;
+}
+```
+
+---
+
+### A.27: M12.029-030 - Auto-Save API & Expiry Mechanism
+
+**What's Defined:** Auto-save behavior (lines 1378-1389)
+
+**What's Missing:** Auto-save API, expiry mechanism
+
+**Implementation:**
+
+```typescript
+// M12.029: Auto-save (Pro) - API endpoint
+// POST /api/documents/:id/autosave
+
+interface AutoSaveRequest {
+  content: object;
+  trigger: 'ai-edit' | 'manual' | 'timeout';
+}
+
+interface AutoSaveResponse {
+  savedAt: Date;
+  versionId: string;
+  nextAutoSaveAt: Date;
+}
+
+// Auto-save service:
+const autoSaveService = {
+  // Trigger: On every AI edit
+  onAiEdit: debounce(async (documentId: string, content: object) => {
+    await saveVersion(documentId, content, 'auto-save');
+  }, 2000),
+  
+  // Trigger: Every 30 seconds while editing
+  onTimeout: async (documentId: string) => {
+    await saveVersion(documentId, getCurrentContent(), 'timeout');
+  },
+  
+  // Interval: 30000ms
+  interval: 30000,
+};
+
+// M12.030: Auto-save (Free) - localStorage expiry
+// localStorage key structure:
+interface LocalStorageDocument {
+  id: string;
+  title: string;
+  preview: string;
+  content: object;
+  createdAt: number;
+  autoDeleteAt: number;
+}
+
+// Expiry check algorithm:
+// Run on app start and every hour
+function checkAndDeleteExpiredDocuments(): void {
+  const now = Date.now();
+  const docs = JSON.parse(localStorage.getItem('cremy_docs') || '[]');
+  
+  const active = docs.filter((doc: LocalStorageDocument) => {
+    // Delete if: credits < 10 AND autoDeleteAt < now
+    if (getCredits() < 10 && doc.autoDeleteAt < now) {
+      return false; // Delete
+    }
+    return true; // Keep
+  });
+  
+  localStorage.setItem('cremy_docs', JSON.stringify(active));
+}
+```
+
+---
+
+### A.28: M12.032 - Search Index
+
+**What's Defined:** Feature mentioned
+
+**What's Missing:** Search implementation
+
+**Implementation:**
+
+```typescript
+// Document search index:
+// Use MongoDB text index for search
+
+// Search index creation:
+await Document.createIndex({ title: 'text', content: 'text' });
+
+// Search API: GET /api/documents/search
+interface SearchRequest {
+  q: string;              // Search query
+  type?: 'all' | 'title' | 'content';
+  limit?: number;
+  page?: number;
+}
+
+interface SearchResult {
+  documents: Document[];
+  total: number;
+  page: number;
+  highlighted: Record<string, string[]>; // Highlighted matches
+}
+
+// Search algorithm:
+async function searchDocuments(query: SearchRequest): Promise<SearchResult> {
+  const { q, type = 'all', limit = 20, page = 1 } = query;
+  
+  const searchQuery = type === 'all' 
+    ? { $text: { $search: q } }
+    : { [type]: { $text: { $search: q } } };
+  
+  const results = await Document.find(searchQuery)
+    .sort({ score: { $meta: 'textScore' } })
+    .skip((page - 1) * limit)
+    .limit(limit);
+  
+  return {
+    documents: results,
+    total: results.length,
+    page,
+    highlighted: results.reduce((acc, doc) => {
+      acc[doc._id] = highlightMatches(doc, q);
+      return acc;
+    }, {}),
+  };
+}
+```
+
+---
+
+### A.29: M13.002 - Error Handling Specifics
+
+**What's Defined:** localStorage mentioned
+
+**What's Missing:** Specific error handling
+
+**Implementation:**
+
+```typescript
+// LocalStorage error handling:
+interface LocalStorageError {
+  code: 'QUOTA_EXCEEDED' | 'NOT_SUPPORTED' | 'SYNTAX_ERROR' | 'SECURITY_ERROR';
+  message: string;
+  recovered: boolean;
+}
+
+// Error handling:
+function handleLocalStorageError(error: Error): LocalStorageError {
+  const errorMessages = {
+    'QuotaExceededError': 'LocalStorage quota exceeded',
+    'SecurityError': 'LocalStorage not available',
+    'SyntaxError': 'Invalid data in localStorage',
+  };
+  
+  const code = error.name as LocalStorageError['code'];
+  
+  // Recovery strategies:
+  const recoveryStrategies = {
+    QUOTA_EXCEEDED: async () => {
+      // Clear oldest documents
+      const docs = getLocalStorageDocuments();
+      if (docs.length > 0) {
+        docs.sort((a, b) => a.createdAt - b.createdAt);
+        await deleteLocalStorageDocument(docs[0].id);
+        return true;
+      }
+      return false;
+    },
+    NOT_SUPPORTED: async () => {
+      // Use sessionStorage as fallback
+      return true;
+    },
+    SYNTAX_ERROR: async () => {
+      // Clear corrupted data
+      localStorage.removeItem('cremy_docs');
+      return true;
+    },
+    SECURITY_ERROR: async () => {
+      // Disable localStorage
+      return false;
+    },
+  };
+  
+  const recovered = await recoveryStrategies[code]();
+  
+  return {
+    code,
+    message: errorMessages[code],
+    recovered,
+  };
+}
+```
+
+---
+
+### A.30: M13.027 - Conflict Resolution Logic
+
+**What's Defined:** Mentioned in M13
+
+**What's Missing:** Conflict resolution logic
+
+**Implementation:**
+
+```typescript
+// Conflict resolution logic:
+// Used when syncing localStorage to MongoDB on upgrade
+
+interface StorageConflict {
+  key: string;
+  localValue: any;
+  mongoValue: any;
+  resolution: 'local' | 'mongo' | 'merge';
+}
+
+// Resolution strategies:
+const CONFLICT_STRATEGIES = {
+  // For documents: Keep newest
+  documents: (local: any, mongo: any) => {
+    if (local.updatedAt > mongo.updatedAt) return local;
+    return mongo;
+  },
+  
+  // For settings: Merge (local overrides)
+  settings: (local: any, mongo: any) => ({
+    ...mongo,
+    ...local,
+  }),
+  
+  // For credits: Keep highest
+  credits: (local: number, mongo: number) => Math.max(local, mongo),
+};
+
+// Conflict detection algorithm:
+async function detectConflicts(localData: any, mongoData: any): Promise<StorageConflict[]> {
+  const conflicts: StorageConflict[] = [];
+  
+  // Compare each key
+  for (const key of Object.keys(localData)) {
+    const local = localData[key];
+    const mongo = mongoData[key];
+    
+    // Skip if equal
+    if (JSON.stringify(local) === JSON.stringify(mongo)) continue;
+    
+    // Determine conflict type
+    const strategy = getStrategy(key);
+    const preferredValue = strategy(local, mongo);
+    
+    conflicts.push({
+      key,
+      localValue: local,
+      mongoValue: mongo,
+      resolution: preferredValue === local ? 'local' : 'mongo',
+    });
+  }
+  
+  return conflicts;
+}
+```
+
+---
+
+### A.31: M13.030 - Encryption Algorithm Specification
+
+**What's Defined:** "Use environment key" mentioned
+
+**What's Missing:** Algorithm specification (AES-256-GCM), IV handling
+
+**Implementation:**
+
+```typescript
+// Encryption specification:
+// Algorithm: AES-256-GCM
+// Key derivation: PBKDF2 with SHA-256
+// IV: Random 12 bytes per encryption
+// Auth tag: 16 bytes
+
+import crypto from 'crypto';
+
+interface EncryptionConfig {
+  algorithm: 'aes-256-gcm';
+  keyLength: 32;        // 256 bits
+  ivLength: 12;         // 96 bits (recommended)
+  authTagLength: 16;    // 128 bits
+  pbkdf2: {
+    iterations: 100000;
+    digest: 'sha256';
+  };
+}
+
+// Encryption:
+function encrypt(plaintext: string, key: string): string {
+  const iv = crypto.randomBytes(12); // 12 bytes
+  const keyBuffer = crypto.scryptSync(key, 'salt', 32); // Derive key
+  
+  const cipher = crypto.createCipheriv('aes-256-gcm', keyBuffer, iv);
+  
+  let encrypted = cipher.update(plaintext, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  
+  const authTag = cipher.getAuthTag();
+  
+  // Format: iv:encrypted:authTag (all hex)
+  return `${iv.toString('hex')}:${encrypted}:${authTag.toString('hex')}`;
+}
+
+// Decryption:
+function decrypt(ciphertext: string, key: string): string {
+  const [ivHex, encrypted, authTagHex] = ciphertext.split(':');
+  
+  const iv = Buffer.from(ivHex, 'hex');
+  const authTag = Buffer.from(authTagHex, 'hex');
+  const keyBuffer = crypto.scryptSync(key, 'salt', 32);
+  
+  const decipher = crypto.createDecipheriv('aes-256-gcm', keyBuffer, iv);
+  decipher.setAuthTag(authTag);
+  
+  let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+  
+  return decrypted;
+}
+```
+
+---
+
+### A.32: M14.004 - Admin Create Validation Spec & API Route
+
+**What's Defined:** Admin creation flow (lines 1496-1529)
+
+**What's Missing:** Validation spec, API route
+
+**Implementation:**
+
+```typescript
+// Admin validation specification:
+const adminValidationSchema = {
+  username: z.string()
+    .min(3, 'Username must be at least 3 characters')
+    .max(20, 'Username must be at most 20 characters')
+    .regex(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, underscores, and dashes'),
+  
+  password: z.string()
+    .min(12, 'Password must be at least 12 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number')
+    .regex(/[!@#$%^&*(),.?":{}|<>]/, 'Password must contain at least one special character'),
+};
+
+// Admin API route: POST /api/admin/create
+interface AdminCreateRequest {
+  token: string;          // Invite token
+  username: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface AdminCreateResponse {
+  success: boolean;
+  userId?: string;
+  message: string;
+}
+
+// API route implementation:
+export async function POST(request: Request) {
+  const body = await request.json();
+  
+  // Validate input
+  const validated = adminValidationSchema.parse(body);
+  
+  // Validate password match
+  if (validated.password !== validated.confirmPassword) {
+    return Response.json({ error: 'Passwords do not match' }, { status: 400 });
+  }
+  
+  // Validate token
+  const tokenValid = await validateAdminToken(validated.token);
+  if (!tokenValid) {
+    return Response.json({ error: 'Invalid or expired token' }, { status: 400 });
+  }
+  
+  // Create admin
+  const user = await createAdmin(validated.username, validated.password);
+  
+  // Mark token as used
+  await markTokenAsUsed(validated.token);
+  
+  return Response.json({ success: true, userId: user._id });
+}
+```
+
+---
+
+### A.33: M14.007 - Old Admin Data Migration
+
+**What's Defined:** Old admin removed (line 1507)
+
+**What's Missing:** Data migration for old admin's documents
+
+**Implementation:**
+
+```typescript
+// Old admin data migration:
+async function migrateOldAdminData(oldAdminId: string, newAdminId: string): Promise<void> {
+  // 1. Transfer ownership of documents
+  await Document.updateMany(
+    { userId: oldAdminId },
+    { userId: newAdminId }
+  );
+  
+  // 2. Transfer ownership of folders
+  await Folder.updateMany(
+    { userId: oldAdminId },
+    { userId: newAdminId }
+  );
+  
+  // 3. Transfer analytics events
+  await AnalyticsEvent.updateMany(
+    { userId: oldAdminId },
+    { userId: newAdminId }
+  );
+  
+  // 4. Transfer templates
+  await Template.updateMany(
+    { userId: oldAdminId },
+    { userId: newAdminId }
+  );
+  
+  // 5. Transfer settings
+  await UserSettings.updateMany(
+    { userId: oldAdminId },
+    { userId: newAdminId }
+  );
+  
+  // 6. Log migration
+  await AuditLog.create({
+    action: 'admin_migration',
+    oldAdminId,
+    newAdminId,
+    timestamp: new Date(),
+  });
+}
+```
+
+---
+
+### A.34: M14.061-067 - Brevo Webhook Handlers
+
+**What's Defined:** Email system described
+
+**What's Missing:** Webhook handlers for Brevo
+
+**Implementation:**
+
+```typescript
+// Brevo webhook handlers:
+// POST /api/webhooks/brevo
+
+interface BrevoWebhook {
+  event: string;
+  timestamp: number;
+  data: BrevoEventData;
+}
+
+type BrevoEventData = 
+  | SentEventData 
+  | OpenedEventData 
+  | ClickedEventData 
+  | BouncedEventData 
+  | UnsubscribedEventData;
+
+// Handle sent event:
+async function handleSent(data: SentEventData): Promise<void> {
+  await AnalyticsEvent.create({
+    eventType: 'email_sent',
+    metadata: {
+      campaignId: data.campaign_id,
+      messageId: data.message_id,
+      recipient: data.email,
+    },
+  });
+}
+
+// Handle opened event:
+async function handleOpened(data: OpenedEventData): Promise<void> {
+  await AnalyticsEvent.create({
+    eventType: 'email_opened',
+    metadata: {
+      campaignId: data.campaign_id,
+      messageId: data.message_id,
+      recipient: data.email,
+      openedAt: new Date(data.timestamp * 1000),
+    },
+  });
+}
+
+// Handle clicked event:
+async function handleClicked(data: ClickedEventData): Promise<void> {
+  await AnalyticsEvent.create({
+    eventType: 'email_clicked',
+    metadata: {
+      campaignId: data.campaign_id,
+      messageId: data.message_id,
+      recipient: data.email,
+      url: data.url,
+    },
+  });
+}
+
+// Handle bounced event:
+async function handleBounced(data: BouncedEventData): Promise<void> {
+  await AnalyticsEvent.create({
+    eventType: 'email_bounced',
+    metadata: {
+      campaignId: data.campaign_id,
+      messageId: data.message_id,
+      recipient: data.email,
+      bounceType: data.bounce_type,
+    },
+  });
+}
+
+// Handle unsubscribed event:
+async function handleUnsubscribed(data: UnsubscribedEventData): Promise<void> {
+  await UserSettings.updateOne(
+    { email: data.email },
+    { emailUnsubscribe: true }
+  );
+}
+
+// Webhook verification:
+// Brevo sends webhook with signature in headers
+// Verify signature using Brevo API key
+```
+
+---
+
+### A.35: M15.001 & M15.009 - Payment Key Storage & Processor Method
+
+**What's Defined:** Paddle/Stripe/PayPal mentioned
+
+**What's Missing:** Key storage approach, processor method specification
+
+**Implementation:**
+
+```typescript
+// M15.001: Key storage approach:
+// Use environment variables for keys
+// Store in database: encrypted
+
+interface PaymentConfig {
+  paddle: {
+    clientToken: string;
+    vendorId: string;
+    environment: 'sandbox' | 'production';
+  };
+  stripe: {
+    publishableKey: string;
+    secretKey: string;        // Encrypted in DB
+    webhookSecret: string;
+  };
+  paypal: {
+    clientId: string;
+    clientSecret: string;    // Encrypted in DB
+    environment: 'sandbox' | 'production';
+  };
+}
+
+// M15.009: Processor checkout method:
+async function createCheckout(userId: string, packId: string, processor: 'paddle' | 'stripe' | 'paypal'): Promise<{ url: string }> {
+  const config = getPaymentConfig();
+  
+  switch (processor) {
+    case 'stripe':
+      return createStripeCheckout(userId, packId, config.stripe);
+    case 'paddle':
+      return createPaddleCheckout(userId, packId, config.paddle);
+    case 'paypal':
+      return createPayPalCheckout(userId, packId, config.paypal);
+    default:
+      throw new Error('Unsupported processor');
+  }
+}
+
+// Stripe checkout:
+async function createStripeCheckout(userId: string, packId: string, config: StripeConfig): Promise<{ url: string }> {
+  const pack = await getCreditPack(packId);
+  const user = await getUser(userId);
+  
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
+    line_items: [{
+      price_data: {
+        currency: 'usd',
+        product_data: { name: pack.name },
+        unit_amount: pack.price * 100,
+      },
+      quantity: pack.credits,
+    }],
+    mode: 'payment',
+    success_url: `${process.env.APP_URL}/buy-credits/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${process.env.APP_URL}/buy-credits/cancel`,
+    metadata: { userId, packId },
+  });
+  
+  return { url: session.url };
+}
+
+// Similar for Paddle and PayPal
+```
+
+---
+
+### A.36: M16.001 - SEO Specific Titles & Descriptions
+
+**What's Defined:** SEO mentioned
+
+**What's Missing:** Specific titles/descriptions
+
+**Implementation:**
+
+```typescript
+// SEO titles and descriptions for landing page:
+const LandingPageSEO = {
+  title: 'Cremy Docs - AI-Powered Document Generation Platform',
+  description: 'Create professional documents in seconds. Use AI to generate, edit, translate, and convert documents. Free credits available.',
+  keywords: ['document generation', 'AI writing', 'document converter', 'PDF tools', 'AI assistant'],
+  
+  // Meta tags:
+  ogTitle: 'Create Documents with AI | Cremy Docs',
+  ogDescription: 'Generate, edit, and convert documents in seconds with AI-powered tools.',
+  ogImage: '/images/og-image.png',
+  
+  // Structured data:
+  schema: {
+    '@type': 'WebApplication',
+    'name': 'Cremy Docs',
+    'applicationCategory': 'ProductivityApplication',
+    'operatingSystem': 'Web',
+    'offers': {
+      '@type': 'Offer',
+      'price': '0',
+      'priceCurrency': 'USD',
+    },
+  },
+};
+
+// Format pages:
+const FormatPageSEO: Record<string, { title: string; description: string }> = {
+  invoice: {
+    title: 'Create Invoice | Professional Invoice Generator',
+    description: 'Generate professional invoices in seconds. Customizable templates, automatic calculations.',
+  },
+  contract: {
+    title: 'Create Contract | Legal Document Generator',
+    description: 'Generate legally-binding contracts with AI. Professional templates.',
+  },
+  // ... add for each format
+};
+```
+
+---
+
+### A.37: M16.007 - Schema.org Type Specification
+
+**What's Defined:** Schema.org mentioned
+
+**What's Missing:** Schema type (CreativeWork)
+
+**Implementation:**
+
+```typescript
+// Schema.org type for format pages:
+const getFormatPageSchema = (format: Format) => ({
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  'name': `${format.name} Generator | Cremy Docs`,
+  'description': format.description,
+  'url': `/format/${format.id}`,
+  'applicationCategory': 'ProductivityApplication',
+  'operatingSystem': 'Web',
+  'offers': {
+    '@type': 'Offer',
+    'price': '0',
+    'priceCurrency': 'USD',
+  },
+  'creator': {
+    '@type': 'Organization',
+    'name': 'Cremy Docs',
+    'url': 'https://cremy-docs.com',
+  },
+  'browserRequirements': 'Requires JavaScript',
+  'softwareRequirements': 'Modern web browser',
+});
+
+// For conversion pages:
+const getConversionPageSchema = (from: string, to: string) => ({
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  'name': `Convert ${from.toUpperCase()} to ${to.toUpperCase()} | Cremy Docs`,
+  'description': `Free online tool to convert ${from.toUpperCase()} files to ${to.toUpperCase()}. Fast, secure, AI-powered.`,
+  'url': `/convert/${from}-to-${to}`,
+  'applicationCategory': 'UtilityApplication',
+  'operatingSystem': 'Web',
+  'offers': {
+    '@type': 'Offer',
+    'price': '0',
+    'priceCurrency': 'USD',
+  },
+});
+```
+
+---
+
+### A.38: M19.001 - Agent API Route Structure & M19.002 Confidence Threshold
+
+**What's Defined:** Agent mentioned (lines 53-139)
+
+**What's Missing:** API route, confidence threshold
+
+**Implementation:**
+
+```typescript
+// M19.001: Agent API route: POST /api/agent
+interface AgentRequest {
+  message: string;
+  context?: {
+    documentId?: string;
+    page?: string;
+  };
+  sessionId?: string;
+}
+
+interface AgentResponse {
+  response: string;
+  intent: IntentAnalysis;
+  action?: {
+    type: string;
+    params: any;
+  };
+  sessionId: string;
+}
+
+// Agent confidence threshold:
+const INTENT_CONFIDENCE_THRESHOLD = 0.7; // 70% minimum confidence
+
+// Confidence scoring:
+function calculateIntentConfidence(detectedIntent: string, alternatives: string[]): number {
+  if (alternatives.length === 0) return 1.0;
+  
+  // Base confidence on top intent
+  const baseConfidence = 0.7;
+  
+  // Reduce confidence if many alternatives
+  const alternativePenalty = Math.min(alternatives.length * 0.05, 0.3);
+  
+  // Calculate final confidence
+  return baseConfidence - alternativePenalty;
+}
+
+// Intent clarification:
+// If confidence < 0.7, ask user for clarification
+```
+
+---
+
+### A.39: M19.030-033 - Mailcraft AI Prompt Structure
+
+**What's Defined:** Mailcraft mentioned
+
+**What's Missing:** AI prompt structure
+
+**Implementation:**
+
+```typescript
+// Mailcraft AI prompt structures:
+
+// Generate template prompt:
+const GENERATE_TEMPLATE_PROMPT = `
+You are an email template expert. Create a professional email template.
+
+Requirements:
+- Subject: {subject}
+- Category: {category} (welcome, promotional, announcement, newsletter, transactional)
+- Tone: {tone} (professional, casual, friendly)
+- Include personalization tags: {name}, {credits}, {pro_expiry}
+
+Structure:
+1. Subject line
+2. Greeting
+3. Main content (2-3 short paragraphs)
+4. Call to action
+5. Signature
+
+Create in HTML format with inline styles.
+`;
+
+// Edit template prompt:
+const EDIT_TEMPLATE_PROMPT = `
+Edit the following email template.
+
+Current template:
+{template}
+
+Editing instructions:
+{instructions}
+
+Return the edited template in HTML format with inline styles.
+`;
+
+// Preview prompt:
+const PREVIEW_TEMPLATE_PROMPT = `
+Show how this email template would look.
+
+Template:
+{template}
+
+Variables:
+{name} = "John"
+{credits} = "100"
+{pro_expiry} = "January 15, 2025"
+
+Render the complete email showing where each variable would appear.
+`;
+```
+
+---
+
+## END OF APPENDIX A
