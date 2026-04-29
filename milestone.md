@@ -56,7 +56,7 @@ This document provides extremely detailed technical specifications for building 
 
 ## M1.1: Project Setup & Docker
 
-### M1.1 Project Setup (Docker + Backend Foundation)
+### Project Setup (Docker + Backend Foundation)
 
 **Approach:** Backend first, minimal frontend for testing only
 
@@ -193,7 +193,7 @@ interface AnonymousUser {
 }
 ```
 
-### M1.3 Credit System
+### Credit System
 
 **Credit Costs (Admin Configurable):**
 | Action | Cost | Configurable |
@@ -356,7 +356,7 @@ interface AnonymousUser {
 - Download: Opens format selector dropdown
 - Start New Project: Redirects to /generate
 
-### M2.6 Post-Action Modal
+### Post-Action Modal
 
 **Trigger:** After user clicks Download
 
@@ -379,7 +379,7 @@ interface AnonymousUser {
 - Modal auto-expires after 10 seconds
 - If user doesn't respond, stays on preview page
 
-### M2.7 Navigation Structure
+### Navigation Structure
 
 **Desktop:**
 - Fixed top navigation bar
@@ -393,7 +393,7 @@ interface AnonymousUser {
 - Close by clicking outside modal
 - Breadcrumb at top left of content area
 
-### M2.8 Credit Display
+### Credit Display
 
 **Floating Badge:**
 - Icon only (💰 or similar)
