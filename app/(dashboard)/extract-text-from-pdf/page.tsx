@@ -47,7 +47,7 @@ export default function ExtractTextPage() {
   };
 
   return (
-    <div className="extract-page">
+    <div>
       <h1>Extract Text from PDF</h1>
 
       <input
@@ -58,17 +58,17 @@ export default function ExtractTextPage() {
         hidden
       />
 
-      <div className="dropzone" onClick={() => fileInput.current?.click()}>
+      <div onClick={() => fileInput.current?.click()}>
         {file ? <p>{file.name}</p> : <p>Click to select file</p>}
       </div>
 
       {text && (
-        <div className="extracted-text">
+        <div>
           <textarea value={text} readOnly />
         </div>
       )}
 
-      <div className="extract-actions">
+      <div>
         <button onClick={() => navigator.clipboard.writeText(text)} disabled={!text}>
           Copy
         </button>

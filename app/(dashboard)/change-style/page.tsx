@@ -40,7 +40,7 @@ export default function ChangeStylePage() {
   };
 
   return (
-    <div className="style-page">
+    <div>
       <h1>Change Document Style</h1>
 
       <select value={style} onChange={(e) => setStyle(e.target.value)}>

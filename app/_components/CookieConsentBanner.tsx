@@ -35,9 +35,9 @@ export function CookieConsentBanner({
   if (!show) return null;
 
   return (
-    <div className="cookie-consent-banner">
+    <div>
       <p>We use cookies to improve your experience.</p>
-      <div className="consent-buttons">
+      <div>
         <button onClick={handleAccept}>Accept</button>
         <button onClick={handleDecline}>Decline</button>
       </div>

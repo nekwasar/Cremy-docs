@@ -46,11 +46,11 @@ export default function TranslatePage() {
   };
 
   return (
-    <div className="translate-page">
+    <div>
       <h1>Translate</h1>
 
-      <div className="language-selectors">
-        <div className="lang-selector">
+      <div>
+        <div>
           <label>From</label>
           <select value={sourceLang} onChange={(e) => setSourceLang(e.target.value)}>
             {LANGUAGES.map((lang) => (
@@ -65,7 +65,7 @@ export default function TranslatePage() {
           setTargetLang(temp);
         }}>Swap</button>
 
-        <div className="lang-selector">
+        <div>
           <label>To</label>
           <select value={targetLang} onChange={(e) => setTargetLang(e.target.value)}>
             {LANGUAGES.map((lang) => (
@@ -75,23 +75,23 @@ export default function TranslatePage() {
         </div>
       </div>
 
-      <div className="translate-content">
+      <div>
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Enter text to translate..."
-          className="translate-input"
+         
         />
 
         <textarea
           value={output}
           readOnly
           placeholder="Translation will appear here..."
-          className="translate-output"
+         
         />
       </div>
 
-      <div className="translate-actions">
+      <div>
         <button onClick={() => navigator.clipboard.writeText(output)} disabled={!output}>
           Copy
         </button>

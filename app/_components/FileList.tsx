@@ -22,15 +22,15 @@ export function FileList({
   };
 
   return (
-    <div className="file-list">
+    <div>
       {files.map((file, index) => (
-        <div key={file.id} className="file-item">
-          {showOrder && <span className="file-order">{index + 1}</span>}
-          <span className="file-name">{file.name}</span>
-          <span className="file-size">{formatSize(file.size)}</span>
+        <div key={file.id}>
+          {showOrder && <span>{index + 1}</span>}
+          <span>{file.name}</span>
+          <span>{formatSize(file.size)}</span>
           {onRemove && (
             <button
-              className="file-remove"
+             
               onClick={() => onRemove(file.id)}
             >
               Remove

@@ -11,7 +11,7 @@ export function HeaderUserMenu({}: HeaderUserMenuProps): ReactNode {
 
   if (!isAuthenticated) {
     return (
-      <div className="header-user-menu">
+      <div>
         <Link href="/auth/login">Login</Link>
         <Link href="/auth/register">Sign Up</Link>
       </div>
@@ -19,14 +19,14 @@ export function HeaderUserMenu({}: HeaderUserMenuProps): ReactNode {
   }
 
   return (
-    <div className="header-user-menu">
-      <div className="credits-display">
-        <span className="credits-icon">💰</span>
-        <span className="credits-value">{credits}</span>
+    <div>
+      <div>
+        <span>💰</span>
+        <span>{credits}</span>
       </div>
-      <div className="user-dropdown">
-        <button className="user-name">{user?.name || 'User'}</button>
-        <div className="dropdown-menu">
+      <div>
+        <button>{user?.name || 'User'}</button>
+        <div>
           <Link href="/dashboard">Dashboard</Link>
           <Link href="/settings">Settings</Link>
           <button onClick={logout}>Logout</button>

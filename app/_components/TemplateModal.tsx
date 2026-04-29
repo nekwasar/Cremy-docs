@@ -31,15 +31,15 @@ export function TemplateModal({
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content template-modal" onClick={(e) => e.stopPropagation()}>
+    <div onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()}>
         <h2>Select a Category</h2>
-        <div className="category-grid">
+        <div>
           {categories.map((cat) => (
             <Link
               key={cat.id}
               href={`/templates/${cat.id}`}
-              className="category-card"
+             
               onClick={(e) => {
                 if (onSelect) {
                   e.preventDefault();
@@ -51,7 +51,7 @@ export function TemplateModal({
             </Link>
           ))}
         </div>
-        <button className="modal-close" onClick={onClose}>
+        <button onClick={onClose}>
           Cancel
         </button>
       </div>

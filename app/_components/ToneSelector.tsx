@@ -28,13 +28,13 @@ export function ToneSelector({
   };
 
   return (
-    <div className="tone-selector">
+    <div>
       <label htmlFor="tone-select">Tone</label>
       <select
         id="tone-select"
         value={value}
         onChange={handleChange}
-        className="tone-select"
+       
       >
         {tones.map((tone) => (
           <option key={tone.id} value={tone.id}>

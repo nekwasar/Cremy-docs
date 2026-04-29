@@ -27,17 +27,17 @@ export function NetworkError({
 
   if (retries >= maxRetries) {
     return (
-      <div className="network-error final-failure">
+      <div>
         <p>Connection failed. Please try again later.</p>
       </div>
     );
   }
 
   return (
-    <div className="network-error">
+    <div>
       <p>Connection lost. Reconnecting... ({retries}/{maxRetries})</p>
       <button
-        className="retry-button"
+       
         onClick={handleRetry}
         disabled={isRetrying}
       >

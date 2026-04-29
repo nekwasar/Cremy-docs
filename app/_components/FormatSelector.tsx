@@ -32,13 +32,13 @@ export function FormatSelector({
   };
 
   return (
-    <div className="format-selector">
+    <div>
       <label htmlFor="format-select">Format</label>
       <select
         id="format-select"
         value={value}
         onChange={handleChange}
-        className="format-select"
+       
       >
         {formats.map((fmt) => (
           <option key={fmt.id} value={fmt.id}>

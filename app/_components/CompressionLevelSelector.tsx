@@ -19,9 +19,9 @@ export function CompressionLevelSelector({
   };
 
   return (
-    <div className="compression-level-selector">
+    <div>
       <label>Compression Level</label>
-      <div className="level-options">
+      <div>
         {(['low', 'medium', 'high'] as CompressionLevel[]).map((l) => (
           <button
             key={l}

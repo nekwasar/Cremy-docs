@@ -27,9 +27,9 @@ export function AITimeoutHandler({
 
   if (isTimedOut) {
     return (
-      <div className="ai-timeout">
+      <div>
         <p>Generation timed out. Your input has been preserved.</p>
-        <button className="retry-button" onClick={onRetry}>
+        <button onClick={onRetry}>
           Retry
         </button>
       </div>

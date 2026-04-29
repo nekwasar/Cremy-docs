@@ -13,15 +13,15 @@ export function CreditBadge() {
 
   return (
     <div 
-      className="credit-badge"
+     
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
-      <span className="badge-icon">💰</span>
-      <span className="badge-amount">{credits}</span>
+      <span>💰</span>
+      <span>{credits}</span>
 
       {showTooltip && (
-        <div className="credit-tooltip">
+        <div>
           <p>{credits} credits available</p>
           <a href="/credits">Add more</a>
         </div>

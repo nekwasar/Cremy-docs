@@ -12,9 +12,9 @@ export function CreditEstimateDisplay({
   showLabel = true,
 }: CreditEstimateProps): ReactNode {
   return (
-    <div className="credit-estimate-display">
+    <div>
       {showLabel && <span>Estimated cost: </span>}
-      <span className="credit-value">~{credits} credits</span>
+      <span>~{credits} credits</span>
     </div>
   );
 }

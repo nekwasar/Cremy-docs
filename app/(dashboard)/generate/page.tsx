@@ -45,30 +45,30 @@ export default function GeneratePage() {
   const creditEstimate = estimateCredits(prompt);
 
   return (
-    <div className="generate-page">
-      <div className="generate-header">
+    <div>
+      <div>
         <h1>Generate Document</h1>
-        <div className="credit-display">
+        <div>
           <span>💰</span>
           <span>{credits} credits</span>
         </div>
       </div>
 
-      <div className="generate-content">
+      <div>
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Describe the document you want to generate..."
-          className="generate-input"
+         
         />
 
-        <div className="generate-actions">
-          <div className="credit-estimate">
+        <div>
+          <div>
             Estimated: ~{creditEstimate} credits
           </div>
           <button
             onClick={() => setPrompt('')}
-            className="btn-clear"
+           
             disabled={!prompt}
           >
             Clear
@@ -76,15 +76,15 @@ export default function GeneratePage() {
           <button
             onClick={handleGenerate}
             disabled={!prompt.trim() || isGenerating}
-            className="btn-generate"
+           
           >
             {isGenerating ? 'Generating...' : 'Generate Document'}
           </button>
         </div>
       </div>
 
-      <div className="generate-templates">
-        <button className="btn-templates">Explore Styles</button>
+      <div>
+        <button>Explore Styles</button>
       </div>
     </div>
   );

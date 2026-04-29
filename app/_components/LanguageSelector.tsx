@@ -38,13 +38,13 @@ export function LanguageSelector({
   };
 
   return (
-    <div className="language-selector">
+    <div>
       <label htmlFor="language-select">Language</label>
       <select
         id="language-select"
         value={value}
         onChange={handleChange}
-        className="language-select"
+       
       >
         {languages.map((lang) => (
           <option key={lang.code} value={lang.code}>

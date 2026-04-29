@@ -28,7 +28,7 @@ export function GenerateButton({
   const canClick = state === 'idle';
 
   return (
-    <div className="generate-button-container">
+    <div>
       <button
         className={`generate-button ${state}`}
         onClick={canClick ? onClick : undefined}
@@ -42,7 +42,7 @@ export function GenerateButton({
       >
         {getLabel()}
       </button>
-      {hoverText && <span className="credit-estimate">{hoverText}</span>}
+      {hoverText && <span>{hoverText}</span>}
     </div>
   );
 }

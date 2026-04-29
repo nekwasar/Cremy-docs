@@ -15,10 +15,10 @@ const features: string[] = [
 
 export function FeaturesSection(): ReactNode {
   return (
-    <div className="features-section">
-      <ul className="features-list">
+    <div>
+      <ul>
         {features.map((feature) => (
-          <li key={feature} className="feature-item">
+          <li key={feature}>
             {feature}
           </li>
         ))}

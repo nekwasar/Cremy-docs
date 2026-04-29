@@ -14,21 +14,21 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="home-page">
-      <section className="hero">
+    <div>
+      <section>
         <h1>AI-Powered Document Platform</h1>
         <p>Generate, convert, and edit documents with AI</p>
-        <div className="hero-actions">
-          <Link href="/generate" className="btn-primary">Start Generating</Link>
-          <Link href="/templates" className="btn-secondary">Browse Templates</Link>
+        <div>
+          <Link href="/generate">Start Generating</Link>
+          <Link href="/templates">Browse Templates</Link>
         </div>
       </section>
 
-      <section className="tools-section">
+      <section>
         <h2>All Tools</h2>
-        <div className="tools-grid">
+        <div>
           {tools.map((tool) => (
-            <Link key={tool.path} href={tool.path} className="tool-card">
+            <Link key={tool.path} href={tool.path}>
               <h3>{tool.name}</h3>
               <p>{tool.desc}</p>
             </Link>
@@ -36,7 +36,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="features">
+      <section>
         <h2>Features</h2>
         <ul>
           <li>AI-powered document generation</li>
@@ -47,10 +47,10 @@ export default function HomePage() {
         </ul>
       </section>
 
-      <section className="cta">
+      <section>
         <h2>Get Started Free</h2>
         <p>Sign up for free credits and start creating documents</p>
-        <Link href="/auth/register" className="btn-primary">Create Account</Link>
+        <Link href="/auth/register">Create Account</Link>
       </section>
     </div>
   );

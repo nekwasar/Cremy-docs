@@ -24,8 +24,8 @@ export function QuickActionButton({
       className={`quick-action-button ${disabled ? 'disabled' : ''} ${className}`}
       onClick={(e) => disabled && e.preventDefault()}
     >
-      <span className="button-label">{label}</span>
-      {badge && <span className="pro-badge">{badge}</span>}
+      <span>{label}</span>
+      {badge && <span>{badge}</span>}
     </Link>
   );
 }

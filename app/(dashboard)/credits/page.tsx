@@ -42,16 +42,16 @@ export default function CreditsPage() {
   };
 
   return (
-    <div className="credits-page">
+    <div>
       <h1>Buy Credits</h1>
       <p>Current balance: {credits} credits</p>
 
-      <div className="packages-grid">
+      <div>
         {PACKAGES.map((pkg) => (
-          <div key={pkg.id} className="package-card">
+          <div key={pkg.id}>
             <h3>{pkg.credits} credits</h3>
-            {pkg.bonus && <p className="bonus">+{pkg.bonus} bonus</p>}
-            <p className="price">${pkg.price}</p>
+            {pkg.bonus && <p>+{pkg.bonus} bonus</p>}
+            <p>${pkg.price}</p>
             <button
               onClick={() => handlePurchase(pkg.id)}
               disabled={purchasing === pkg.id}

@@ -14,27 +14,27 @@ export function DocumentSidebar({}: DocumentSidebarProps): ReactNode {
 
   return (
     <div className={`document-sidebar ${isOpen ? 'open' : ''}`}>
-      <button className="sidebar-toggle" onClick={() => setIsOpen(!isOpen)}>
+      <button onClick={() => setIsOpen(!isOpen)}>
         {isOpen ? '<' : '>'}
       </button>
       {isOpen && (
-        <div className="sidebar-content">
+        <div>
           <h3>Recent Documents</h3>
-          <ul className="document-list">
+          <ul>
             {recentDocs.length === 0 ? (
-              <li className="no-documents">No recent documents</li>
+              <li>No recent documents</li>
             ) : (
               recentDocs.map((doc) => (
                 <li key={doc.id}>
                   <Link href={`/preview?id=${doc.id}`}>{doc.title}</Link>
-                  <span className="doc-date">
+                  <span>
                     {new Date(doc.createdAt).toLocaleDateString()}
                   </span>
                 </li>
               ))
             )}
           </ul>
-          <Link href="/dashboard" className="view-all">
+          <Link href="/dashboard">
             View All
           </Link>
         </div>

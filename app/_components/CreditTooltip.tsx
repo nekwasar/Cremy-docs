@@ -11,13 +11,13 @@ export function CreditTooltip({}: CreditTooltipProps): ReactNode {
 
   return (
     <div
-      className="credit-tooltip"
+     
       onMouseEnter={() => setIsVisible(true)}
       onMouseLeave={() => setIsVisible(false)}
     >
-      <span className="credit-icon">💰</span>
+      <span>💰</span>
       {isVisible && (
-        <div className="tooltip-content">
+        <div>
           <p>Balance: {credits} credits</p>
           <a href="/credits">Buy More</a>
         </div>

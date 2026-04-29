@@ -12,11 +12,11 @@ export function EditToolbar({
   onRotatePages,
 }: EditToolbarProps): ReactNode {
   return (
-    <div className="edit-toolbar">
-      <button className="toolbar-btn" onClick={onRemovePages}>
+    <div>
+      <button onClick={onRemovePages}>
         Remove Pages
       </button>
-      <button className="toolbar-btn" onClick={onRotatePages}>
+      <button onClick={onRotatePages}>
         Rotate Pages
       </button>
     </div>

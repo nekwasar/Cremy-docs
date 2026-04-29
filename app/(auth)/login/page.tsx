@@ -38,12 +38,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="login-page">
+    <div>
       <h1>Login</h1>
       <form onSubmit={handleSubmit}>
-        {error && <div className="error-message">{error}</div>}
+        {error && <div>{error}</div>}
 
-        <div className="form-group">
+        <div>
           <label htmlFor="email">Email</label>
           <input
             id="email"
@@ -54,7 +54,7 @@ export default function LoginPage() {
           />
         </div>
 
-        <div className="form-group">
+        <div>
           <label htmlFor="password">Password</label>
           <input
             id="password"
@@ -65,16 +65,16 @@ export default function LoginPage() {
           />
         </div>
 
-        <button type="submit" disabled={loading} className="btn-submit">
+        <button type="submit" disabled={loading}>
           {loading ? 'Logging in...' : 'Login'}
         </button>
       </form>
 
-      <p className="form-footer">
+      <p>
         <Link href="/auth/forgot-password">Forgot password?</Link>
       </p>
 
-      <p className="signup-link">
+      <p>
         Don't have an account? <Link href="/auth/register">Sign up</Link>
       </p>
     </div>

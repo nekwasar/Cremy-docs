@@ -16,37 +16,37 @@ export default function PreviewPage() {
     }
   }, [docId]);
 
-  if (loading) return <div className="preview-loading">Loading...</div>;
-  if (!document) return <div className="preview-empty">No document found</div>;
+  if (loading) return <div>Loading...</div>;
+  if (!document) return <div>No document found</div>;
 
   return (
-    <div className="preview-page">
-      <div className="preview-header">
-        <a href="/dashboard" className="btn-back">← Back</a>
+    <div>
+      <div>
+        <a href="/dashboard">← Back</a>
         <input
           type="text"
           defaultValue={document.title}
-          className="doc-title"
+         
           disabled={!isEditing}
         />
-        <div className="preview-toolbar">
+        <div>
           <button onClick={() => setIsEditing(!isEditing)}>
             {isEditing ? 'Save' : 'Edit'}
           </button>
           <button>Undo</button>
           <button>Redo</button>
-          <button className="btn-download">Download ▾</button>
+          <button>Download ▾</button>
         </div>
       </div>
 
-      <div className="preview-content">
-        <div className="document-preview">
+      <div>
+        <div>
           {document.content}
         </div>
       </div>
 
-      <div className="preview-actions">
-        <button className="btn-new">Start New Project</button>
+      <div>
+        <button>Start New Project</button>
       </div>
     </div>
   );

@@ -39,12 +39,12 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="register-page">
+    <div>
       <h1>Create Account</h1>
       <form onSubmit={handleSubmit}>
-        {error && <div className="error-message">{error}</div>}
+        {error && <div>{error}</div>}
 
-        <div className="form-group">
+        <div>
           <label htmlFor="name">Name</label>
           <input
             id="name"
@@ -55,7 +55,7 @@ export default function RegisterPage() {
           />
         </div>
 
-        <div className="form-group">
+        <div>
           <label htmlFor="email">Email</label>
           <input
             id="email"
@@ -66,7 +66,7 @@ export default function RegisterPage() {
           />
         </div>
 
-        <div className="form-group">
+        <div>
           <label htmlFor="password">Password</label>
           <input
             id="password"
@@ -78,12 +78,12 @@ export default function RegisterPage() {
           />
         </div>
 
-        <button type="submit" disabled={loading} className="btn-submit">
+        <button type="submit" disabled={loading}>
           {loading ? 'Creating account...' : 'Create Account'}
         </button>
       </form>
 
-      <p className="form-footer">
+      <p>
         Already have an account? <Link href="/auth/login">Login</Link>
       </p>
     </div>

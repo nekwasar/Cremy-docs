@@ -72,10 +72,10 @@ export default function VoicePage() {
   };
 
   return (
-    <div className="voice-page">
+    <div>
       <h1>Voice to Document</h1>
 
-      <div className="recorder">
+      <div>
         <button
           onClick={isRecording ? stopRecording : startRecording}
           className={isRecording ? 'recording' : ''}
@@ -89,7 +89,7 @@ export default function VoicePage() {
       </div>
 
       {transcript && (
-        <div className="transcript">
+        <div>
           <h3>Transcript</h3>
           <p>{transcript}</p>
         </div>

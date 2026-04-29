@@ -46,11 +46,11 @@ export function RecordingTimer({
   };
 
   return (
-    <div className="recording-timer">
-      <span className="timer-display">
+    <div>
+      <span>
         {formatTime(seconds)} / {formatTime(maxSeconds)}
       </span>
-      <button className="timer-toggle" onClick={toggle}>
+      <button onClick={toggle}>
         {isRecording ? 'Stop' : 'Start'}
       </button>
     </div>

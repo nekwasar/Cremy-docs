@@ -44,10 +44,10 @@ export default function TemplatesPage() {
   });
 
   return (
-    <div className="templates-page">
+    <div>
       <h1>Templates</h1>
 
-      <div className="filters">
+      <div>
         <input
           type="text"
           placeholder="Search templates..."
@@ -66,12 +66,12 @@ export default function TemplatesPage() {
       {loading ? (
         <p>Loading...</p>
       ) : filtered.length > 0 ? (
-        <div className="template-grid">
+        <div>
           {filtered.map((template) => (
-            <Link key={template._id} href={`/templates/${template.category}/${template._id}`} className="template-card">
+            <Link key={template._id} href={`/templates/${template.category}/${template._id}`}>
               <h3>{template.name}</h3>
               <p>{template.description}</p>
-              <span className="template-format">{template.format}</span>
+              <span>{template.format}</span>
             </Link>
           ))}
         </div>

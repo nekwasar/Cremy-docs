@@ -41,7 +41,7 @@ export default function SplitPdfPage() {
   };
 
   return (
-    <div className="split-page">
+    <div>
       <h1>Split PDF</h1>
       <input type="file" accept=".pdf" onChange={(e) => setFile(e.target.files?.[0] || null)} />
       <input type="text" placeholder="e.g., 1-3,5,7-10" value={pages} onChange={(e) => setPages(e.target.value)} />

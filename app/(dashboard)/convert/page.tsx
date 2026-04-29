@@ -63,11 +63,11 @@ export default function ConvertPage() {
   };
 
   return (
-    <div className="convert-page">
+    <div>
       <h1>Convert File</h1>
 
-      <div className="convert-settings">
-        <div className="format-selector">
+      <div>
+        <div>
           <label>From</label>
           <select value={fromFormat} onChange={(e) => setFromFormat(e.target.value)}>
             {FORMATS.map((f) => (
@@ -76,9 +76,9 @@ export default function ConvertPage() {
           </select>
         </div>
 
-        <div className="format-arrow">→</div>
+        <div>→</div>
 
-        <div className="format-selector">
+        <div>
           <label>To</label>
           <select value={toFormat} onChange={(e) => setToFormat(e.target.value)}>
             {FORMATS.map((f) => (
@@ -89,7 +89,7 @@ export default function ConvertPage() {
       </div>
 
       <div
-        className="dropzone"
+       
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
       >
@@ -98,7 +98,7 @@ export default function ConvertPage() {
       </div>
 
       {files.length > 0 && (
-        <ul className="file-list">
+        <ul>
           {files.map((file, index) => (
             <li key={index}>
               <span>{file.name}</span>
@@ -108,12 +108,12 @@ export default function ConvertPage() {
         </ul>
       )}
 
-      <div className="convert-actions">
+      <div>
         <p>Cost: 2 credits</p>
         <button
           onClick={handleConvert}
           disabled={files.length === 0 || isConverting}
-          className="btn-convert"
+         
         >
           {isConverting ? 'Converting...' : 'Convert'}
         </button>

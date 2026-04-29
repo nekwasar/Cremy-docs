@@ -10,13 +10,13 @@ export function WaveformPlaceholder({
   isPlaying = false,
 }: WaveformPlaceholderProps): ReactNode {
   return (
-    <div className="waveform-placeholder">
-      <span className="placeholder-text">
+    <div>
+      <span>
         {isPlaying ? 'Playing...' : 'Recording...'}
       </span>
-      <div className="placeholder-bars">
+      <div>
         {Array.from({ length: 20 }, (_, i) => (
-          <div key={i} className="bar" />
+          <div key={i} />
         ))}
       </div>
     </div>

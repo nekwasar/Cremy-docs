@@ -36,7 +36,7 @@ export default function AdminPage() {
 
   if (user?.role !== 'admin') {
     return (
-      <div className="admin-access-denied">
+      <div>
         <h1>Access Denied</h1>
         <p>You do not have permission to view this page.</p>
         <Link href="/dashboard">Go to Dashboard</Link>
@@ -45,26 +45,26 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="admin-page">
+    <div>
       <h1>Admin Panel</h1>
 
       {loading ? (
         <p>Loading...</p>
       ) : stats ? (
-        <div className="admin-stats">
-          <div className="stat-card">
+        <div>
+          <div>
             <h3>Total Users</h3>
             <p>{stats.totalUsers}</p>
           </div>
-          <div className="stat-card">
+          <div>
             <h3>Total Documents</h3>
             <p>{stats.totalDocuments}</p>
           </div>
-          <div className="stat-card">
+          <div>
             <h3>Credits in System</h3>
             <p>{stats.totalCredits}</p>
           </div>
-          <div className="stat-card">
+          <div>
             <h3>Active Subscriptions</h3>
             <p>{stats.activeSubscriptions}</p>
           </div>
@@ -73,9 +73,9 @@ export default function AdminPage() {
         <p>Unable to load stats</p>
       )}
 
-      <section className="admin-sections">
+      <section>
         <h2>Quick Links</h2>
-        <div className="admin-links">
+        <div>
           <Link href="/admin/users">Manage Users</Link>
           <Link href="/admin/documents">Manage Documents</Link>
           <Link href="/admin/api-keys">API Keys</Link>

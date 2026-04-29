@@ -50,16 +50,16 @@ export default function MergePdfPage() {
   };
 
   return (
-    <div className="merge-page">
+    <div>
       <h1>Merge PDF</h1>
 
       <input type="file" multiple ref={fileInput} onChange={handleFiles} hidden />
-      <div className="dropzone" onClick={() => fileInput.current?.click()}>
+      <div onClick={() => fileInput.current?.click()}>
         <p>Click to select files</p>
       </div>
 
       {files.length > 0 && (
-        <ul className="file-list">
+        <ul>
           {files.map((file, i) => (
             <li key={i}>
               {file.name}

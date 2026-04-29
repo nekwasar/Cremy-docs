@@ -33,22 +33,22 @@ export function PostActionModal({ isOpen, title = 'Download Complete!', document
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="post-action-modal">
-        <div className="success-checkmark">✓</div>
+    <div>
+      <div>
+        <div>✓</div>
         <h2>{title}</h2>
         <p>Your document is ready!</p>
 
-        <div className="modal-actions">
-          <Link href={`/preview?doc=${documentId}`} className="btn-primary">
+        <div>
+          <Link href={`/preview?doc=${documentId}`}>
             View Document
           </Link>
-          <button onClick={onClose} className="btn-secondary">
+          <button onClick={onClose}>
             Start New Project
           </button>
         </div>
 
-        <p className="countdown">Auto-closing in {countdown}s</p>
+        <p>Auto-closing in {countdown}s</p>
       </div>
     </div>
   );

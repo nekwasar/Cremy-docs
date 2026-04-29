@@ -51,9 +51,9 @@ export function DownloadDropdown({ documentId, onDownload }: Props) {
   };
 
   return (
-    <div className="download-dropdown" ref={dropdownRef}>
+    <div ref={dropdownRef}>
       <button 
-        className="dropdown-toggle"
+       
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
       >
@@ -61,7 +61,7 @@ export function DownloadDropdown({ documentId, onDownload }: Props) {
       </button>
 
       {isOpen && (
-        <ul className="dropdown-menu">
+        <ul>
           {FORMATS.map((option) => (
             <li key={option.format}>
               <button onClick={() => handleDownload(option.format)}>

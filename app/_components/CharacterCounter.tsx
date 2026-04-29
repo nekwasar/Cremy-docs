@@ -31,7 +31,7 @@ export function CharacterCounter({
       ) : (
         <span>{count} characters</span>
       )}
-      {isOverLimit && <span className="limit-warning">Over limit</span>}
+      {isOverLimit && <span>Over limit</span>}
     </div>
   );
 }

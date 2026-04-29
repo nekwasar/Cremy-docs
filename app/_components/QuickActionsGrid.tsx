@@ -22,7 +22,7 @@ const tools: Tool[] = [
 
 export function QuickActionsGrid(): ReactNode {
   return (
-    <div className="quick-actions-grid">
+    <div>
       {tools.map((tool) => (
         <QuickActionButton
           key={tool.route}

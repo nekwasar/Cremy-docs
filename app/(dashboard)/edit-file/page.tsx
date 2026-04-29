@@ -44,7 +44,7 @@ export default function EditFilePage() {
   };
 
   return (
-    <div className="edit-file-page">
+    <div>
       <h1>Edit File</h1>
 
       <input
@@ -55,11 +55,11 @@ export default function EditFilePage() {
         hidden
       />
 
-      <div className="dropzone" onClick={() => fileInput.current?.click()}>
+      <div onClick={() => fileInput.current?.click()}>
         {file ? <p>{file.name}</p> : <p>Click to select file</p>}
       </div>
 
-      <div className="edit-options">
+      <div>
         <button onClick={() => handleEdit('remove-pages')}>
           Remove Pages
         </button>
@@ -71,7 +71,7 @@ export default function EditFilePage() {
         </button>
       </div>
 
-      <button className="btn-download">Download Edited File</button>
+      <button>Download Edited File</button>
     </div>
   );
 }

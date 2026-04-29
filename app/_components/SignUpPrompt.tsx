@@ -17,16 +17,16 @@ export function SignUpPrompt() {
   if (!showPrompt) return null;
 
   return (
-    <div className="signup-prompt">
-      <div className="prompt-content">
+    <div>
+      <div>
         <h3>Create a free account</h3>
         <p>You have {credits} credits remaining. Sign up to get 10 more free credits and save your documents!</p>
         
-        <div className="prompt-actions">
-          <Link href="/auth/register" className="btn-signup">
+        <div>
+          <Link href="/auth/register">
             Sign Up Free
           </Link>
-          <button onClick={() => setShowPrompt(false)} className="btn-later">
+          <button onClick={() => setShowPrompt(false)}>
             Maybe Later
           </button>
         </div>

@@ -38,16 +38,16 @@ export function QuickActionsSearch({
   };
 
   return (
-    <div className="quick-actions-search">
+    <div>
       <input
         type="text"
         placeholder="Search tools..."
         value={searchTerm}
         onChange={(e) => handleSearch(e.target.value)}
-        className="search-input"
+       
       />
       {filteredTools.length === 0 && (
-        <p className="no-results">No tools found</p>
+        <p>No tools found</p>
       )}
     </div>
   );

@@ -22,15 +22,15 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps): ReactNode 
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+    <div onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()}>
         <h2>Upgrade to Pro</h2>
         <p>Get unlimited access to all features.</p>
-        <div className="modal-actions">
-          <a href="/dashboard/upgrade" className="btn-primary">
+        <div>
+          <a href="/dashboard/upgrade">
             Upgrade Now
           </a>
-          <button className="btn-secondary" onClick={onClose}>
+          <button onClick={onClose}>
             Not Now
           </button>
         </div>

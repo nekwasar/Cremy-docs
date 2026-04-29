@@ -24,9 +24,9 @@ export function FooterSection({}: FooterSectionProps): ReactNode {
   };
 
   return (
-    <footer className="footer-section">
-      <div className="footer-links">
-        <div className="footer-column">
+    <footer>
+      <div>
+        <div>
           <h4>Product</h4>
           <ul>
             {links.product.map((link) => (
@@ -36,7 +36,7 @@ export function FooterSection({}: FooterSectionProps): ReactNode {
             ))}
           </ul>
         </div>
-        <div className="footer-column">
+        <div>
           <h4>Company</h4>
           <ul>
             {links.company.map((link) => (
@@ -46,7 +46,7 @@ export function FooterSection({}: FooterSectionProps): ReactNode {
             ))}
           </ul>
         </div>
-        <div className="footer-column">
+        <div>
           <h4>Legal</h4>
           <ul>
             {links.legal.map((link) => (
@@ -57,7 +57,7 @@ export function FooterSection({}: FooterSectionProps): ReactNode {
           </ul>
         </div>
       </div>
-      <div className="footer-bottom">
+      <div>
         <p>&copy; {new Date().getFullYear()} Cremy Docs. All rights reserved.</p>
       </div>
     </footer>

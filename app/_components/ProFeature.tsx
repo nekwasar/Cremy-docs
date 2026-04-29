@@ -8,21 +8,21 @@ interface Props {
 
 export function ProFeature({ children }: Props) {
   return (
-    <div className="pro-feature">
+    <div>
       {children}
-      <span className="pro-badge">PRO</span>
+      <span>PRO</span>
     </div>
   );
 }
 
 export function LockedFeature({ children }: Props) {
   return (
-    <div className="locked-feature">
-      <div className="locked-content">{children}</div>
-      <div className="locked-overlay">
+    <div>
+      <div>{children}</div>
+      <div>
         <span>🔒</span>
         <p>Upgrade to Pro to unlock</p>
-        <Link href="/pro" className="btn-upgrade">
+        <Link href="/pro">
           Upgrade Now
         </Link>
       </div>

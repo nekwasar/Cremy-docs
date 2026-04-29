@@ -15,7 +15,7 @@ export function Breadcrumb({ items }: Props) {
   if (!items || items.length === 0) return null;
 
   return (
-    <nav className="breadcrumb" aria-label="Breadcrumb">
+    <nav aria-label="Breadcrumb">
       <ol>
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
@@ -29,7 +29,7 @@ export function Breadcrumb({ items }: Props) {
               ) : (
                 <span>{item.label}</span>
               )}
-              {!isLast && <span className="separator">/</span>}
+              {!isLast && <span>/</span>}
             </li>
           );
         })}

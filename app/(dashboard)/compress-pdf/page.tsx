@@ -7,7 +7,7 @@ export default function CompressPdfPage() {
   const [isCompressing, setIsCompressing] = useState(false);
 
   return (
-    <div className="compress-page">
+    <div>
       <h1>Compress PDF</h1>
       <select value={level} onChange={(e) => setLevel(e.target.value)}>
         <option value="low">Low</option>

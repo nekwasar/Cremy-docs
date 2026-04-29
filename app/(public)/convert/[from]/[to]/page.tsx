@@ -21,20 +21,20 @@ export default function ConvertFormatPage({ params }: Props) {
   const to = params.to.toUpperCase();
 
   return (
-    <div className="convert-format-page">
+    <div>
       <h1>Convert {from} to {to}</h1>
       <p>Convert your {from} files to {to} format instantly.</p>
 
-      <Link href={`/convert?from=${from}&to=${to}`} className="btn-convert">
+      <Link href={`/convert?from=${from}&to=${to}`}>
         Start Conversion
       </Link>
 
-      <section className="format-info">
+      <section>
         <h2>About {to} Format</h2>
         <p>{to} is a widely supported document format...</p>
       </section>
 
-      <Link href="/convert" className="back-link">
+      <Link href="/convert">
         ← Back to Convert
       </Link>
     </div>

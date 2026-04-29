@@ -14,8 +14,8 @@ export function BeforeAfterPreview({
   const [showAfter, setShowAfter] = useState(false);
 
   return (
-    <div className="before-after-preview">
-      <div className="preview-toggle">
+    <div>
+      <div>
         <button
           className={!showAfter ? 'active' : ''}
           onClick={() => setShowAfter(false)}
@@ -29,7 +29,7 @@ export function BeforeAfterPreview({
           After
         </button>
       </div>
-      <div className="preview-content">
+      <div>
         {showAfter ? afterContent : beforeContent}
       </div>
     </div>

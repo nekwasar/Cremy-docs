@@ -28,16 +28,16 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="settings-page">
+    <div>
       <h1>Settings</h1>
 
       <section>
         <h2>Profile</h2>
-        <div className="form-group">
+        <div>
           <label>Name</label>
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
-        <div className="form-group">
+        <div>
           <label>Email</label>
           <input type="email" value={user?.email || ''} disabled />
         </div>
@@ -46,7 +46,7 @@ export default function SettingsPage() {
 
       <section>
         <h2>Appearance</h2>
-        <div className="form-group">
+        <div>
           <label>Theme</label>
           <select value={theme} onChange={(e) => setTheme(e.target.value as 'light' | 'dark' | 'system')}>
             <option value="light">Light</option>
@@ -58,7 +58,7 @@ export default function SettingsPage() {
 
       <section>
         <h2>Danger Zone</h2>
-        <button className="btn-danger">Delete Account</button>
+        <button>Delete Account</button>
       </section>
     </div>
   );

@@ -7,36 +7,36 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="dashboard-layout">
-      <aside className="sidebar">
-        <Link href="/" className="sidebar-logo">Cremy Docs</Link>
-        <nav className="sidebar-nav">
-          <Link href="/dashboard" className="sidebar-link">Dashboard</Link>
-          <Link href="/generate" className="sidebar-link">Generate</Link>
-          <Link href="/convert" className="sidebar-link">Convert</Link>
-          <Link href="/translate" className="sidebar-link">Translate</Link>
-          <Link href="/voice" className="sidebar-link">Voice</Link>
-          <Link href="/extract-text-from-pdf" className="sidebar-link">Extract Text</Link>
-          <Link href="/merge-pdf" className="sidebar-link">Merge PDF</Link>
-          <Link href="/split-pdf" className="sidebar-link">Split PDF</Link>
-          <Link href="/compress-pdf" className="sidebar-link">Compress</Link>
-          <Link href="/change-style" className="sidebar-link">Change Style</Link>
-          <Link href="/credits" className="sidebar-link">Credits</Link>
-          <Link href="/settings" className="sidebar-link">Settings</Link>
+    <div>
+      <aside>
+        <Link href="/">Cremy Docs</Link>
+        <nav>
+          <Link href="/dashboard">Dashboard</Link>
+          <Link href="/generate">Generate</Link>
+          <Link href="/convert">Convert</Link>
+          <Link href="/translate">Translate</Link>
+          <Link href="/voice">Voice</Link>
+          <Link href="/extract-text-from-pdf">Extract Text</Link>
+          <Link href="/merge-pdf">Merge PDF</Link>
+          <Link href="/split-pdf">Split PDF</Link>
+          <Link href="/compress-pdf">Compress</Link>
+          <Link href="/change-style">Change Style</Link>
+          <Link href="/credits">Credits</Link>
+          <Link href="/settings">Settings</Link>
         </nav>
       </aside>
-      <div className="dashboard-main">
-        <header className="dashboard-header">
-          <div className="credit-balance">
-            <span className="credit-icon">💰</span>
-            <span className="credit-amount">Loading...</span>
+      <div>
+        <header>
+          <div>
+            <span>💰</span>
+            <span>Loading...</span>
           </div>
-          <div className="user-menu">
-            <button className="user-menu-btn">Account</button>
+          <div>
+            <button>Account</button>
           </div>
         </header>
-        <Suspense fallback={<div className="loading">Loading...</div>}>
-          <main className="dashboard-content">{children}</main>
+        <Suspense fallback={<div>Loading...</div>}>
+          <main>{children}</main>
         </Suspense>
       </div>
     </div>

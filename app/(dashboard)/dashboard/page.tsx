@@ -36,38 +36,38 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="dashboard-page">
+    <div>
       <h1>Dashboard</h1>
 
-      <div className="stats-grid">
-        <div className="stat-card">
+      <div>
+        <div>
           <h3>Credits</h3>
-          <p className="stat-value">{credits}</p>
-          <Link href="/credits" className="stat-link">Add more</Link>
+          <p>{credits}</p>
+          <Link href="/credits">Add more</Link>
         </div>
-        <div className="stat-card">
+        <div>
           <h3>Documents</h3>
-          <p className="stat-value">{documents.length}</p>
-          <Link href="/generate" className="stat-link">Create new</Link>
+          <p>{documents.length}</p>
+          <Link href="/generate">Create new</Link>
         </div>
-        <div className="stat-card">
+        <div>
           <h3>Account</h3>
-          <p className="stat-value">{user?.role || 'free'}</p>
-          <Link href="/settings" className="stat-link">Manage</Link>
+          <p>{user?.role || 'free'}</p>
+          <Link href="/settings">Manage</Link>
         </div>
       </div>
 
-      <section className="recent-docs">
+      <section>
         <h2>Recent Documents</h2>
         {loading ? (
           <p>Loading...</p>
         ) : documents.length > 0 ? (
-          <ul className="doc-list">
+          <ul>
             {documents.map((doc) => (
-              <li key={doc._id} className="doc-item">
+              <li key={doc._id}>
                 <Link href={`/preview?doc=${doc._id}`}>
                   <span>{doc.title}</span>
-                  <span className="doc-status">{doc.status}</span>
+                  <span>{doc.status}</span>
                 </Link>
               </li>
             ))}
@@ -77,12 +77,12 @@ export default function DashboardPage() {
         )}
       </section>
 
-      <section className="quick-actions">
+      <section>
         <h2>Quick Actions</h2>
-        <div className="action-buttons">
-          <Link href="/generate" className="btn-action">Generate Document</Link>
-          <Link href="/convert" className="btn-action">Convert File</Link>
-          <Link href="/templates" className="btn-action">Browse Templates</Link>
+        <div>
+          <Link href="/generate">Generate Document</Link>
+          <Link href="/convert">Convert File</Link>
+          <Link href="/templates">Browse Templates</Link>
         </div>
       </section>
     </div>

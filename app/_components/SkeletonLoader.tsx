@@ -13,5 +13,5 @@ export function SkeletonLoader({ type, count = 1 }: SkeletonLoaderProps): ReactN
     <div key={i} className={`skeleton skeleton-${type}`} />
   ));
 
-  return <div className="skeleton-container">{loaders}</div>;
+  return <div>{loaders}</div>;
 }

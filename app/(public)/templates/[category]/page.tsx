@@ -39,8 +39,8 @@ export default function TemplatesCategoryPage() {
   };
 
   return (
-    <div className="templates-category-page">
-      <div className="page-header">
+    <div>
+      <div>
         <Link href="/templates">← All Templates</Link>
         <h1>{category} Templates</h1>
       </div>
@@ -48,16 +48,16 @@ export default function TemplatesCategoryPage() {
       {loading ? (
         <p>Loading...</p>
       ) : templates.length > 0 ? (
-        <div className="template-grid">
+        <div>
           {templates.map((template) => (
             <Link
               key={template._id}
               href={`/templates/${category}/${template._id}`}
-              className="template-card"
+             
             >
               <h3>{template.name}</h3>
               <p>{template.description}</p>
-              <span className="template-format">{template.format}</span>
+              <span>{template.format}</span>
             </Link>
           ))}
         </div>

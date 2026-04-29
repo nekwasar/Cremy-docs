@@ -21,7 +21,7 @@ export function CopyButton({ text, label = 'Copy' }: Props) {
   };
 
   return (
-    <button onClick={handleCopy} className="copy-button">
+    <button onClick={handleCopy}>
       {copied ? 'Copied!' : label}
     </button>
   );

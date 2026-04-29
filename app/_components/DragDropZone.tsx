@@ -72,7 +72,7 @@ export function DragDropZone({
     >
       <p>Drop files here or click to upload</p>
       {uploadProgress !== null && (
-        <div className="upload-progress">{uploadProgress}%</div>
+        <div>{uploadProgress}%</div>
       )}
     </div>
   );
