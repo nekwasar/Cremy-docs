@@ -1,54 +1,85 @@
+import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 import Notification from '@/models/Notification';
+import { sendEmail } from '@/services/email';
 
-const CREDIT_THRESHOLDS = [5, 2, 0];
+const LOW_BALANCE_THRESHOLDS = [5, 2, 0];
 
-export interface LowBalanceNotification {
-  userId: string;
-  threshold: number;
-  currentCredits: number;
-}
+export async function checkLowBalance(
+  userId: string,
+  currentBalance: number
+): Promise<{ notified: boolean; threshold: number | null }> {
+  await connectDB();
 
-export async function checkAndNotifyLowBalance(userId: string, previousCredits: number, currentCredits: number): Promise<void> {
-  for (const threshold of CREDIT_THRESHOLDS) {
-    if (previousCredits > threshold && currentCredits <= threshold) {
-      await createLowBalanceNotification(userId, threshold, currentCredits);
-      break;
+  const user = await User.findById(userId);
+  if (!user || user.role === 'pro') {
+    return { notified: false, threshold: null };
+  }
+
+  const lastNotification = await Notification.findOne({
+    userId,
+    type: 'low_balance',
+  })
+    .sort({ createdAt: -1 })
+    .select('createdAt');
+
+  for (const threshold of LOW_BALANCE_THRESHOLDS) {
+    if (currentBalance <= threshold) {
+      if (lastNotification) {
+        const hoursSinceNotification =
+          (Date.now() - lastNotification.createdAt.getTime()) / (1000 * 60 * 60);
+        if (hoursSinceNotification < 24) {
+          continue;
+        }
+      }
+
+      await Notification.create({
+        userId,
+        type: 'low_balance',
+        title: 'Low Credit Balance',
+        message: `Your balance is ${currentBalance} credits. Upgrade to get more!`,
+        isRead: false,
+        data: { threshold, currentBalance },
+      });
+
+      if (user.email) {
+        await sendEmail({
+          to: user.email,
+          subject: 'Low Credit Balance - Cremy Docs',
+          html: `<p>Your credit balance is running low!</p>
+                 <p>Current balance: <strong>${currentBalance} credits</strong></p>
+                 <p>Upgrade now to never run out of credits.</p>`,
+        });
+      }
+
+      return { notified: true, threshold };
     }
   }
+
+  return { notified: false, threshold: null };
 }
 
-async function createLowBalanceNotification(userId: string, threshold: number, currentCredits: number): Promise<void> {
-  const recentNotification = await Notification.findOne({
-    userId,
-    type: 'low_balance',
-    data: { threshold },
-    createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+export async function sendLowBalanceReminder(userId: string): Promise<void> {
+  const user = await User.findById(userId);
+  if (!user) return;
+
+  await checkLowBalance(userId, user.credits || 0);
+}
+
+export async function processAllLowBalanceReminders(): Promise<number> {
+  await connectDB();
+
+  const users = await User.find({
+    role: { $ne: 'pro' },
+    credits: { $lte: 5 },
   });
 
-  if (recentNotification) {
-    return;
+  let notified = 0;
+
+  for (const user of users) {
+    const result = await checkLowBalance(user._id.toString(), user.credits || 0);
+    if (result.notified) notified++;
   }
 
-  const title = threshold === 0 
-    ? 'No Credits Remaining' 
-    : `Low Credit Balance: ${currentCredits} credits`;
-  
-  const message = threshold === 0
-    ? 'You have used all your credits. Purchase more to continue using the service.'
-    : `You have only ${currentCredits} credits remaining. Purchase more to avoid interruption.`;
-
-  await Notification.create({
-    userId,
-    type: 'low_balance',
-    title,
-    message,
-    link: '/credits/purchase',
-    data: { threshold, currentCredits },
-  });
-}
-
-export async function sendLowBalanceEmail(userId: string, currentCredits: number): Promise<void> {
-  // TODO: Implement email notification
-  console.log(`[Email] Low balance for user ${userId}: ${currentCredits} credits`);
+  return notified;
 }
