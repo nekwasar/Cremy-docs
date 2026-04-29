@@ -990,9 +990,7 @@ interface FormatPrompt {
 - Reverts element to previous state
 - Updates credit if needed (refund for undo within 30s)
 
----
-
-### M5.5 Tool-Specific Preview Behaviors
+### M7.5 Tool-Specific Preview Behaviors
 
 **Note:** Each tool has unique preview behavior. All previews are shown in the preview section (except where noted).
 
@@ -1051,16 +1049,12 @@ interface FormatPrompt {
 - Recreates document in new selected style
 - Preview + Download buttons under preview section
 
----
-
-### M5.6 Upload Dash Replacement
+### M7.6 Upload Dash Replacement
 
 **On pages with agent:**
 - Upload dash disappears
 - Replaced with visual indicators for tools
 - Shown at top of page
-
----
 
 ## M8: Document Generation Features
 
