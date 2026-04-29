@@ -1,0 +1,91 @@
+services:
+  # ========================================
+  # Application Container
+  # ========================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cremy-docs-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongo:27017/cremy-docs
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - cremy-network
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/.next
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ========================================
+  # MongoDB Database
+  # ========================================
+  mongo:
+    image: mongo:7.0
+    container_name: cremy-docs-mongo
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_DATABASE=cremy-docs
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD:${MONGO_ROOT_PASSWORD:-password}
+    ports:
+      - "27017:27017"
+    networks:
+      - cremy-network
+    volumes:
+      - mongo-data:/data/db
+      - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ========================================
+  # Redis Cache & Session
+  # ========================================
+  redis:
+    image: redis:7-alpine
+    container_name: cremy-docs-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - cremy-network
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# ========================================
+# Networks
+# ========================================
+networks:
+  cremy-network:
+    driver: bridge
+
+# ========================================
+# Volumes
+# ========================================
+volumes:
+  mongo-data:
+    driver: local
+  redis-data:
+    driver: local

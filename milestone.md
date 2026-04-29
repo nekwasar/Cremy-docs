@@ -14,55 +14,44 @@ This document provides extremely detailed technical specifications for building 
 
 ---
 
-## Milestone Order (Backend First)
+## Milestone Order
 
-### Phase 1: Infrastructure
-- **M1:** Infrastructure & Docker ✅ (Issues: 10)
+### Phase 1: Infrastructure (M1.1 - M1.2)
+- **M1.1:** Project Setup & Docker ✅
+- **M1.2:** User Types & Credit System ✅
 
-### Phase 2: Core Backend
-- **M2:** Authentication System
-- **M3:** Database & Data Models
-- **M4:** Credit System Backend
+### Phase 2: Frontend (M2 - M5)
+- **M2:** Frontend Core & Routing
+- **M3:** Homepage Quick Actions & State Management
+- **M4:** Document Generation Engine
+- **M5:** Document Generation Page
 
-### Phase 3: File Processing  
-- **M5:** File Upload/Download
-- **M6:** File Conversion Engine
-- **M7:** PDF Tools (Merge/Split/Compress)
+### Phase 3: Rendering (M6 - M8)
+- **M6:** Format Templates System
+- **M7:** Document Preview & Rendering
+- **M8:** Document Generation Features
 
-### Phase 4: AI Integration
-- **M8:** AI Client Setup
-- **M9:** Document Generation AI
-- **M10:** AI Editing
-- **M11:** Translation & OCR
+### Phase 4: Tools (M9 - M11)
+- **M9:** Voice-to-Document
+- **M10:** Image Integration
+- **M11:** File Conversion System
 
-### Phase 5: Frontend (Minimal)
-- **M12:** Frontend Core & Routing
-- **M13:** Homepage
-- **M14:** Document Generation Page
-- **M15:** Preview/Edit Page
+### Phase 5: User Features (M12 - M14)
+- **M12:** Pro User Dashboard
+- **M13:** Data Storage & Persistence
+- **M14:** Admin Panel
 
-### Phase 6: Features
-- **M16:** Templates System
-- **M17:** Voice-to-Document
-- **M18:** Change Style Feature
+### Phase 6: Monetization (M15)
+- **M15:** Payments & Subscriptions
 
-### Phase 7: User Features
-- **M19:** Dashboard (Pro)
-- **M20:** Save Banner
-- **M21:** Admin Panel
-
-### Phase 8: Monetization
-- **M22:** Payments & Subscriptions
-- **M23:** Credit System Frontend
-
-### Phase 9: SEO & Launch
-- **M24:** SEO Pages (200+ pages)
-- **M25:** Edge Cases & Error Handling
-6. Features (M6-M15)
+### Phase 7: SEO (M16 - M18)
+- **M16:** SEO & Public Pages
+- **M17:** SEO Tool Pages
+- **M18:** Edge Cases & Error Handling
 
 ---
 
-## M1: Infrastructure & Docker
+## M1.1: Project Setup & Docker
 
 ### M1.1 Project Setup (Docker + Backend Foundation)
 
@@ -97,38 +86,83 @@ This document provides extremely detailed technical specifications for building 
   /utils            # Helper functions
 ```
 
-### M1.2 Authentication System
+## M1.2: User Types & Credit System
 
-**User Types:**
-1. **Anonymous User** - No account, uses free credits, limited features
-2. **Registered Free User** - Email/Google signup, 10 free credits, localStorage for 24h
-3. **Pro Subscriber** - Monthly/yearly subscription, 200 credits/month, MongoDB storage
+### User Types
 
-**Auth Methods:**
-- Email + Password (with verification code for reset)
-- Google OAuth 2.0
-- Session: JWT in httpOnly cookies, 7-day expiry, automatic refresh
+1. **Anonymous User**
+   - No account required
+   - Gets 5 free credits (one-time, initial)
+   - Can use ALL features as long as credits available
+   - Rate limiting triggers when credits exhausted
+   - Can download, view document history
+   - Data stored in localStorage (default: OFF in settings)
+   - Auto-deletes after 24h if credits < 10
 
-**Auth Flow:**
-```
-User visits site
-    ↓
-Check JWT cookie
-    ↓
-Valid? → Dashboard
-    ↓
-No/Expired
-    ↓
-Show landing page with input box
-    ↓
-User clicks Login/Register
-    ↓
-Modal: Email+Password OR Google
-    ↓
-On success: Set JWT cookie, redirect to dashboard
-```
+2. **Registered Free User**
+   - Email/Password OR Google OAuth signup
+   - Email verification REQUIRED before account activated
+   - Reward: 10 free credits (one-time after email verified)
+   - No time-based rate limits
+   - Storage option: Can enable localStorage or cloud storage
+   - Dashboard upgrades with full features
 
-**Data Models:**
+3. **Pro Subscriber**
+   - Monthly ($9/mo) or Yearly ($86/yr)
+   - Monthly: 200 credits/month (valid for billing period only)
+   - Yearly: 2400 credits (valid for 12 months)
+   - Unlimited cloud storage
+   - Full dashboard + analytics
+
+### Credit System
+
+**Credit Allocation:**
+| User Type | Initial Credits | Renewal | Expiration |
+|----------|----------------|---------|------------|
+| Anonymous | 5 (one-time) | None | Never |
+| Registered Free | 10 (one-time) | None | Never |
+| Pro Monthly | 200/month | Monthly | Per billing period |
+| Pro Yearly | 2400/year | Yearly | Per billing period |
+
+**Credit Costs:**
+| Action | Cost | Notes |
+|--------|------|-------|
+| Document Generation | 1 credit / 100 words | Core AI |
+| AI Editing | 1 credit / 10 edits | |
+| Translation | 1 credit / 50 words | Any language |
+| Extract Text (OCR) | 1 credit / 50 words | PDF/Image to text |
+| Change Style | 1 credit / 100 words | |
+| Image Add | 1 credit / image | Max 5 per doc |
+| Merge PDF | FREE | Traffic driver |
+| Split PDF | FREE | Traffic driver |
+| Compress PDF | FREE | Traffic driver |
+| Basic Convert | FREE | Traffic driver |
+
+### Referral Program
+
+**Registered Users Only:**
+- Refer to BUY credits: Referrer gets 10% of every purchase forever
+- Refer to Pro: Referrer gets 10 credits (one-time)
+- Referred user: No automatic reward (optional future feature)
+
+### Pro Subscription
+
+| Plan | Price | Credits | Validity |
+|------|-------|---------|----------|
+| Pro Monthly | $9/mo | 200/month | Per billing period |
+| Pro Yearly | $86/yr | 2400 | Per 12 months |
+
+**Pro Credits Difference:**
+- Bought credits: Never expire
+- Pro credits: Valid only for billing period, expire if unused
+
+### Credit Packs
+
+| Pack | Price | Cost per Credit |
+|------|-------|-----------------|
+| 100 credits | $10 | 10¢ |
+| 500 credits | $40 | 8¢ |
+| 1000 credits | $70 | 7¢ |
 
 ```typescript
 // User Schema (MongoDB)
@@ -170,23 +204,6 @@ interface AnonymousUser {
 
 **Credit Bundles:**
 - 100 credits = $10 (1 credit = 10 cents)
-- Credits never expire
-
-**Free Credits:**
-- New anonymous users: 10 credits (one-time)
-- Can create account to keep using
-
-**Pro Subscription:**
-- $9/month OR $86/year (20% discount)
-- Includes 200 credits/month
-- Unused credits do NOT roll over
-- Unlimited document storage in MongoDB
-
-**Rate Limit Behavior:**
-- Usage bar shows at 80% → yellow warning
-- At 100%: Allow 1 more action, then graceful block
-- Blocked: Modal with upgrade plans + pricing
-
 ---
 
 ## M2: Frontend Core & Routing
@@ -383,7 +400,7 @@ interface AnonymousUser {
 
 ---
 
-## M3: Homepage Quick Actions
+## M3: Homepage Quick Actions & State Management
 
 ### M3.1 Quick Actions Grid
 
@@ -485,9 +502,9 @@ interface AppState {
 
 ---
 
-## M3: Document Generation Engine
+## M4: Document Generation Engine
 
-### M3.1 AI Integration Architecture
+### M4.1 AI Integration Architecture
 
 **Plug-and-Play Admin System:**
 - Admin page to add/remove/view API keys
@@ -583,7 +600,7 @@ interface DocumentSection {
 
 ---
 
-## M3B: Document Generation Page
+## M5: Document Generation Page
 
 ### M3B.1 Page Structure
 
@@ -804,7 +821,7 @@ After download: Show save banner
 
 ---
 
-## M4: Format Templates System
+## M6: Format Templates System
 
 ### M4.1 Format Template Pages
 
@@ -868,7 +885,7 @@ interface FormatPrompt {
 
 ---
 
-## M5: Document Preview & Rendering
+## M7: Document Preview & Rendering
 
 ### M5.1 Preview Renderer
 
@@ -972,7 +989,7 @@ interface FormatPrompt {
 
 ---
 
-## M6: Document Generation Features
+## M8: Document Generation Features
 
 ### M6.1 Generation from Text Input
 
@@ -1057,7 +1074,7 @@ Returns translated document
 
 ---
 
-## M7: Voice-to-Document
+## M9: Voice-to-Document
 
 ### M7.1 Voice Recording
 
@@ -1114,7 +1131,7 @@ Render preview
 
 ---
 
-## M8: Image Integration
+## M10: Image Integration
 
 ### M8.1 Image Upload
 
@@ -1170,7 +1187,7 @@ Image placed in generated document at described location
 
 ---
 
-## M9: File Conversion System
+## M11: File Conversion System
 
 ### M9.1 Conversion Philosophy
 
@@ -1227,7 +1244,7 @@ Build in order: Full matrix (all formats)
 
 ---
 
-## M10: Pro User Dashboard
+## M12: Pro User Dashboard
 
 ### M10.1 Dashboard Features
 
@@ -1276,7 +1293,7 @@ Build in order: Full matrix (all formats)
 
 ---
 
-## M11: Data Storage & Persistence
+## M13: Data Storage & Persistence
 
 ### M11.1 Storage Strategy
 
@@ -1357,7 +1374,7 @@ analytics_events
 
 ---
 
-## M12: Admin Panel
+## M14: Admin Panel
 
 ### M12.1 Admin Features
 
@@ -1392,7 +1409,7 @@ analytics_events
 
 ---
 
-## M13: Payments & Subscriptions
+## M15: Payments & Subscriptions
 
 ### M13.1 Payment Processor
 
@@ -1428,7 +1445,7 @@ Show confirmation + new balance
 
 ---
 
-## M14: SEO & Public Pages
+## M16: SEO & Public Pages
 
 ### M14.1 Landing Page (/)
 
@@ -1774,7 +1791,7 @@ Show confirmation + new balance
 
 ---
 
-## M15: SEO Tool Pages
+## M17: SEO Tool Pages
 
 ### M15.1 Extract Text SEO Pages
 
@@ -2137,7 +2154,7 @@ interface ConversionPageProps {
 
 ---
 
-## M15: Edge Cases & Error Handling
+## M18: Edge Cases & Error Handling
 
 ### M15.1 Credit Edge Cases
 
