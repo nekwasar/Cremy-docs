@@ -405,9 +405,47 @@ interface AnonymousUser {
 
 ## M3: Homepage Quick Actions
 
-### Quick Actions Grid
+### Quick Actions Grid (User)
 
 **Buttons on Homepage:**
+```
+┌─────────────────────────────────────────┐
+│  ┌──────────────┐ ┌──────────────┐     │
+│  │   📄        │ │    🔄       │     │
+│  │   Generate  │ │   Convert   │     │
+│  │    Doc      │ │    Files    │     │
+│  └──────────────┘ └──────────────┘     │
+│  ┌──────────────┐ ┌──────────────┐     │
+│  │    🌐       │ │    🎤       │     │
+│  │  Translate  │ │    Voice    │     │
+│  │             │ │  to Document│     │
+│  └──────────────┘ └──────────────┘     │
+│  ┌──────────────┐ ┌──────────────┐     │
+│  │    📝       │ │    📑       │     │
+│  │Extract Text │ │  Merge PDF   │     │
+│  └──────────────┘ └──────────────┘     │
+│  ┌──────────────┐ ┌──────────────┐     │
+│  │    ✂️       │ │    📦       │     │
+│  │  Split PDF  │ │Compress PDF │     │
+│  └──────────────┘ └──────────────┘     │
+│  ┌──────────────┐                       │
+│  │    🎨       │                       │
+│  │Change Style  │                       │
+│  └──────────────┘                       │
+└─────────────────────────────────────────┘
+```
+
+### Quick Actions Grid (Admin Only)
+
+**Additional buttons (admin visible, user NOT visible):**
+```
+┌─────────────────────────────────────────┐
+│  ┌──────────────┐                       │
+│  │    ✉️       │                       │
+│  │  Mailcraft  │                       │
+│  │  (Email Tool)                       │
+│  └──────────────┘                       │
+└─────────────────────────────────────────┘
 ```
 ┌─────────────────────────────────────────┐
 │  ┌──────────────┐ ┌──────────────┐     │
@@ -1580,15 +1618,40 @@ Analytics (Brevo):
 - Open rate, Click rate, Unsubscribe rate, Bounce rate
 - Per-campaign history
 
-Email Triggers (in Settings):
+Email Trigger System:
 - Action → Trigger → Template/Send
+- Example: User signup → Welcome email template → Automation sends
 
 Email Tool (Admin only - 12th tool):
-- Mailcraft page: interact with AI to create/edit templates
-- Fill templates with content
-- Preview emails
-- Make suggestions
-- Create custom templates
+- Mailcraft page: https://app.com/mailcraft
+- Only visible to admin role
+- Features:
+  - AI-powered email template creation
+  - Fill templates with content
+  - Preview emails (desktop, mobile)
+  - Make suggestions/improvements
+  - Create custom templates
+  - Edit existing templates
+  - Personalization tag insertion
+  - HTML editor with AI assistant
+- Route: GET /mailcraft
+
+The 12 Tools:
+
+| # | Tool | Description | Who Sees |
+|---|------|-------------|---------|
+| 1 | Generate from Text | Paste text → document | User |
+| 2 | Generate from Command | AI creates from request | User |
+| 3 | Edit | Modify document content | User |
+| 4 | Convert | File format conversion | User |
+| 5 | Translate | Translate to any language | User |
+| 6 | Voice | Voice-to-document | User |
+| 7 | Extract (OCR) | Text from PDF/image | User |
+| 8 | Merge | Combine PDFs | User |
+| 9 | Split | Separate PDF pages | User |
+| 10 | Compress | Reduce PDF size | User |
+| 11 | Change Style | AI restyle document | User |
+| 12 | Mailcraft | AI email assistance | Admin ONLY |
 
 ### Admin UI
 
