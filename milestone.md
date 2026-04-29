@@ -1443,6 +1443,52 @@ analytics_events
 
 ## M14: Admin Panel
 
+### Admin Creation (Token-Based)
+
+**Single Admin Rule:** Only 1 admin exists at a time. Creating new admin removes old admin.
+
+**Server Command:**
+```bash
+npm run admin:create [email]
+```
+- Generates one-time token
+- Creates invite link
+- Token saved to database with expiry
+
+**Admin Invite Flow:**
+```
+1. Server command executed
+   └── Generates token, saves to DB, outputs link
+
+2. Admin visits: https://app.com/admin/create?token=xxx
+   └── Validates token, checks expiry, checks if used
+
+3. Admin enters password
+   └── Creates admin account, sets role='admin'
+
+4. Old admin removed (if exists)
+   └── Previous admin set to 'user' role
+
+5. Token marked as used
+   └── Cannot be reused
+```
+
+**Token Properties:**
+- Token: random string (32 chars)
+- Email: provided in command
+- CreatedAt: timestamp
+- ExpiresAt: timestamp (24h default)
+- UsedAt: null (until used)
+- UsedBy: null (until used)
+
+**Security:**
+- Token single-use
+- Token expires (24h)
+- Old admin removed on new creation
+- Role check on all admin routes
+
+---
+
 ### Admin Features
 
 **API Key Management:**
