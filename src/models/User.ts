@@ -84,6 +84,32 @@ const userSchema = new Schema<IUser>(
     lastCreditResetAt: {
       type: Date,
     },
+    referralCode: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    receivedSignupReward: {
+      type: Boolean,
+      default: false,
+    },
+    proCredits: {
+      type: Number,
+      default: 0,
+    },
+    proCreditsExpires: {
+      type: Date,
+    },
+    useMongoDB: {
+      type: Boolean,
+      default: false,
+    },
+    storageEnabledAt: {
+      type: Date,
+    },
+    referredBy: {
+      type: String,
+    },
     refreshToken: {
       type: String,
       select: false,

@@ -1,70 +1,54 @@
+import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 import CreditTransaction from '@/models/CreditTransaction';
-import { addCredits } from '@/lib/credits';
 
-export const SIGNUP_REWARD_CREDITS = 10;
+const SIGNUP_REWARD_CREDITS = 10;
 
-export async function grantSignupReward(userId: string): Promise<{
-  success: boolean;
-  creditsAwarded: number;
-  message?: string;
-}> {
+export async function addSignupReward(userId: string): Promise<boolean> {
+  await connectDB();
+
   const user = await User.findById(userId);
-  
-  if (!user) {
-    return { success: false, creditsAwarded: 0, message: 'User not found' };
+  if (!user) return false;
+
+  if (user.receivedSignupReward) {
+    return false;
   }
 
-  const hasReceivedReward = await CreditTransaction.findOne({
-    userId,
-    type: 'bonus',
-    description: 'Signup reward',
+  const previousCredits = user.credits || 0;
+  const newCredits = previousCredits + SIGNUP_REWARD_CREDITS;
+
+  await User.findByIdAndUpdate(userId, {
+    credits: newCredits,
+    receivedSignupReward: true,
   });
 
-  if (hasReceivedReward) {
-    return { success: false, creditsAwarded: 0, message: 'Reward already claimed' };
-  }
-
-  const result = await addCredits({
+  await CreditTransaction.create({
     userId,
     type: 'bonus',
     amount: SIGNUP_REWARD_CREDITS,
-    description: 'Signup reward - 10 credits for verified email',
+    balance: newCredits,
+    description: 'Signup reward - 10 credits',
+    creditsBefore: previousCredits,
+    creditsAfter: newCredits,
   });
 
-  if (!result.success) {
-    return { success: false, creditsAwarded: 0, message: 'Failed to add credits' };
-  }
-
-  return {
-    success: true,
-    creditsAwarded: SIGNUP_REWARD_CREDITS,
-  };
+  return true;
 }
 
-export async function checkSignupRewardEligibility(userId: string): Promise<{
-  eligible: boolean;
-  reason?: string;
-}> {
+export async function checkSignupRewardEligible(userId: string): Promise<boolean> {
+  await connectDB();
+
   const user = await User.findById(userId);
-  
-  if (!user) {
-    return { eligible: false, reason: 'User not found' };
-  }
+  if (!user) return false;
 
-  if (!user.isEmailVerified) {
-    return { eligible: false, reason: 'Email not verified' };
-  }
+  return !user.receivedSignupReward && user.isEmailVerified;
+}
 
-  const hasReceivedReward = await CreditTransaction.findOne({
-    userId,
-    type: 'bonus',
-    description: { $regex: /signup reward/i },
-  });
+export async function hasReceivedSignupReward(userId: string): Promise<boolean> {
+  await connectDB();
 
-  if (hasReceivedReward) {
-    return { eligible: false, reason: 'Reward already claimed' };
-  }
+  const user = await User.findById(userId);
+  if (!user) return false;
 
-  return { eligible: true };
+  return user.receivedSignupReward ?? false;
 }

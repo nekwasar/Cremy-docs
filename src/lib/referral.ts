@@ -1,150 +1,169 @@
+import crypto from 'crypto';
+import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 import Referral from '@/models/Referral';
-import { addCredits } from '@/lib/credits';
+import CreditTransaction from '@/models/CreditTransaction';
 
-const REFERRAL_CREDIT_PERCENTAGE = 0.1;
-const PRO_REFERRAL_CREDITS = 10;
+const REFERRAL_BONUS_PERCENT = 0.1;
+const PRO_SUBSCRIPTION_BONUS = 10;
 
-export interface GenerateReferralCodeResult {
-  referralCode: string;
+export async function generateReferralCode(userId: string): Promise<string> {
+  await connectDB();
+
+  const user = await User.findById(userId);
+  if (!user) throw new Error('User not found');
+
+  if (user.referralCode) {
+    return user.referralCode;
+  }
+
+  const code = crypto.randomBytes(4).toString('hex').toUpperCase();
+
+  await User.findByIdAndUpdate(userId, { referralCode: code });
+
+  return code;
 }
 
-export async function generateReferralCode(userId: string): Promise<GenerateReferralCodeResult> {
+export async function getUserReferralCode(userId: string): Promise<string | null> {
+  await connectDB();
+
   const user = await User.findById(userId);
-  if (!user) {
-    throw new Error('User not found');
-  }
+  if (!user) return null;
 
-  if (user.role !== 'free') {
-    const existing = await Referral.findOne({ referrerId: userId });
-    if (existing) {
-      return { referralCode: existing.referralCode };
-    }
-  }
-
-  const referralCode = `REF${userId.substring(0, 8).toUpperCase()}${Date.now().toString(36).toUpperCase()}`;
-
-  const existingRef = await Referral.findOne({ referralCode });
-  if (existingRef) {
-    throw new Error('Referral code already exists');
-  }
-
-  return { referralCode };
+  return user.referralCode || null;
 }
 
 export async function applyReferral(
   referrerId: string,
-  refereeId: string,
-  referralCode: string
-): Promise<{ success: boolean; message: string }> {
-  if (referrerId === refereeId) {
-    return { success: false, message: 'Self-referral not allowed' };
-  }
+  refereeId: string
+): Promise<boolean> {
+  await connectDB();
 
-  const existingReferral = await Referral.findOne({ refereeId });
-  if (existingReferral) {
-    return { success: false, message: 'User already referred' };
-  }
+  if (referrerId === refereeId) return false;
+
+  const existingReferral = await Referral.findOne({
+    $or: [
+      { referrerId, refereeId },
+      { refereeId: referrerId },
+    ],
+  });
+
+  if (existingReferral) return false;
 
   await Referral.create({
     referrerId,
     refereeId,
-    referralCode,
-    status: 'completed',
+    status: 'pending',
   });
 
-  return { success: true, message: 'Referral applied' };
+  return true;
 }
 
-export async function rewardReferrerOnCreditPurchase(
+export async function recordReferralPurchase(
   referrerId: string,
-  purchaseAmount: number
-): Promise<{ success: boolean; creditsAwarded: number }> {
-  const referral = await Referral.findOne({ referrerId, status: 'completed' });
-  if (!referral) {
-    return { success: false, creditsAwarded: 0 };
-  }
+  amount: number
+): Promise<void> {
+  await connectDB();
 
-  const rewardCredits = Math.floor(purchaseAmount * REFERRAL_CREDIT_PERCENTAGE);
-  
-  if (rewardCredits <= 0) {
-    return { success: false, creditsAwarded: 0 };
-  }
+  const bonusCredits = Math.floor(amount * REFERRAL_BONUS_PERCENT);
 
-  await addCredits({
-    userId: referrerId,
-    type: 'referral',
-    amount: rewardCredits,
-    description: `Referral reward - 10% of referee credit purchase`,
+  const referrer = await User.findById(referrerId);
+  if (!referrer) return;
+
+  const previousCredits = referrer.credits || 0;
+  const newCredits = previousCredits + bonusCredits;
+
+  await User.findByIdAndUpdate(referrerId, {
+    credits: newCredits,
   });
 
-  referral.totalEarnings += rewardCredits;
-  referral.creditRewardGiven = true;
-  await referral.save();
-
-  return { success: true, creditsAwarded: rewardCredits };
-}
-
-export async function rewardReferrerOnProSubscription(referrerId: string): Promise<{
-  success: boolean;
-  creditsAwarded: number;
-}> {
-  const referral = await Referral.findOne({ referrerId, status: 'completed' });
-  if (!referral) {
-    return { success: false, creditsAwarded: 0 };
-  }
-
-  if (referral.proRewardGiven) {
-    return { success: false, creditsAwarded: 0 };
-  }
-
-  await addCredits({
+  await CreditTransaction.create({
     userId: referrerId,
-    type: 'referral',
-    amount: PRO_REFERRAL_CREDITS,
-    description: `Referral reward - Pro subscription signup bonus`,
+    type: 'bonus',
+    amount: bonusCredits,
+    balance: newCredits,
+    description: `Referral bonus - 10% of $${amount} purchase`,
+    creditsBefore: previousCredits,
+    creditsAfter: newCredits,
   });
 
-  referral.proRewardGiven = true;
-  referral.totalEarnings += PRO_REFERRAL_CREDITS;
-  await referral.save();
-
-  return { success: true, creditsAwarded: PRO_REFERRAL_CREDITS };
+  await Referral.findOneAndUpdate(
+    { referrerId, status: 'pending' },
+    { status: 'active' }
+  );
 }
 
-export async function getReferralStats(userId: string): Promise<{
-  totalReferrals: number;
-  totalEarnings: number;
-  successfulReferrals: number;
-  pendingReferrals: number;
-}> {
+export async function recordReferralSubscription(referrerId: string): Promise<void> {
+  await connectDB();
+
+  const referrer = await User.findById(referrerId);
+  if (!referrer) return;
+
+  const previousCredits = referrer.credits || 0;
+  const newCredits = previousCredits + PRO_SUBSCRIPTION_BONUS;
+
+  await User.findByIdAndUpdate(referrerId, {
+    credits: newCredits,
+  });
+
+  await CreditTransaction.create({
+    userId: referrerId,
+    type: 'bonus',
+    amount: PRO_SUBSCRIPTION_BONUS,
+    balance: newCredits,
+    description: 'Referral bonus - Pro subscription',
+    creditsBefore: previousCredits,
+    creditsAfter: newCredits,
+  });
+}
+
+export async function getReferralStats(
+  userId: string
+): Promise<{ totalReferrals: number; activeReferrals: number; totalCredits: number }> {
+  await connectDB();
+
   const stats = await Referral.aggregate([
-    { $match: { referrerId: new mongoose.Types.ObjectId(userId) } },
+    { $match: { referrerId: userId } },
     {
       $group: {
         _id: '$status',
         count: { $sum: 1 },
-        totalEarnings: { $sum: '$totalEarnings' },
       },
     },
   ]);
 
-  const result = {
-    totalReferrals: 0,
-    totalEarnings: 0,
-    successfulReferrals: 0,
-    pendingReferrals: 0,
+  const activeCount =
+    stats.find((s) => s._id === 'active')?.count || 0;
+  const pendingCount =
+    stats.find((s) => s._id === 'pending')?.count || 0;
+
+  const transactions = await CreditTransaction.find({
+    userId,
+    description: { $regex: 'Referral bonus' },
+  });
+
+  const totalCredits = transactions.reduce((sum, t) => sum + t.amount, 0);
+
+  return {
+    totalReferrals: activeCount + pendingCount,
+    activeReferrals: activeCount,
+    totalCredits,
   };
+}
 
-  for (const s of stats) {
-    result.totalReferrals += s.count;
-    result.totalEarnings += s.totalEarnings;
-    if (s._id === 'completed') {
-      result.successfulReferrals = s.count;
-    } else if (s._id === 'pending') {
-      result.pendingReferrals = s.count;
-    }
-  }
+export async function getReferralHistory(
+  userId: string
+): Promise<{ refereeId: string; status: string; createdAt: Date }[]> {
+  await connectDB();
 
-  return result;
+  const referrals = await Referral.find({ referrerId: userId })
+    .sort({ createdAt: -1 })
+    .limit(50)
+    .select('refereeId status createdAt');
+
+  return referrals.map((r) => ({
+    refereeId: r.refereeId.toString(),
+    status: r.status,
+    createdAt: r.createdAt,
+  }));
 }

@@ -1,109 +1,188 @@
 import { v4 as uuidv4 } from 'uuid';
 
+const ANONYMOUS_STORAGE_KEY = 'cremy_anon_user';
 const ANONYMOUS_CREDITS = 5;
-const AUTO_DELETE_THRESHOLD_HOURS = 24;
+const AUTO_DELETE_CREDITS_THRESHOLD = 10;
+const AUTO_DELETE_HOURS = 24;
 
-export interface AnonymousUser {
+interface AnonymousUserData {
   id: string;
   credits: number;
-  createdAt: Date;
-  lastActiveAt: Date;
+  createdAt: number;
+  lastActive: number;
   documents: AnonymousDocument[];
+  settings: Record<string, unknown>;
 }
 
-export interface AnonymousDocument {
+interface AnonymousDocument {
   id: string;
   title: string;
   content: string;
-  createdAt: Date;
+  type: 'generated' | 'uploaded' | 'template';
+  createdAt: number;
 }
 
-export function createAnonymousUser(): AnonymousUser {
-  return {
+export function createAnonymousUser(): AnonymousUserData {
+  const user: AnonymousUserData = {
     id: uuidv4(),
     credits: ANONYMOUS_CREDITS,
-    createdAt: new Date(),
-    lastActiveAt: new Date(),
+    createdAt: Date.now(),
+    lastActive: Date.now(),
     documents: [],
+    settings: {},
   };
+
+  saveAnonymousUser(user);
+  return user;
 }
 
-export function loadAnonymousUser(): AnonymousUser | null {
+export function getAnonymousUser(): AnonymousUserData | null {
   if (typeof window === 'undefined') return null;
-  
-  const stored = localStorage.getItem('anonymous_user');
-  if (!stored) return null;
-  
+
   try {
-    const user = JSON.parse(stored) as AnonymousUser;
-    user.createdAt = new Date(user.createdAt);
-    user.lastActiveAt = new Date(user.lastActiveAt);
-    
-    for (const doc of user.documents) {
-      doc.createdAt = new Date(doc.createdAt);
-    }
-    
+    const stored = localStorage.getItem(ANONYMOUS_STORAGE_KEY);
+    if (!stored) return null;
+
+    const user = JSON.parse(stored) as AnonymousUserData;
+    user.lastActive = Date.now();
+    saveAnonymousUser(user);
     return user;
   } catch {
     return null;
   }
 }
 
-export function saveAnonymousUser(user: AnonymousUser): void {
+export function saveAnonymousUser(user: AnonymousUserData): void {
   if (typeof window === 'undefined') return;
-  
-  user.lastActiveAt = new Date();
-  localStorage.setItem('anonymous_user', JSON.stringify(user));
+
+  try {
+    localStorage.setItem(ANONYMOUS_STORAGE_KEY, JSON.stringify(user));
+  } catch (e) {
+    console.error('Failed to save anonymous user:', e);
+  }
 }
 
-export function addAnonymousCredits(amount: number): AnonymousUser | null {
-  const user = loadAnonymousUser();
-  if (!user) return null;
-  
-  user.credits += amount;
-  saveAnonymousUser(user);
-  return user;
+export function checkAnonymousUserExpired(): boolean {
+  const user = getAnonymousUser();
+  if (!user) return false;
+
+  const hoursSinceCreation = (Date.now() - user.createdAt) / (1000 * 60 * 60);
+  const hasLowCredits = user.credits < AUTO_DELETE_CREDITS_THRESHOLD;
+
+  return hoursSinceCreation >= AUTO_DELETE_HOURS && hasLowCredits;
+}
+
+export function deleteAnonymousUser(): void {
+  if (typeof window === 'undefined') return;
+
+  localStorage.removeItem(ANONYMOUS_STORAGE_KEY);
+}
+
+export function getAnonymousCredits(): number {
+  const user = getAnonymousUser();
+  return user?.credits ?? ANONYMOUS_CREDITS;
 }
 
 export function deductAnonymousCredits(amount: number): boolean {
-  const user = loadAnonymousUser();
-  if (!user || user.credits < amount) return false;
-  
+  const user = getAnonymousUser();
+  if (!user) return false;
+
+  if (user.credits < amount) return false;
+
   user.credits -= amount;
+  user.lastActive = Date.now();
   saveAnonymousUser(user);
   return true;
 }
 
-export function saveAnonymousDocument(doc: { id: string; title: string; content: string }): void {
-  const user = loadAnonymousUser();
-  if (!user) return;
-  
-  user.documents.push({
-    ...doc,
-    createdAt: new Date(),
-  });
+export function addAnonymousCredits(amount: number): void {
+  let user = getAnonymousUser();
+  if (!user) {
+    user = createAnonymousUser();
+  }
+
+  user.credits += amount;
+  user.lastActive = Date.now();
   saveAnonymousUser(user);
 }
 
-export function shouldAutoDeleteAnonymousUser(): boolean {
-  const user = loadAnonymousUser();
-  if (!user) return false;
-  
-  const hoursSinceCreation = (Date.now() - user.createdAt.getTime()) / (1000 * 60 * 60);
-  return hoursSinceCreation >= AUTO_DELETE_THRESHOLD_HOURS && user.credits < 10;
-}
+export function addAnonymousDocument(
+  title: string,
+  content: string,
+  type: 'generated' | 'uploaded' | 'template'
+): AnonymousDocument {
+  let user = getAnonymousUser();
+  if (!user) {
+    user = createAnonymousUser();
+  }
 
-export function clearAnonymousUser(): void {
-  if (typeof window === 'undefined') return;
-  localStorage.removeItem('anonymous_user');
-}
-
-export function migrateAnonymousToRegistered(
-  anonymousData: AnonymousUser,
-  userId: string
-): { credits: number; documents: AnonymousDocument[] } {
-  return {
-    credits: anonymousData.credits,
-    documents: anonymousData.documents,
+  const doc: AnonymousDocument = {
+    id: uuidv4(),
+    title,
+    content,
+    type,
+    createdAt: Date.now(),
   };
+
+  user.documents.push(doc);
+  user.lastActive = Date.now();
+  saveAnonymousUser(user);
+
+  return doc;
 }
+
+export function getAnonymousDocuments(): AnonymousDocument[] {
+  const user = getAnonymousUser();
+  return user?.documents ?? [];
+}
+
+export function deleteAnonymousDocument(id: string): boolean {
+  const user = getAnonymousUser();
+  if (!user) return false;
+
+  const index = user.documents.findIndex((d) => d.id === id);
+  if (index === -1) return false;
+
+  user.documents.splice(index, 1);
+  user.lastActive = Date.now();
+  saveAnonymousUser(user);
+
+  return true;
+}
+
+export function updateAnonymousSettings(settings: Record<string, unknown>): void {
+  let user = getAnonymousUser();
+  if (!user) {
+    user = createAnonymousUser();
+  }
+
+  user.settings = { ...user.settings, ...settings };
+  user.lastActive = Date.now();
+  saveAnonymousUser(user);
+}
+
+export function getAnonymousSettings(): Record<string, unknown> {
+  const user = getAnonymousUser();
+  return user?.settings ?? {};
+}
+
+export function migrateAnonymousToRegistered(uid: string): { credits: number; documents: AnonymousDocument[] } {
+  const user = getAnonymousUser();
+  if (!user) {
+    return { credits: ANONYMOUS_CREDITS, documents: [] };
+  }
+
+  const data = {
+    credits: user.credits,
+    documents: user.documents,
+  };
+
+  deleteAnonymousUser();
+  return data;
+}
+
+export function isUserAnonymous(): boolean {
+  return typeof window !== 'undefined' && !getAnonymousUser();
+}
+
+export { AnonymousUserData, AnonymousDocument };

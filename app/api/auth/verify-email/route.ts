@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 import { jwtService } from '@/services/jwt';
-import { grantSignupReward } from '@/services/credit-reward';
+import { addSignupReward } from '@/services/credit-reward';
 
 export async function GET(request: NextRequest) {
   try {
@@ -39,13 +39,13 @@ export async function GET(request: NextRequest) {
     user.emailVerificationExpires = undefined;
     await user.save();
 
-    const reward = await grantSignupReward(user._id.toString());
+    const rewardAdded = await addSignupReward(user._id.toString());
 
     return NextResponse.json({
       success: true,
       message: 'Email verified successfully',
-      reward: reward.success ? {
-        creditsAwarded: reward.creditsAwarded,
+      reward: rewardAdded ? {
+        creditsAwarded: 10,
         message: '10 credits added to your account!',
       } : null,
     });

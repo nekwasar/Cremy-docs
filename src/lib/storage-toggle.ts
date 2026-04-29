@@ -1,110 +1,136 @@
-import mongoose from 'mongoose';
+import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
-import StorageSettings from '@/models/StorageSettings';
+import Document from '@/models/Document';
 
-export interface StorageToggleResult {
-  success: boolean;
-  storageType: 'local' | 'cloud';
-  message?: string;
+interface StoragePreference {
+  userId: string;
+  useMongoDB: boolean;
+  enabledAt: Date;
 }
 
-const MAX_STORAGE_FREE = 10 * 1024 * 1024;
-const MAX_STORAGE_PRO = 1 * 1024 * 1024 * 1024;
+export async function getStoragePreference(userId: string): Promise<boolean> {
+  await connectDB();
 
-export async function getStorageSettings(userId: string): Promise<{
-  storageType: 'local' | 'cloud';
-  isEnabled: boolean;
-  storageUsed: number;
-  maxStorage: number;
-}> {
   const user = await User.findById(userId);
-  if (!user) {
-    throw new Error('User not found');
-  }
+  if (!user) return false;
 
-  let settings = await StorageSettings.findOne({ userId });
+  const subscription = user.subscription;
+  if (subscription === 'pro') return true;
 
-  if (!settings) {
-    const isPro = user.role === 'pro' || user.role === 'admin';
-    const defaultStorage = isPro ? 'cloud' : 'local';
-
-    settings = await StorageSettings.create({
-      userId,
-      storageType: defaultStorage,
-      isEnabled: isPro,
-    });
-  }
-
-  const maxStorage = (user.role === 'pro' || user.role === 'admin') 
-    ? MAX_STORAGE_PRO 
-    : MAX_STORAGE_FREE;
-
-  return {
-    storageType: settings.storageType,
-    isEnabled: settings.isEnabled,
-    storageUsed: settings.storageUsed || 0,
-    maxStorage,
-  };
+  const settings = await User.findById(userId).select('useMongoDB');
+  return settings?.useMongoDB ?? false;
 }
 
-export async function toggleStorage(
+export async function setStoragePreference(
   userId: string,
-  enable: boolean,
-  migrateData: boolean = true
-): Promise<StorageToggleResult> {
+  useMongoDB: boolean
+): Promise<boolean> {
   const user = await User.findById(userId);
-  if (!user) {
-    throw new Error('User not found');
+  if (!user) return false;
+
+  const isPro = user.subscription === 'pro';
+  const credits = user.credits || 0;
+
+  if (useMongoDB && !isPro && credits < 10) {
+    return false;
   }
 
-  const isPro = user.role === 'pro' || user.role === 'admin';
+  await User.findByIdAndUpdate(userId, {
+    useMongoDB,
+    storageEnabledAt: useMongoDB ? new Date() : null,
+  });
 
-  if (!isPro && enable) {
-    const eligibleForCloud = user.credits >= 10;
-    if (!eligibleForCloud) {
-      return {
-        success: false,
-        storageType: 'local',
-        message: 'Upgrade to Pro or earn 10 credits to enable cloud storage',
-      };
-    }
-  }
+  return true;
+}
 
-  let settings = await StorageSettings.findOne({ userId });
+export async function migrateLocalToMongo(
+  userId: string,
+  localDocuments: { title: string; content: string; type: string }[]
+): Promise<number> {
+  await connectDB();
 
-  if (!settings) {
-    settings = await StorageSettings.create({
+  const user = await User.findById(userId);
+  if (!user) return 0;
+
+  let migrated = 0;
+
+  for (const doc of localDocuments) {
+    await Document.create({
       userId,
-      storageType: enable ? 'cloud' : 'local',
-      isEnabled: enable,
+      title: doc.title,
+      content: doc.content,
+      type: doc.type as 'generated' | 'uploaded' | 'template',
+      status: 'completed',
+      format: 'txt',
+      storage: 'mongodb',
     });
-  } else {
-    if (enable) {
-      settings.storageType = 'cloud';
-      settings.isEnabled = true;
-      if (migrateData) {
-        settings.lastSyncAt = new Date();
-      }
-    } else {
-      settings.storageType = 'local';
-      settings.isEnabled = false;
-    }
-    await settings.save();
+
+    migrated++;
   }
+
+  await User.findByIdAndUpdate(userId, { useMongoDB: true });
+
+  return migrated;
+}
+
+export async function migrateMongoToLocal(userId: string): Promise<{ title: string; content: string }[]> {
+  await connectDB();
+
+  await User.findByIdAndUpdate(userId, { useMongoDB: false });
+
+  const documents = await Document.find({ userId, storage: 'mongodb' }).select(
+    'title content'
+  );
+
+  return documents.map((d) => ({
+    title: d.title,
+    content: d.content,
+  }));
+}
+
+export async function getStorageStats(
+  userId: string
+): Promise<{ totalDocuments: number; storageUsed: number; storageType: string }> {
+  await connectDB();
+
+  const user = await User.findById(userId);
+  if (!user) return { totalDocuments: 0, storageUsed: 0, storageType: 'localStorage' };
+
+  const useMongoDB = user.useMongoDB ?? false;
+  const storageType = useMongoDB ? 'mongodb' : 'localStorage';
+
+  if (!useMongoDB) {
+    return { totalDocuments: 0, storageUsed: 0, storageType };
+  }
+
+  const documents = await Document.countDocuments({ userId });
+  const totalSize = await Document.aggregate([
+    { $match: { userId } },
+    {
+      $project: {
+        contentSize: { $strLenCP: '$content' },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        total: { $sum: '$contentSize' },
+      },
+    },
+  ]);
 
   return {
-    success: true,
-    storageType: settings.storageType,
-    message: enable 
-      ? 'Cloud storage enabled. Your data is now stored in the cloud.' 
-      : 'Storage switched to local. Data will be stored in your browser.',
+    totalDocuments: documents,
+    storageUsed: totalSize[0]?.total || 0,
+    storageType,
   };
 }
 
-export async function updateStorageUsed(userId: string, bytes: number): Promise<void> {
-  await StorageSettings.findOneAndUpdate(
-    { userId },
-    { storageUsed: bytes },
-    { upsert: true }
-  );
+export async function deleteOldLocalStorageData(userId: string): Promise<void> {
+  await connectDB();
+
+  const user = await User.findById(userId);
+  if (!user?.useMongoDB) return;
+
+  await User.findByIdAndUpdate(userId, { useMongoDB: false });
 }
