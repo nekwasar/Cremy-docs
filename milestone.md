@@ -211,7 +211,7 @@ interface AnonymousUser {
 
 ## M2: Frontend Core & Routing
 
-### M2.1 App Structure
+### App Structure
 
 **Routes:**
 ```
@@ -238,7 +238,7 @@ interface AnonymousUser {
 /admin                      # Admin panel
 ```
 
-### M2.2 Homepage Layout (Tool Showcase)
+### Homepage Layout (Tool Showcase)
 
 **Purpose:** Showcase all tools, quick actions, value proposition - NOT a tool page
 
@@ -278,7 +278,7 @@ interface AnonymousUser {
 └─────────────────────────────────────────┘
 ```
 
-### M2.3 Document Generation Page (/generate)
+### Document Generation Page
 
 **Purpose:** Main document creation interface
 
@@ -309,7 +309,7 @@ interface AnonymousUser {
 - Fixed top bar: Logo (left), Credit balance (center), Account menu (right)
 - Credit balance always visible at top
 
-### M2.4 Templates Modal Flow
+### Templates Modal Flow
 
 **Step 1: Open Modal**
 - Click "Explore Styles" dropdown button
@@ -327,7 +327,7 @@ interface AnonymousUser {
 - Modal: Template preview + [Cancel] [Use Template]
 - Click "Use Template" → redirects to /generate?template=[id]
 
-### M2.5 Preview/Edit Page (/preview)
+### Preview/Edit Page
 
 **Purpose:** Document preview and editing
 
@@ -403,9 +403,9 @@ interface AnonymousUser {
 
 ---
 
-## M3: Homepage Quick Actions & State Management
+## M3: Homepage Quick Actions
 
-### M3.1 Quick Actions Grid
+### Quick Actions Grid
 
 **Buttons on Homepage:**
 ```
@@ -465,7 +465,7 @@ interface AnonymousUser {
 - Send button appears on typing
 - WebSocket streaming for generation
 
-### M2.3 State Management
+### State Management
 
 **Zustand Store:**
 ```typescript
@@ -490,7 +490,7 @@ interface AppState {
 }
 ```
 
-### M2.4 Error Handling
+### Error Handling
 
 **Error Types & UI:**
 
@@ -507,7 +507,7 @@ interface AppState {
 
 ## M4: Document Generation Engine
 
-### M4.1 AI Integration Architecture
+### AI Integration
 
 **Plug-and-Play Admin System:**
 - Admin page to add/remove/view API keys
@@ -532,7 +532,7 @@ Frontend renders skeleton + fills progressively
 Complete: Show document preview
 ```
 
-### M3.2 WebSocket Implementation
+### WebSocket Implementation
 
 **Connection:**
 - Single WebSocket connection per document session
@@ -556,7 +556,7 @@ Complete: Show document preview
 { type: 'credit_update', payload: { remaining: number } }
 ```
 
-### M3.3 Streaming UX (Skeleton + Fill)
+### Streaming UX (Skeleton + Fill)
 
 **Behavior:**
 1. User clicks generate
@@ -577,7 +577,7 @@ interface DocumentSkeleton {
 }
 ```
 
-### M3.4 Document Output
+### Document Output
 
 **Structure (from AI):**
 ```typescript
@@ -826,7 +826,7 @@ After download: Show save banner
 
 ## M6: Format Templates System
 
-### M4.1 Format Template Pages
+### Format Template Pages
 
 **Concept:** No stored templates - each format has a presentation page showing what it looks like (video/GIF/demo), and a detailed prompt that generates it.
 
@@ -854,7 +854,7 @@ After download: Show save banner
 └─────────────────────────────────────────┘
 ```
 
-### M4.2 Format Categories & Initial Set
+### Format Categories
 
 **Categories:**
 1. **Business** - Invoice, Proposal, Contract, Report, Memo
@@ -867,7 +867,7 @@ After download: Show save banner
 - Default: Same as word-based generation
 - Complex formats (presentations): Higher cost
 
-### M4.3 Format Prompt System
+### Format Prompt System
 
 Each format has a detailed prompt that the AI uses:
 ```typescript
@@ -1605,7 +1605,7 @@ Show confirmation + new balance
 
 ---
 
-### M14.5 Conversion Page (/convert)
+### Conversion Page
 
 **Purpose:** Main conversion tool - user selects any file to convert to any compatible format
 
@@ -1644,7 +1644,7 @@ Show confirmation + new balance
 
 ---
 
-### M14.6 SEO Conversion Pages (/convert/[from]-[to])
+### SEO Conversion Pages (/convert/[from]-[to])
 
 **Purpose:** Dedicated pages for SEO - one page per conversion type
 
@@ -1892,7 +1892,7 @@ Show confirmation + new balance
 
 ---
 
-### M16.1 Core Priority Formats (10 formats = 100 paths)
+### Core Priority Formats (10 formats = 100 paths)
 
 All SEO pages follow URL structure: `/convert/[from]-[to]`
 
@@ -2038,7 +2038,7 @@ All SEO pages follow URL structure: `/convert/[from]-[to]`
 
 ---
 
-### M16.2 Medium Priority Formats (10 formats = 100 paths)
+### Medium Priority Formats (10 formats = 100 paths)
 
 #### ODT (10 paths)
 | URL | From | To |
@@ -2182,7 +2182,7 @@ All SEO pages follow URL structure: `/convert/[from]-[to]`
 
 ---
 
-### M16.3 Total SEO Paths Summary
+### Total SEO Paths Summary
 
 | Category | Formats | Total Paths |
 |----------|---------|-------------|
@@ -2190,7 +2190,7 @@ All SEO pages follow URL structure: `/convert/[from]-[to]`
 | Medium Priority | 10 | 100 paths |
 | **Total** | **20** | **200 paths** |
 
-### M16.4 Page Implementation Structure
+### Page Implementation Structure
 
 Each conversion page (`/convert/[from]-[to]`) should have:
 
@@ -2212,7 +2212,7 @@ interface ConversionPageProps {
 - Schema.org: Structured data for rich snippets
 ```
 
-### M16.5 Build Priority
+### Build Priority
 
 | Phase | Paths | Description |
 |-------|-------|-------------|
@@ -2259,7 +2259,7 @@ interface ConversionPageProps {
 | Email already exists | "Account exists, login instead" |
 | Password reset fails | "Try again or contact support" |
 
-### M15.5 Data Retention Edge Cases
+### Data Retention Edge Cases
 
 | Scenario | Handling |
 |----------|----------|
