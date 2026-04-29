@@ -890,7 +890,7 @@ interface FormatPrompt {
 
 ## M7: Document Preview & Rendering
 
-### M5.1 Preview Renderer
+### Preview Renderer
 
 **Implementation:** React components rendering structured JSON to HTML
 
@@ -909,7 +909,7 @@ interface FormatPrompt {
 <ImageSection />
 ```
 
-### M5.2 View Mode vs Edit Mode
+### View Mode vs Edit Mode
 
 **Three Editing Options:**
 
@@ -951,7 +951,7 @@ interface FormatPrompt {
 // Click Replace → File picker opens
 ```
 
-### M5.3 New Content Highlighting
+### New Content Highlighting
 
 **Visual Feedback:**
 - New AI-generated content: Light green background
@@ -969,7 +969,7 @@ interface FormatPrompt {
 }
 ```
 
-### M5.4 Undo System
+### Undo System
 
 **All Methods Implemented:**
 
@@ -990,7 +990,7 @@ interface FormatPrompt {
 - Reverts element to previous state
 - Updates credit if needed (refund for undo within 30s)
 
-### M7.5 Tool-Specific Preview Behaviors
+### Tool-Specific Preview Behaviors
 
 **Note:** Each tool has unique preview behavior. All previews are shown in the preview section (except where noted).
 
@@ -1049,7 +1049,7 @@ interface FormatPrompt {
 - Recreates document in new selected style
 - Preview + Download buttons under preview section
 
-### M7.6 Upload Dash Replacement
+### Upload Dash Replacement
 
 **On pages with agent:**
 - Upload dash disappears
@@ -1058,7 +1058,7 @@ interface FormatPrompt {
 
 ## M8: Document Generation Features
 
-### M6.1 Generation from Text Input
+### Generation from Text Input
 
 **Input Methods:**
 1. **Direct Text:** User types in main input box
@@ -1082,7 +1082,7 @@ Render in preview
 Deduct credits
 ```
 
-### M6.2 AI Editing
+### AI Editing
 
 **Credit Cost:** 1 credit per 10 edit prompts
 
@@ -1103,7 +1103,7 @@ Deduct credits
 - Green highlight on edited element (2s fade)
 - Undo button appears
 
-### M6.3 Document Formatting
+### Document Formatting
 
 **Concept:** Formatting applies structure/styles to existing text or generated content
 
@@ -1114,7 +1114,7 @@ Deduct credits
 
 **Credit Cost:** Admin configurable per format
 
-### M6.4 Translation
+### Translation
 
 **Languages:** Top 10 (EN, ES, FR, DE, IT, PT, ZH, JA, KO, AR)
 
@@ -1131,7 +1131,7 @@ Maintains original formatting
 Returns translated document
 ```
 
-### M6.5 Summarization
+### Summarization
 
 **Options:**
 - Shorter version (user selects length: brief/medium/detailed)
@@ -1143,7 +1143,7 @@ Returns translated document
 
 ## M9: Voice-to-Document
 
-### M7.1 Voice Recording
+### Voice Recording
 
 **Audio Formats:** MP3, WAV, M4A (common formats)
 
@@ -1172,7 +1172,7 @@ Returns translated document
 └─────────────────────────────────────────┘
 ```
 
-### M7.2 Transcription Engine
+### Transcription Engine
 
 **Implementation:** Self-hosted Whisper
 
@@ -1189,7 +1189,7 @@ AI formats into document
 Render preview
 ```
 
-### M7.3 Post-Processing
+### Post-Processing
 
 - AI takes transcribed text
 - Removes filler words
@@ -1200,7 +1200,7 @@ Render preview
 
 ## M10: Image Integration
 
-### M8.1 Image Upload
+### Image Upload
 
 **Formats:** PNG, JPG, JPEG, WEBP, GIF
 
@@ -1220,7 +1220,7 @@ Render preview
 - During generation: User adds images in input box with text description
 - After generation: In edit mode via Replace option
 
-### M8.2 Image Placement
+### Image Placement
 
 **Method:** Describe placement in input text
 
@@ -1246,7 +1246,7 @@ Image placed in generated document at described location
 - "insert photo between section 2 and 3"
 - "put signature at bottom right"
 
-### M8.3 Image Options
+### Image Options
 
 **On Click (in edit mode or preview edit):**
 - **Remove:** Delete image from document (refunds credit)
@@ -1256,11 +1256,11 @@ Image placed in generated document at described location
 
 ## M11: File Conversion System
 
-### M9.1 Conversion Philosophy
+### Conversion Philosophy
 
 **Key Rule:** Conversions are COMPLETELY FREE for all users (no credits needed)
 
-### M9.2 Supported Conversions (Full Matrix)
+### Supported Conversions (Full Matrix)
 
 **Word Processing:**
 - DOC, DOCX, ODT, RTF, TXT ↔ each other + PDF
@@ -1277,7 +1277,7 @@ Image placed in generated document at described location
 **Markup/Web:**
 - HTML, MD ↔ PDF, DOCX
 
-### M9.3 AI-Enhanced Conversion
+### AI-Enhanced Conversion
 
 **All conversions use AI for best quality** (user confirmed)
 
@@ -1286,11 +1286,11 @@ Image placed in generated document at described location
 - Regenerates in target format with best formatting
 - Preserves: headings, tables, images, layout
 
-### M9.4 Conversion Priority
+### Conversion Priority
 
 Build in order: Full matrix (all formats)
 
-### M9.5 Export Engines
+### Export Engines
 
 **PDF Generation (AI + Library Hybrid):**
 - AI outputs structured content
@@ -1313,7 +1313,7 @@ Build in order: Full matrix (all formats)
 
 ## M12: Pro User Dashboard
 
-### M10.1 Dashboard Features
+### Dashboard Features
 
 **For Free Users:**
 - Credit balance display
@@ -1328,7 +1328,7 @@ Build in order: Full matrix (all formats)
 - Credit balance + usage analytics
 - Templates (favorited, recent)
 
-### M10.2 Document Management
+### Document Management
 
 **Features:**
 - View all saved documents
@@ -1337,7 +1337,7 @@ Build in order: Full matrix (all formats)
 - Delete documents
 - Organize into folders
 
-### M10.3 Auto-Save
+### Auto-Save
 
 **Behavior:**
 - Auto-save on every AI edit
@@ -1350,7 +1350,7 @@ Build in order: Full matrix (all formats)
 - If credits ≥ 10, data persists in localStorage
 - User can manually delete in settings
 
-### M10.4 Analytics (Pro)
+### Analytics (Pro)
 
 **Displayed:**
 - Documents generated (this month)
@@ -1362,7 +1362,7 @@ Build in order: Full matrix (all formats)
 
 ## M13: Data Storage & Persistence
 
-### M11.1 Storage Strategy
+### Storage Strategy
 
 **Anonymous Users (Free):**
 ```typescript
@@ -1394,7 +1394,7 @@ folders
 analytics_events
 ```
 
-### M11.2 MongoDB Schema
+### MongoDB Schema
 
 ```javascript
 // Users Collection
@@ -1443,7 +1443,7 @@ analytics_events
 
 ## M14: Admin Panel
 
-### M12.1 Admin Features
+### Admin Features
 
 **API Key Management:**
 - Add single API key
@@ -1463,7 +1463,7 @@ analytics_events
 - Rate limits
 - Feature flags
 
-### M12.2 Admin UI
+### Admin UI
 
 ```typescript
 // Routes
@@ -1478,7 +1478,7 @@ analytics_events
 
 ## M15: Payments & Subscriptions
 
-### M13.1 Payment Processor
+### Payment Processor
 
 **Selected:** User wants less limiting than Stripe (had issues with international cards)
 
@@ -1487,7 +1487,7 @@ analytics_events
 - LemonSqueezy (developer-friendly, handles taxes)
 - Stripe with alternatives configured
 
-### M13.2 Pricing Models
+### Pricing Models
 
 | Plan | Price | Credits |
 |------|-------|---------|
@@ -1496,7 +1496,7 @@ analytics_events
 | Pro Yearly | $86/yr | 2400/year (20% off) |
 | Credit Pack | $10 | 100 credits |
 
-### M13.3 Checkout Flow
+### Checkout Flow
 
 ```
 User clicks "Subscribe" or "Buy Credits"
@@ -1514,7 +1514,7 @@ Show confirmation + new balance
 
 ## M16: SEO & Public Pages
 
-### M14.1 Landing Page (/)
+### Landing Page
 
 **Purpose:** Main entry point for users
 
@@ -1524,7 +1524,7 @@ Show confirmation + new balance
 - Main input box (bottom)
 - Call-to-action: Create Account
 
-### M14.2 Format Pages (/format/[id])
+### Format Pages (/format/[id])
 
 **Purpose:** SEO landing pages for each format
 
@@ -1535,7 +1535,7 @@ Show confirmation + new balance
 - "Use This Format" button
 - Input box to generate
 
-### M14.3 Conversion Tool (/convert)
+### Conversion Tool (/convert)
 
 **Purpose:** Free conversion tool for SEO traffic
 
@@ -1545,7 +1545,7 @@ Show confirmation + new balance
 - Convert button
 - Download result
 
-### M14.4 Translate Page (/translate)
+### Translate Page (/translate)
 
 **Purpose:** Translate documents to any supported language
 
@@ -1661,13 +1661,13 @@ Show confirmation + new balance
 
 **Total:** 200 SEO pages (see M16)
 
-### M14.5 Voice Page (/voice)
+### Voice Page (/voice)
 
 **Purpose:** Dedicated voice-to-document tool
 
 ---
 
-### M14.6 Extract Text Page (/extract-text-from-pdf)
+### Extract Text Page
 
 **Purpose:** Extract text from PDF or image
 
@@ -1707,7 +1707,7 @@ Show confirmation + new balance
 
 ---
 
-### M14.7 Merge PDF Page (/merge-pdf)
+### Merge PDF Page
 
 **Purpose:** Combine multiple PDFs into one
 
@@ -1741,7 +1741,7 @@ Show confirmation + new balance
 
 ---
 
-### M14.8 Split PDF Page (/split-pdf)
+### Split PDF Page
 
 **Purpose:** Split PDF into separate pages
 
@@ -1773,7 +1773,7 @@ Show confirmation + new balance
 
 ---
 
-### M14.9 Compress PDF Page (/compress-pdf)
+### Compress PDF Page
 
 **Purpose:** Reduce PDF file size
 
@@ -1806,7 +1806,7 @@ Show confirmation + new balance
 
 ---
 
-### M14.10 Change Style Page (/change-style)
+### Change Style Page
 
 **Purpose:** Full page version of Explore Styles modal - change document design/style
 
@@ -1860,7 +1860,7 @@ Show confirmation + new balance
 
 ## M17: SEO Tool Pages
 
-### M15.1 Extract Text SEO Pages
+### Extract Text SEO Pages
 
 | Page | Purpose |
 |------|---------|
@@ -1871,7 +1871,7 @@ Show confirmation + new balance
 | /png-to-text | Extract text from PNG |
 | /scanned-pdf-to-text | Extract text from scanned PDF |
 
-### M15.2 PDF Tools SEO Pages
+### PDF Tools SEO Pages
 
 | Page | Purpose |
 |------|---------|
@@ -1882,7 +1882,7 @@ Show confirmation + new balance
 | /compress-pdf | Compress PDF file size |
 | /reduce-pdf-size | Reduce PDF size |
 
-### M15.3 Style SEO Pages
+### Style SEO Pages
 
 | Page | Purpose |
 |------|---------|
@@ -2223,7 +2223,7 @@ interface ConversionPageProps {
 
 ## M18: Edge Cases & Error Handling
 
-### M15.1 Credit Edge Cases
+### Credit Edge Cases
 
 | Scenario | Handling |
 |----------|----------|
@@ -2232,7 +2232,7 @@ interface ConversionPageProps {
 | Pro subscription expires | Downgrade to free, keep data 30 days |
 | Refund requested | Restore credits, cancel subscription |
 
-### M15.2 Generation Edge Cases
+### Generation Edge Cases
 
 | Scenario | Handling |
 |----------|----------|
@@ -2241,7 +2241,7 @@ interface ConversionPageProps {
 | Invalid input | Show inline error, don't deduct credits |
 | Empty input | Disable generate button |
 
-### M15.3 File Conversion Edge Cases
+### File Conversion Edge Cases
 
 | Scenario | Handling |
 |----------|----------|
@@ -2250,7 +2250,7 @@ interface ConversionPageProps {
 | Conversion fails | Show error, offer retry |
 | Corrupted file | "Unable to read file" error |
 
-### M15.4 Auth Edge Cases
+### Auth Edge Cases
 
 | Scenario | Handling |
 |----------|----------|
