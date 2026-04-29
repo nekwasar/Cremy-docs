@@ -4,8 +4,8 @@ import Subscription from '@/models/Subscription';
 import CreditTransaction from '@/models/CreditTransaction';
 import { addCredits } from './credits';
 
-export const PRO_MONTHLY_CREDITS = 100;
-export const PRO_YEARLY_CREDITS = 1200;
+export const PRO_MONTHLY_CREDITS = 200;
+export const PRO_YEARLY_CREDITS = 2400;
 
 export async function allocateProCredits(userId: string, plan: 'monthly' | 'yearly' | 'lifetime'): Promise<{
   allocated: number;
