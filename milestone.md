@@ -1506,11 +1506,89 @@ npm run admin:create
 - Credit bundle prices
 - Pro subscription price
 
-**System Settings:**
-- Default AI model
-- Max file upload size
-- Rate limits
-- Feature flags
+**System Settings (Dynamic):**
+
+Free Credits:
+- Anonymous: [configurable] credits (one-time) - default: 5
+- Registered Free: [configurable] credits (one-time) - default: 10
+
+Credit Costs (ALL configurable):
+- Document Generation: 1 credit / [configurable] words - default: 100
+- AI Editing: 1 credit / [configurable] edits - default: 10
+- Translation: 1 credit / [configurable] words - default: 50
+- Extract Text (OCR): 1 credit / [configurable] words - default: 50
+- Change Style: 1 credit / [configurable] words - default: 100
+- Image Add: 1 credit / [configurable] image - default: 1
+- ALL can be changed to FREE
+
+Pro Subscription:
+- Monthly: $[configurable] - default: $9
+- Yearly: $[configurable] - default: $86
+- Credits/month: [configurable] - default: 200
+- Yearly can auto-calculate or set manually
+- Bonus credits: [configurable] - default: 0
+- Bonus page: /bonuses (advertise current bonuses)
+
+Credit Packs:
+- Default: 100 credits ($10), 500 credits ($40)
+- Admin can add CUSTOM packs
+- Admin can set custom prices/sizes
+
+Maintenance Mode:
+- Toggle ON/OFF from admin
+- Public sees maintenance template (admin can still access)
+- Auto-clear after [configurable] days or manual
+
+Registration Open:
+- Toggle ON/OFF from admin
+- Closed shows signup-closed template
+
+Email System (Enterprise):
+- Brevo integration for delivery + analytics
+
+Campaigns:
+- Single Send (one-time to segment)
+- Scheduled (send at specific date/time)
+- Automated (trigger-based workflows)
+- Recurring (weekly digest, monthly newsletter)
+- A/B Testing (send to test emails before full campaign)
+
+Audience Segments:
+- All registered users
+- Free users only
+- Pro users only
+- Users inactive for [configurable] days
+- Users who never purchased
+- Users by country
+- Custom segments
+
+Automation Workflows:
+- Welcome series (new user)
+- Win-back (inactive users)
+- Upsell (free → Pro)
+- Feature announcement
+- Credit expiry warning
+- Custom workflows (admin-created)
+
+Templates:
+- Upload HTML templates
+- Preview before use
+- Personalization tags support
+- Save reusable templates
+
+Analytics (Brevo):
+- Open rate, Click rate, Unsubscribe rate, Bounce rate
+- Per-campaign history
+
+Email Triggers (in Settings):
+- Action → Trigger → Template/Send
+
+Email Tool (Admin only - 12th tool):
+- Mailcraft page: interact with AI to create/edit templates
+- Fill templates with content
+- Preview emails
+- Make suggestions
+- Create custom templates
 
 ### Admin UI
 
@@ -1518,9 +1596,12 @@ npm run admin:create
 // Routes
 /admin              # Dashboard
 /admin/api-keys     # API key management
-/admin/pricing      # Credit pricing
-/admin/settings     # System settings
-/admin/analytics    # Usage analytics
+/admin/pricing     # Credit pricing
+/admin/settings   # System settings (all dynamic settings)
+/admin/email      # Email campaigns + templates
+/admin/analytics # Usage analytics + email analytics
+/admin/maintenance # Maintenance mode toggle
+/admin/bonuses   # Bonus advertising page
 ```
 
 ---
