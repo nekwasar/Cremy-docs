@@ -1449,7 +1449,7 @@ analytics_events
 
 **Server Command:**
 ```bash
-npm run admin:create [email]
+npm run admin:create
 ```
 - Generates one-time token
 - Creates invite link
@@ -1463,7 +1463,7 @@ npm run admin:create [email]
 2. Admin visits: https://app.com/admin/create?token=xxx
    └── Validates token, checks expiry, checks if used
 
-3. Admin enters password
+3. Admin enters username + complex password
    └── Creates admin account, sets role='admin'
 
 4. Old admin removed (if exists)
@@ -1475,11 +1475,14 @@ npm run admin:create [email]
 
 **Token Properties:**
 - Token: random string (32 chars)
-- Email: provided in command
-- CreatedAt: timestamp
+- createdAt: timestamp
 - ExpiresAt: timestamp (24h default)
 - UsedAt: null (until used)
 - UsedBy: null (until used)
+
+**Admin Login:**
+- Username + Password only (no email)
+- Password must be complex (min 12 chars, uppercase, lowercase, number, special char)
 
 **Security:**
 - Token single-use
