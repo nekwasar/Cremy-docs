@@ -30,7 +30,6 @@ export function GenerateButton({
   return (
     <div>
       <button
-        className={`generate-button ${state}`}
         onClick={canClick ? onClick : undefined}
         disabled={!canClick}
         onMouseEnter={() => {
