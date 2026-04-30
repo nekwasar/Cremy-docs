@@ -12,10 +12,10 @@ interface SocketContextType {
 
 const SocketContext = createContext<SocketContextType | null>(null);
 
-export function useSocket() {
+export function useSocketContext() {
   const context = useContext(SocketContext);
   if (!context) {
-    throw new Error('useSocket must be used within SocketProvider');
+    throw new Error('useSocketContext must be used within SocketProvider');
   }
   return context;
 }

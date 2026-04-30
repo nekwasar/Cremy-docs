@@ -47,6 +47,6 @@ export function handleTranscriptionError(error: unknown): {
   };
 }
 
-export function getRetryDelay(attempt: number): number {
+export function getTranscriptionRetryDelay(attempt: number): number {
   return Math.min(2000 * Math.pow(2, attempt), 10000);
 }
