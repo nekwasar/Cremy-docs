@@ -1,4 +1,8 @@
-export default function GlobalError({
+'use client';
+
+import { GlobalErrorBoundary } from '@/app/_components/GlobalErrorBoundary';
+
+export default function GlobalErrorPage({
   error,
   reset,
 }: {
@@ -6,10 +10,13 @@ export default function GlobalError({
   reset: () => void;
 }) {
   return (
-    <div>
-      <h1>Something went wrong</h1>
-      <p>{error.message || 'An unexpected error occurred'}</p>
-      <button onClick={() => reset()}>Try again</button>
-    </div>
+    <html>
+      <body>
+        <h1>Application Error</h1>
+        <p>A critical error occurred. Your data has not been lost.</p>
+        <p>Error details: {error.message}</p>
+        <button onClick={reset}>Try Again</button>
+      </body>
+    </html>
   );
 }
