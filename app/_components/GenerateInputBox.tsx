@@ -21,7 +21,7 @@ export function GenerateInputBox({ value, onChange, disabled = false }: Generate
         maxHeight={300}
         disabled={disabled}
       />
-      <CharacterCounter text={value} />
+      <CharacterCounter value={value} />
     </div>
   );
 }
