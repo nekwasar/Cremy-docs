@@ -1698,18 +1698,24 @@ The 12 Tools:
 
 ---
 
-## M15: Payments & Subscriptions
+## M15: Payments & Subscriptions (34 Issues)
 
 ### Payment Processors
 
-**Supported:**
-- **Paddle** - Handles global tax/compliance (recommended)
-- **Stripe** - Simple card payments
-- **PayPal** - PayPal wallet payments
+**Supported (Global + Local Coverage):**
+- **Flutterwave** - African/local card payments, mobile money, bank transfers, international cards
+- **Paystack** - Nigerian/local card payments, bank transfers, USSD, international cards
+- **Stripe** - International card payments (US/Europe/global)
+- **PayPal** - PayPal wallet payments (international)
 
-**User Selection:** At checkout, user chooses: Card (Stripe), Card (Paddle), or PayPal
+**Region-Based Selection:**
+- African users see Flutterwave/Paystack as primary options
+- Nigerian users see Paystack as default (bank transfer, USSD, card)
+- International users see Stripe/PayPal as primary options
+- All processors accept international cards as fallback
+- Admin configures active processors per region in M14 settings
 
-**Admin Config:** In M14 settings, set default processor
+**Admin Config:** In M14 settings, set which processors are active and default per region
 
 ### Pricing Models
 
@@ -1727,9 +1733,13 @@ User clicks "Subscribe" or "Buy Credits"
     ↓
 Select plan/pack
     ↓
-Select payment method: Card (Stripe), Card (Paddle), or PayPal
+Region auto-detected → appropriate payment methods shown
+    ↓
+Select payment: Flutterwave / Paystack / Stripe / PayPal
     ↓
 Selected processor checkout
+    ↓
+Webhook received → verify signature → process event
     ↓
 On success: Update user credits in DB
     ↓
@@ -4681,7 +4691,7 @@ async function handleUnsubscribed(data: UnsubscribedEventData): Promise<void> {
 
 ### A.35: M15.001 & M15.009 - Payment Key Storage & Processor Method
 
-**What's Defined:** Paddle/Stripe/PayPal mentioned
+**What's Defined:** Flutterwave/Paystack/Stripe/PayPal for global + local coverage
 
 **What's Missing:** Key storage approach, processor method specification
 
@@ -4693,9 +4703,15 @@ async function handleUnsubscribed(data: UnsubscribedEventData): Promise<void> {
 // Store in database: encrypted
 
 interface PaymentConfig {
-  paddle: {
-    clientToken: string;
-    vendorId: string;
+  flutterwave: {
+    publicKey: string;
+    secretKey: string;       // Encrypted in DB
+    encryptionKey: string;   // Encrypted in DB
+    environment: 'sandbox' | 'production';
+  };
+  paystack: {
+    publicKey: string;
+    secretKey: string;       // Encrypted in DB
     environment: 'sandbox' | 'production';
   };
   stripe: {
