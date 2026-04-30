@@ -34,7 +34,7 @@ This document provides extremely detailed technical specifications for building 
 ### Phase 4: Tools (M9 - M11)
 - **M9:** Voice-to-Document
 - **M10:** Image Integration
-- **M11:** File Conversion System
+- **M11:** File Conversion System (55 issues, 200 SEO pages)
 
 ### Phase 5: User Features (M12 - M14)
 - **M12:** Pro User Dashboard
@@ -1292,28 +1292,42 @@ Image placed in generated document at described location
 
 ---
 
-## M11: File Conversion System
+## M11: File Conversion System (55 Issues)
 
 ### Conversion Philosophy
 
 **Key Rule:** Conversions are COMPLETELY FREE for all users (no credits needed)
 
-### Supported Conversions (Full Matrix)
+### SEO Architecture (Enterprise-Grade)
 
-**Word Processing:**
-- DOC, DOCX, ODT, RTF, TXT ↔ each other + PDF
+M11 targets **200 unique SSG conversion pages**, each independently indexable by Google. Every page has:
+- Unique 300+ word content (no boilerplate, zero thin-content penalty risk)
+- Schema.org `SoftwareApplication` + `WebApplication` + `BreadcrumbList` JSON-LD
+- Canonical URL enforcement with 301 redirects for trailing slash and case variants
+- XML sitemap with `<lastmod>`, `<priority>`, and `<changefreq>` for all 200 URLs
+- 7 category hub pages with internal linking + 5-8 contextual related links per page
+- Core Web Vitals compliant (>90 Lighthouse Performance)
+- Open Graph + Twitter Card social metadata
 
-**Presentations:**
-- PPT, PPTX, ODP ↔ PDF + each other
+### Supported Conversion Matrix (200 Pairs)
 
-**Spreadsheets:**
-- XLS, XLSX, ODS, CSV ↔ PDF + each other
+| Category | Source Formats | Pairs |
+|----------|---------------|-------|
+| Word Processing | DOC, DOCX, ODT, RTF, TXT ↔ each other + PDF | 25 |
+| Presentations | PPT, PPTX, ODP ↔ each other + PDF | 9 |
+| Spreadsheets | XLS, XLSX, ODS, CSV ↔ each other + PDF | 16 |
+| eBooks | EPUB, MOBI, AZW → PDF | 3 |
+| Markup | HTML, MD → PDF, DOCX | 4 |
+| Word → Presentation | 5 sources × 3 targets | 15 |
+| Word → Spreadsheet | Selected cross-category pairs | 10 |
+| Document → Markup | Selected cross-category pairs | 10 |
+| Images | JPG, PNG, WEBP, TIFF ← PDF + selected targets | 15 |
+| Image → Document | Images to Word, Spreadsheet, Presentation | 18 |
+| PDF → Everything | PDF to all 24 other supported formats | 24 |
+| Cross-Category Bidirectional | Additional reverse and edge-case pairs | 16 |
+| **TOTAL** | | **200** |
 
-**eBooks:**
-- EPUB, MOBI, AZW ↔ PDF
-
-**Markup/Web:**
-- HTML, MD ↔ PDF, DOCX
+All 200 pairs defined in `src/config/convert-pairs.ts` with unique slugs, priorities, and content templates.
 
 ### AI-Enhanced Conversion
 
@@ -1323,10 +1337,7 @@ Image placed in generated document at described location
 - AI analyzes source document structure
 - Regenerates in target format with best formatting
 - Preserves: headings, tables, images, layout
-
-### Conversion Priority
-
-Build in order: Full matrix (all formats)
+- Fallback to library-only if AI fails (Issue 033)
 
 ### Export Engines
 
@@ -1346,6 +1357,24 @@ Build in order: Full matrix (all formats)
 **XLSX Export (AI + SheetJS):**
 - AI outputs data structure
 - SheetJS generates spreadsheet
+
+### SEO Conversion Pages Architecture
+
+**URL Pattern:** `/convert/[slug]` (e.g., `/convert/pdf-to-word`, `/convert/docx-to-pdf`)
+
+**Key Features:**
+- **SSG:** All 200 pages pre-generated at build time via `generateStaticParams`
+- **Unique per page:** H1, title tag, meta description (150+ chars), 300+ words content
+- **Structured Data:** `SoftwareApplication` + `BreadcrumbList` JSON-LD with `@type: "Offer", price: "0"`
+- **Canonical:** `<link rel="canonical">` + 301 redirects for `/slug/` and case variants
+- **Sitemap:** `app/sitemap.ts` with all 200 URLs, priorities, change frequencies
+- **robots.txt:** All `/convert/*` paths allowed, sitemap referenced
+- **Internal Links:** 7 category hubs + 5-8 related conversion links per page
+- **Breadcrumbs:** Visual + LD+JSON on every page (Home > Convert > [Category] > [Title])
+- **Social:** Open Graph + Twitter Card metadata on all pages
+- **PageSpeed:** LCP ≤2.5s, FID ≤100ms, CLS ≤0.1, no external fonts, deferred scripts
+- **Validation:** Pre-build script checks unique slugs, titles, descriptions across all 200 pairs
+- **Monitoring:** GSC indexing + click tracking, broken link detection, weekly reports
 
 ---
 
