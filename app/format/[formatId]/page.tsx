@@ -7,16 +7,16 @@ import { useSocket } from '@/hooks/useSocket';
 import { useFormatGeneration } from '@/hooks/useFormatGeneration';
 import { useFormatStore } from '@/store/format-store';
 import { getFormatById } from '@/config/formats';
-import { FormatPreview } from '../../../_components/FormatPreview';
-import { FormatName } from '../../../_components/FormatName';
-import { FormatDescription } from '../../../_components/FormatDescription';
-import { FormatCreditCost } from '../../../_components/FormatCreditCost';
-import { UseThisFormatButton } from '../../../_components/UseThisFormatButton';
-import { GenerateInputBox } from '../../../_components/GenerateInputBox';
-import { GenerateButton } from '../../../_components/GenerateButton';
-import { CreditEstimateDisplay } from '../../../_components/CreditEstimateDisplay';
-import { ClearInput } from '../../../_components/ClearInput';
-import { DocumentSkeleton } from '../../../_components/DocumentSkeleton';
+import { FormatPreview } from '../../_components/FormatPreview';
+import { FormatName } from '../../_components/FormatName';
+import { FormatDescription } from '../../_components/FormatDescription';
+import { FormatCreditCost } from '../../_components/FormatCreditCost';
+import { UseThisFormatButton } from '../../_components/UseThisFormatButton';
+import { GenerateInputBox } from '../../_components/GenerateInputBox';
+import { GenerateButton } from '../../_components/GenerateButton';
+import { CreditEstimateDisplay } from '../../_components/CreditEstimateDisplay';
+import { ClearInput } from '../../_components/ClearInput';
+import { DocumentSkeleton } from '../../_components/DocumentSkeleton';
 
 export default function FormatPage() {
   const params = useParams();

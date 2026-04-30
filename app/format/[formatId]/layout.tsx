@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -28,5 +29,5 @@ export default function FormatPageLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>;
 }

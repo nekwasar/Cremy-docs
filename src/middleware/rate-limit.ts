@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getRedis } from './redis';
+import { getRedis } from '@/lib/redis';
 
 interface RateLimitConfig {
   endpoint: string;

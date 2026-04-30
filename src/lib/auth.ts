@@ -8,6 +8,35 @@ export interface AuthUser {
   isEmailVerified: boolean;
 }
 
+export const authOptions = {
+  providers: [],
+  secret: process.env.JWT_SECRET,
+  session: {
+    strategy: 'jwt' as const,
+    maxAge: 7 * 24 * 60 * 60,
+  },
+  callbacks: {
+    async jwt({ token, user }: any) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+      }
+      return token;
+    },
+    async session({ session, token }: any) {
+      if (session.user) {
+        session.user.id = token.id || token.sub;
+        session.user.role = token.role;
+      }
+      return session;
+    },
+  },
+  pages: {
+    signIn: '/auth/login',
+    error: '/auth/error',
+  },
+};
+
 export async function getAuthUser(request: NextRequest): Promise<AuthUser | null> {
   const authHeader = request.headers.get('authorization');
   const token = authHeader?.replace('Bearer ', '');

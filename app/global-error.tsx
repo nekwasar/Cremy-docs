@@ -1,7 +1,5 @@
 'use client';
 
-import { GlobalErrorBoundary } from '@/app/_components/GlobalErrorBoundary';
-
 export default function GlobalErrorPage({
   error,
   reset,

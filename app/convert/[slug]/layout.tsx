@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 
 export async function generateMetadata({
   params,
@@ -47,5 +48,5 @@ export default function ConvertSlugLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>;
 }

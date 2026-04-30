@@ -1,29 +1,48 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+const CSP_DIRECTIVES: Record<string, string[]> = {
+  'default-src': ["'self'"],
+  'script-src': ["'self'", "'unsafe-inline'"],
+  'style-src': ["'self'", "'unsafe-inline'"],
+  'img-src': ["'self'", 'data:', 'blob:'],
+  'font-src': ["'self'"],
+  'connect-src': ["'self'", 'ws:', 'wss:'],
+  'frame-src': ["'none'"],
+  'object-src': ["'none'"],
+};
+
+const SECURITY_HEADERS: Record<string, string> = {
+  'X-Frame-Options': 'DENY',
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'X-XSS-Protection': '1; mode=block',
+};
+
 function buildCSP(csp: Record<string, string[]>): string {
   return Object.entries(csp)
-    .filter(([_, values]) => values.length > 0)
+    .filter(([, values]) => values.length > 0)
     .map(([directive, values]) => `${directive} ${values.join(' ')}`)
     .join('; ');
 }
 
 function generateNonce(): string {
-  return Buffer.from(crypto.randomUUID() + Date.now()).toString('base64');
+  return crypto.randomUUID();
 }
 
-function getAllowedOrigins(origin: string): string[] {
-  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
-  const defaultOrigins = [
+function getAllowedOrigins(): string[] {
+  const allowed = process.env.ALLOWED_ORIGINS?.split(',') || [];
+  const defaults = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
-    process.env.APP_URL,
+    process.env.NEXT_PUBLIC_APP_URL || '',
   ].filter(Boolean);
-
-  return [...defaultOrigins, ...allowedOrigins];
+  return [...defaults, ...allowed];
 }
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const origin = request.headers.get('origin') || '';
-  const allowedOrigins = getAllowedOrigins(origin);
+  const allowedOrigins = getAllowedOrigins();
   const isCorsOriginAllowed = allowedOrigins.includes(origin);
 
   const response = NextResponse.next();
@@ -33,52 +52,15 @@ export function middleware(request: NextRequest) {
   }
 
   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  response.headers.set('Access-Control-Allow-Credentials', 'true');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   response.headers.set('Access-Control-Max-Age', '86400');
 
-  if (pathname.startsWith('/api/')) {
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    response.headers.set('Pragma', 'no-cache');
-    response.headers.set('Expires', '0');
+  if (request.method === 'OPTIONS') {
+    return new NextResponse(null, { status: 204, headers: response.headers });
   }
 
-function generateNonce(): string {
-  return Buffer.from(crypto.randomUUID() + Date.now()).toString('base64');
-}
-
-function getAllowedOrigins(origin: string): string[] {
-  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
-  const defaultOrigins = [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    process.env.APP_URL,
-  ].filter(Boolean);
-
-  return [...defaultOrigins, ...allowedOrigins];
-}
-
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const origin = request.headers.get('origin') || '';
-  const allowedOrigins = getAllowedOrigins(origin);
-  const isCorsOriginAllowed = allowedOrigins.includes(origin);
-
-  const response = NextResponse.next();
-
-  if (isCorsOriginAllowed) {
-    response.headers.set('Access-Control-Allow-Origin', origin);
-  }
-
-  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  response.headers.set('Access-Control-Allow-Credentials', 'true');
-  response.headers.set('Access-Control-Max-Age', '86400');
-
   if (pathname.startsWith('/api/')) {
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    response.headers.set('Pragma', 'no-cache');
-    response.headers.set('Expires', '0');
+    response.headers.set('Cache-Control', 'no-store');
   }
 
   Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
@@ -92,24 +74,14 @@ export function middleware(request: NextRequest) {
   const nonce = generateNonce();
   const cspWithNonce = {
     ...CSP_DIRECTIVES,
-    'script-src': [...CSP_DIRECTIVES['script-src'], `'nonce-${nonce}'`],
+    'script-src': [...(CSP_DIRECTIVES['script-src'] || []), `'nonce-${nonce}'`],
   };
 
-  response.headers.set('Content-Security-Policy', buildCSP(cspWithNonce, nonce));
-  
-  response.cookies.set('x-csrf-token', generateNonce(), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    maxAge: 86400,
-    path: '/',
-  });
+  response.headers.set('Content-Security-Policy', buildCSP(cspWithNonce));
 
   return response;
 }
 
-export const config: MiddlewareConfig = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\..*$).*)',
-  ],
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };

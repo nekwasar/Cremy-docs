@@ -74,7 +74,6 @@ export function getPipelineStatus(userId: string): {
 }
 
 function getImagesFromStorage(userId: string): ImageRecord[] {
-  const { getImages } = require('./image-storage');
   return getImages(userId);
 }
 

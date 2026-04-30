@@ -1,6 +1,6 @@
 import { Server as HTTPServer } from 'http';
 import { Server as SocketServer } from 'socket.io';
-import { registerSocketHandlers } from './handlers';
+import { registerSocketHandlers } from '@/server/handlers';
 
 let io: SocketServer | null = null;
 
