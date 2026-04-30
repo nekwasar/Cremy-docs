@@ -1,11 +1,17 @@
+import { getPostBySlug } from '@/lib/blog-posts';
 import { generatePageMetadata } from '@/config/seo';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const post = await getPostBySlug(slug);
+
+  if (!post) return { title: 'Post Not Found' };
+
   return generatePageMetadata({
-    title: slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-    description: `Read our article about ${slug.replace(/-/g, ' ')}. Tips, guides, and insights from Cremy Docs.`,
+    title: post.seoTitle || post.title,
+    description: post.seoDescription || post.excerpt,
     path: `/blog/${slug}`,
     type: 'article',
   });
@@ -13,16 +19,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const title = slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  const post = await getPostBySlug(slug);
+
+  if (!post) notFound();
 
   return (
     <div>
       <article>
-        <h1>{title}</h1>
-        <p>Published on {new Date().toLocaleDateString()}</p>
-        <div>
-          <p>This is a placeholder article about {slug.replace(/-/g, ' ')}. Full content coming soon.</p>
-        </div>
+        <h1>{post.title}</h1>
+        <p>Published on {new Date(post.publishedAt!).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        <div dangerouslySetInnerHTML={{ __html: post.content }} />
       </article>
       <Link href="/blog">← Back to Blog</Link>
     </div>
