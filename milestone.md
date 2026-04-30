@@ -1748,7 +1748,7 @@ Show confirmation + new balance
 
 ---
 
-## M16: SEO & Public Pages
+## M16: SEO & Public Pages (37 Issues)
 
 ### Landing Page
 
@@ -1780,6 +1780,29 @@ Show confirmation + new balance
 - Select target format
 - Convert button
 - Download result
+
+### Blog System (Admin-Managed)
+
+**Purpose:** Full blog platform with admin CRUD
+
+**Database:** MongoDB `blog_posts` collection (slug, title, content, excerpt, seoTitle, seoDescription, status, publishedAt, scheduledAt)
+
+**Admin Flow:**
+1. `/admin/blog` — management table: list all posts, publish/unpublish toggle, delete
+2. `/admin/blog/new` — create post: upload .md/.html/.ejs, paste content, or agent-generate → set slug/title/excerpt/SEO → preview → draft/publish/schedule
+
+**Frontend:**
+- `/blog` — lists published posts from DB
+- `/blog/[slug]` — renders post content with SEO metadata per post
+
+**Public Pages:**
+- `/features` — all features listed with descriptions
+- `/how-it-works` — 4-step guide
+- `/about` — company info
+- `/contact` — contact form
+- `/privacy` — privacy policy
+- `/terms` — terms of service
+- All pages have unique SEO metadata, canonical URLs, OG+Twitter cards
 
 ### Translate Page (/translate)
 
