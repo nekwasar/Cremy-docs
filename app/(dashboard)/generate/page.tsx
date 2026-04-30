@@ -5,16 +5,16 @@ import Link from 'next/link';
 import { useGenerateStore } from '@/store/generate-store';
 import { useSocket } from '@/hooks/useSocket';
 import { useGeneration } from '@/hooks/useGeneration';
-import { GenerateInputBox } from '@/app/_components/GenerateInputBox';
-import { CreditEstimateDisplay } from '@/app/_components/CreditEstimateDisplay';
-import { DocStructureSelector } from '@/app/_components/DocStructureSelector';
-import { ExploreStylesButton } from '@/app/_components/ExploreStylesButton';
-import { AddImageButton } from '@/app/_components/AddImageButton';
-import { ClearInput } from '@/app/_components/ClearInput';
-import { GenerateButton } from '@/app/_components/GenerateButton';
-import { DocumentSkeleton } from '@/app/_components/DocumentSkeleton';
-import { TemplatePreviewModal } from '@/app/_components/TemplatePreviewModal';
-import { CreditBalance } from '@/app/_components/CreditBalance';
+import { GenerateInputBox } from '../../_components/GenerateInputBox';
+import { CreditEstimateDisplay } from '../../_components/CreditEstimateDisplay';
+import { DocStructureSelector } from '../../_components/DocStructureSelector';
+import { ExploreStylesButton } from '../../_components/ExploreStylesButton';
+import { AddImageButton } from '../../_components/AddImageButton';
+import { ClearInput } from '../../_components/ClearInput';
+import { GenerateButton } from '../../_components/GenerateButton';
+import { DocumentSkeleton } from '../../_components/DocumentSkeleton';
+import { TemplatePreviewModal } from '../../_components/TemplatePreviewModal';
+import { CreditBalance } from '../../_components/CreditBalance';
 
 export default function GeneratePage() {
   const {
