@@ -10,6 +10,7 @@ export interface IUser extends Document {
   isEmailVerified: boolean;
   receivedSignupReward?: boolean;
   proCredits?: number;
+  proCreditsExpires?: Date;
   referralCode?: string;
   emailVerificationToken?: string;
   emailVerificationExpires?: Date;
