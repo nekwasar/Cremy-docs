@@ -4,7 +4,7 @@ import { selectTool } from './tool-selector';
 import { calculateCredits } from './credit-calculator';
 import { assessCreditCapacity } from './credit-aware';
 import { filterTask } from './task-filter';
-import { executeToolChain } from './tool-chain';
+
 import { getPageContext } from './page-context';
 import { getFileContext } from './file-context';
 
@@ -67,7 +67,7 @@ export async function processAgentMessage(input: AgentMessage): Promise<AgentRes
 
   if (tool.requiresCredits) {
     const cost = calculateCredits(tool.id, input.message);
-    const creditCheck = assessCreditCapacity(input.userId || '', cost);
+    const creditCheck = await assessCreditCapacity(input.userId || '', cost);
 
     if (!creditCheck.canProceed) {
       return {

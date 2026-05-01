@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { useUserStore } from '@/store/user-store';
-import { useUIStore } from '@/store/ui-store';
+import { useSettingsStore } from '@/store/settings-store';
 
 export default function SettingsPage() {
   const { user, updateUser } = useUserStore();
-  const { theme, setTheme } = useUIStore();
+  const { theme, setTheme } = useSettingsStore();
   const [name, setName] = useState(user?.name || '');
 
   const handleSave = async () => {

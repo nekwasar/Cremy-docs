@@ -14,7 +14,7 @@ const historySchema = z.object({
 
 async function historyHandler(request: NextRequest, user: AuthUser) {
   try {
-    const searchParams = request.nextUrl.searchParams();
+    const searchParams = request.nextUrl.searchParams;
     const validatedData = historySchema.parse({
       page: searchParams.get('page'),
       limit: searchParams.get('limit'),

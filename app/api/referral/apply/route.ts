@@ -29,13 +29,12 @@ async function applyHandler(request: NextRequest, user: AuthUser) {
 
     const result = await applyReferral(
       referrer._id.toString(),
-      user.sub,
-      validatedData.referralCode
+      user.sub
     );
 
-    if (!result.success) {
+    if (!result) {
       return NextResponse.json(
-        { error: { message: result.message, code: 'REFERRAL_FAILED' } },
+        { error: { message: 'Referral could not be applied', code: 'REFERRAL_FAILED' } },
         { status: 400 }
       );
     }

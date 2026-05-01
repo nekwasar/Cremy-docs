@@ -1,6 +1,11 @@
 import { Socket } from 'socket.io';
 import { SOCKET_EVENTS, SocketEventType } from './events';
 
+interface StreamHandler {
+  emit(event: string, data: any): void;
+  userId: string;
+}
+
 export function registerSocketHandlers(socket: Socket): void {
   const eventTypes: SocketEventType[] = ['generate', 'edit', 'format', 'translate', 'summarize', 'cancel'];
 
@@ -10,7 +15,7 @@ export function registerSocketHandlers(socket: Socket): void {
 
       try {
         const handler = await getHandler(definition.handler);
-        const result = await handler(socket, payload);
+        const result = await handler(socket as unknown as StreamHandler, payload);
         socket.emit('complete', { document: result });
       } catch (error: any) {
         socket.emit('error', {

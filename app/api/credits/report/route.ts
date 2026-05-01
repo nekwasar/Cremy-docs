@@ -7,12 +7,12 @@ import { withAuth, AuthUser } from '@/lib/auth';
 const reportSchema = z.object({
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
-  groupBy: z.enum(['day', 'week', 'month', 'tool']).optional().default('day'),
+  groupBy: z.enum(['day', 'week', 'month']).optional().default('day'),
 });
 
 async function reportHandler(request: NextRequest, user: AuthUser) {
   try {
-    const searchParams = request.nextUrl.searchParams();
+    const searchParams = request.nextUrl.searchParams;
     const validatedData = reportSchema.parse({
       startDate: searchParams.get('startDate'),
       endDate: searchParams.get('endDate'),

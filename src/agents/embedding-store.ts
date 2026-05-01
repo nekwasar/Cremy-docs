@@ -15,7 +15,8 @@ export async function storeEmbedding(
   }
 
   try {
-    const db = await (await import('@/lib/mongodb')).getMongoDb();
+    const { getMongoDb } = await import('@/lib/mongodb');
+    const db = await getMongoDb();
     await db.collection('embeddings').insertOne({
       sessionId,
       message,
@@ -30,7 +31,8 @@ export async function getSessionEmbeddings(
   limit: number = 10
 ): Promise<number[][]> {
   try {
-    const db = await (await import('@/lib/mongodb')).getMongoDb();
+    const { getMongoDb } = await import('@/lib/mongodb');
+    const db = await getMongoDb();
     const records = await db.collection('embeddings')
       .find({ sessionId })
       .sort({ timestamp: -1 })
@@ -45,7 +47,8 @@ export async function getSessionEmbeddings(
 
 export async function cleanupOldEmbeddings(maxAgeDays: number = 30): Promise<number> {
   try {
-    const db = await (await import('@/lib/mongodb')).getMongoDb();
+    const { getMongoDb } = await import('@/lib/mongodb');
+    const db = await getMongoDb();
     const result = await db.collection('embeddings').deleteMany({
       timestamp: { $lt: new Date(Date.now() - maxAgeDays * 24 * 60 * 60 * 1000) },
     });

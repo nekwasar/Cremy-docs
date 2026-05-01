@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, createContext, useContext } from 'react';
+import { useEffect, createContext, useContext } from 'react';
 import { useUserStore } from '@/store/user-store';
+import { useSettingsStore } from '@/store/settings-store';
 
 type Theme = 'light' | 'dark' | 'system';
 
@@ -17,8 +18,8 @@ export function useTheme() {
 }
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>('system');
-  const { updateUser } = useSettingsStore?.() || {};
+  const { theme, setTheme } = useSettingsStore();
+  const { updateUser } = useUserStore();
 
   useEffect(() => {
     const saved = localStorage.getItem('theme') as Theme;
@@ -40,6 +41,3 @@ export function ThemeToggle() {
   );
 }
 
-function useSettingsStore() {
-  return useUserStore;
-}

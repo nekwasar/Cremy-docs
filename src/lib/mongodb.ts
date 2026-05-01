@@ -46,3 +46,8 @@ async function connectDB(): Promise<typeof mongoose> {
 }
 
 export default connectDB;
+
+export async function getMongoDb() {
+  const conn = await connectDB();
+  return conn.db;
+}

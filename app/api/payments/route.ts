@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        payments: payments.map((p) => ({
+        payments: payments.map((p: any) => ({
           id: p._id.toString(),
           type: p.type,
           amount: p.amount,

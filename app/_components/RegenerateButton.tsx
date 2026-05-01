@@ -7,7 +7,7 @@ interface RegenerateButtonProps {
 }
 
 export function RegenerateButton({ socket }: RegenerateButtonProps) {
-  const { originalInput, canRegenerate } = useGenerateStore.getState();
+  const { originalInput } = useGenerateStore.getState();
 
   const handleRegenerate = () => {
     if (!socket?.connected || !originalInput) return;
