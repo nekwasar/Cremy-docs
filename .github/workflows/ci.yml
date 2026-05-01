@@ -35,21 +35,11 @@ jobs:
         image: mongo:6.0
         ports:
           - 27017:27017
-        options: >-
-          --health-cmd "mongosh --eval db.adminCommand('ping')"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
       redis:
         image: redis:7-alpine
         ports:
           - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - name: Checkout repository
@@ -61,18 +51,31 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Diagnose service containers
-        if: always()
+      - name: Wait for MongoDB to be ready
         run: |
-          echo "=== DOCKER CONTAINERS ==="
-          docker ps -a || true
-          echo "=== MONGODB LOGS ==="
-          docker logs $(docker ps -aq --filter "name=mongodb" | head -1) 2>/dev/null || echo "No mongodb container found"
-          echo "=== REDIS LOGS ==="
-          docker logs $(docker ps -aq --filter "name=redis" | head -1) 2>/dev/null || echo "No redis container found"
-          echo "=== CONNECTIVITY CHECK ==="
-          nc -zv localhost 27017 2>&1 || echo "MongoDB port 27017 not reachable"
-          nc -zv localhost 6379 2>&1 || echo "Redis port 6379 not reachable"
+          echo "Waiting for MongoDB on port 27017..."
+          for i in $(seq 1 30); do
+            if nc -z localhost 27017 2>/dev/null; then
+              echo "MongoDB is reachable on port 27017"
+              break
+            fi
+            echo "Attempt $i/30: MongoDB not ready, retrying in 2s..."
+            sleep 2
+          done
+          echo "=== MONGO LOGS ==="
+          docker logs $(docker ps -q --filter ancestor=mongo:6.0 | head -1) 2>/dev/null || echo "Cannot retrieve logs"
+
+      - name: Wait for Redis to be ready
+        run: |
+          echo "Waiting for Redis on port 6379..."
+          for i in $(seq 1 20); do
+            if redis-cli -h localhost ping 2>/dev/null | grep -q PONG; then
+              echo "Redis is ready"
+              break
+            fi
+            echo "Attempt $i/20: Redis not ready, retrying in 2s..."
+            sleep 2
+          done
 
       - name: Install dependencies
         run: npm ci
