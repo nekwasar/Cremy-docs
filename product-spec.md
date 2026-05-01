@@ -1,428 +1,393 @@
-# Cremy Docs — Product Requirements Document (PRD)
+# Cremy Docs — Product Documentation
 
-**Product Name:** Cremy Docs  
+**Product:** Cremy Docs  
 **Domain:** cremy.co  
-**Brand:** Cremy (parent brand — "Docs" is the first product under it)  
+**Brand:** Cremy (parent brand — "Docs" is the first product)  
 **Version:** 3.0  
-**Status:** Ready for Engineering  
 
 ---
 
-> **On the name:** The domain is cremy.co. The product is called **Cremy Docs** — clean, obvious, and instantly communicates what it does. "Cremy" is preserved as the parent brand for future products.
 
----
+## What Cremy Docs Is
 
-## 1. Product Overview
+Cremy Docs is an all-in-one document platform. You can generate, convert, translate, extract text, merge, split, compress, and restyle documents — all in one place, without leaving the browser.
 
-**Cremy Docs** is the ultimate all-in-one document platform that does everything — generate, convert, translate, extract text, merge, split, compress, and style documents — in one place.
+No subscription required. No watermarks. No tab switching between five different websites. Just documents, done smoothly.
 
-No subscriptions required. No watermarks. No tab switching. Just documents, done smoothly.
 
-### Tagline
+## Tagline
+
 > *"Documents, done smoothly."*
 
-### The Core Promise
-```
-Free for basic. AI-powered for perfect. 
-You choose.
-```
-
----
-
-## 2. What Cremy Docs Does
-
-### 2.1 The 9 Core Tools
-
-| # | Tool | Description | Credits |
-|---|------|-------------|---------|
-| 1 | **Generate Doc** | Create professional documents from text | Paid |
-| 2 | **Convert** | Convert between any file formats | FREE |
-| 3 | **Translate** | Translate documents to any language | Paid |
-| 4 | **Voice to Doc** | Convert voice/audio to document | Paid |
-| 5 | **Extract Text** | OCR - extract text from PDF/images | Paid |
-| 6 | **Merge PDF** | Combine multiple PDFs into one | FREE |
-| 7 | **Split PDF** | Split PDF into separate pages | FREE |
-| 8 | **Compress PDF** | Reduce PDF file size | FREE |
-| 9 | **Change Style** | Redesign document with new style | Paid |
-
-### 2.2 How Each Tool Works
-
-**Generate Doc:**
-- User enters text or uses Doc Structure dropdown
-- Optional: Add images (describe where they go)
-- Click Generate → AI creates document
-- Preview → Edit (free click or AI) → Download
-
-**Convert:**
-- Upload any file
-- Select target format
-- Click Convert → Download
-- FREE for all users
-
-**Translate:**
-- Select source language
-- Select target language
-- Upload file OR paste text
-- Click Translate → Download
-
-**Voice to Doc:**
-- Record voice OR upload audio file
-- AI transcribes and formats to document
-
-**Extract Text (OCR):**
-- Upload PDF or image
-- AI extracts text using OCR
-- Copy or download text
-
-**Merge PDF:**
-- Upload multiple PDF files
-- Reorder by drag & drop
-- Click Merge → Download
-
-**Split PDF:**
-- Upload PDF
-- Select pages to extract OR extract all
-- Download
-
-**Compress PDF:**
-- Upload PDF
-- Select compression level (Low/Medium/High)
-- Download compressed file
-
-**Change Style:**
-- Upload document
-- Select new style from gallery
-- AI applies new design
-- Download
-
----
-
-## 3. Target Audience
-
-**Everyone** — broad positioning. Key personas:
-
-| Persona | Use Case | Frequency |
-|---|---|---|
-| Job seeker | Resumes, cover letters | High |
-| Freelancer | Proposals, invoices, contracts | High |
-| Student | Essays, reports, assignments | High |
-| Small business owner | Invoices, proposals, contracts | High |
-| HR professional | Job descriptions, offer letters | Medium |
-| Marketing team | Briefs, newsletters, presentations | High |
-| Educator | Syllabi, lesson plans, rubrics | Medium |
-| Anyone needing conversions | PDF tools, format changes | Very High |
-
----
-
-## 4. Why Cremy Docs Wins
-
-### 4.1 The All-In-One Advantage
-
-| What others do | What Cremy Docs does |
-|---|---|
-| One tool | **9 tools in one platform** |
-| Go to 5+ different sites | **Never leave Cremy Docs** |
-| Remember 5 passwords | **One account (optional)** |
-
-### 4.2 The Free Dominance
-
-| What competitors do | What Cremy Docs does |
-|---|---|
-| Limited free conversions | **UNLIMITED free conversions** |
-| Watermark free files | **No watermarks. Ever.** |
-| Force account creation | **Use immediately, login when ready** |
-| Expensive subscriptions | **Pay-as-you-go with credits** |
-
-### 4.3 The Quality Edge
-
-| What competitors do | What Cremy Docs does |
-|---|---|
-| Basic library conversions | **AI-enhanced option for perfect quality** |
-| Lost formatting | **Layout preserved with AI** |
-| One quality level | **Free (basic) + Paid (AI perfect)** |
-
----
-
-## 5. Page Structure & Routes
-
-### 5.1 Main Routes
-
-```
-/                           # Homepage (tool showcase)
-/generate                   # Document generation
-/preview                    # Document preview & editing
-/convert                    # Main conversion tool
-/templates                  # Template gallery
-/templates/[category]       # Templates by category
-/templates/[category]/[id] # Individual template
-/translate                 # Translation page
-/voice                      # Voice-to-document page
-/extract-text-from-pdf     # OCR/Extract text page
-/merge-pdf                  # Merge PDFs
-/split-pdf                  # Split PDF
-/compress-pdf               # Compress PDF
-/change-style               # Change document style
-```
-
-### 5.2 SEO Pages (200+ pages)
-
-**Conversion Pages:** `/convert/[from]-[to]`
-- /convert/pdf-to-docx
-- /convert/docx-to-pdf
-- ... (200 paths)
-
-**Extract Text Pages:** `/extract-text-from-pdf`, `/pdf-to-text`, `/image-to-text`, etc.
-
-**PDF Tool Pages:** `/merge-pdf`, `/split-pdf`, `/compress-pdf`, etc.
-
----
-
-## 6. User Interface
-
-### 6.1 Homepage
-
-```
-┌─────────────────────────────────────────┐
-│  Logo (left)    [Login] [Sign Up]      │  ← Header
-├─────────────────────────────────────────┤
-│         Hero Section                     │
-│    "Documents, done smoothly."          │
-│    Value proposition + animated demo     │
-├─────────────────────────────────────────┤
-│     Quick Actions Grid (9 tools)         │
-│  [📄 Generate]  [🔄 Convert]           │
-│  [🌐 Translate] [🎤 Voice]             │
-│  [📝 Extract Text] [📑 Merge]          │
-│  [✂️ Split]     [📦 Compress]          │
-│  [🎨 Change Style]                      │
-└─────────────────────────────────────────┘
-```
-
-### 6.2 Document Generation Page (/generate)
-
-```
-┌─────────────────────────────────────────┐
-│  Home > Generate                        │  ← Breadcrumb
-├─────────────────────────────────────────┤
-│  Logo    [💰]    [Account ▼]          │  ← Fixed Top Bar (click 💰 to reveal credits)
-├─────────────────────────────────────────┤
-│  [Explore Styles ▼]                     │  ← Opens templates modal
-├─────────────────────────────────────────┤
-│  Doc Structure: [Auto ▼]                 │  ← Optional: select structure
-├─────────────────────────────────────────┤
-│  Input Box                              │
-│  "Paste your document text here..."    │
-│  [Add Image 📷]                        │
-│  [Clear] [Generate]                   │
-├─────────────────────────────────────────┤
-│  Credit Estimate: ~X credits            │
-└─────────────────────────────────────────┘
-```
-
-### 6.3 Preview/Edit Page (/preview)
-
-```
-┌─────────────────────────────────────────┐
-│  Home > Generate > Preview              │  ← Breadcrumb
-├─────────────────────────────────────────┤
-│  Logo    [💰]    [Account ▼]          │  ← Fixed Top Bar
-├─────────────────────────────────────────┤
-│  [← Back] [Title] [Preview] [Edit]    │
-│  [Undo] [Redo] [Download ▼]          │
-├─────────────────────────────────────────┤
-│         Document Preview                 │
-│      (Rendered PDF-style view)          │
-├─────────────────────────────────────────┤
-│  [Download PDF ▼]  [Start New Project] │
-└─────────────────────────────────────────┘
-```
-
-### 6.4 Post-Download Modal
-
-```
-┌─────────────────────────────────────────┐
-│       ✅ Download Complete!              │
-│                                         │
-│  [Start New Project]  [View Doc]      │
-│                                         │
-│  Auto-closes in 10 seconds             │
-└─────────────────────────────────────────┘
-```
-
-### 6.5 Navigation
-
-**Desktop:**
-- Top navigation bar
-- Breadcrumb below (like File Explorer)
-- Current page underlined
-
-**Mobile:**
-- Hamburger menu (right side)
-- Slide-out modal
-- Close by clicking outside
-- Breadcrumb at top left
-
----
-
-## 7. Key Features
-
-### 7.1 Document Generation
-
-- **Input:** Text in expandable textarea
-- **Doc Structure:** Optional dropdown (Auto, Letter, Invoice, Contract, etc.)
-- **Images:** Add up to 5 images, describe placement in text
-- **Generation:** Skeleton + fill progressive streaming
-- **Output:** PDF default, can convert to other formats
-
-### 7.2 Templates (Explore Styles)
-
-- Click "Explore Styles" → Modal with categories
-- Select category → /templates/[category]
-- Click template → Preview modal → "Use Template"
-- Redirects to /generate?template=[id]
-
-### 7.3 Editing
-
-Three ways to edit:
-1. **Preview Click Edit (Free):** Click element to edit only that part
-2. **Make Content Editable (Free):** Click button to edit all
-3. **AI Commands (Paid):** Use input box for complex changes
-
-### 7.4 File Conversion
-
-- **FREE:** Unlimited conversions for all users
-- **Method:** Drag-and-drop, select format, download
-- **Quality:** Standard library for free, AI-enhanced for credits
-
-### 7.5 Translation
-
-- Select source language (required)
-- Select target language (required)
-- Upload file OR paste text
-- 1 credit per 50 words
-
-### 7.6 Voice to Document
-
-- Record in-app OR upload audio file
-- English only initially
-- Max 2 minutes
-- Self-hosted Whisper for transcription
-
-### 7.7 Extract Text (OCR)
-
-- Upload PDF or image
-- AI extracts text using OCR
-- 1 credit per 50 words extracted
-
-### 7.8 Merge/Split/Compress PDF
-
-- All completely FREE
-- Use libraries (100% quality)
-- No credits needed
-
-### 7.9 Change Style
-
-- Upload document
-- Select new style from gallery
-- AI redesigns document
-- 1 credit per 100 words
-
----
-
-## 8. Credit System
-
-### 8.1 Credit Costs
-
-| Action | Cost | Notes |
-|--------|------|-------|
-| Document Generation | 1 credit / 100 words | Core AI |
-| AI Editing | 1 credit / 10 edits | Complex changes |
-| Translation | 1 credit / 50 words | Any language |
-| Extract Text (OCR) | 1 credit / 50 words | From images/PDFs |
-| Change Style | 1 credit / 100 words | Document redesign |
-| Add Image | 1 credit / image | Max 5 per doc |
-| **Merge PDF** | **FREE** | Traffic driver |
-| **Split PDF** | **FREE** | Traffic driver |
-| **Compress PDF** | **FREE** | Traffic driver |
-| **Basic Conversions** | **FREE** | Traffic driver |
-
-### 8.2 Credit Bundles
-
-| Bundle | Price | Cost per Credit |
-|--------|-------|------------------|
-| 100 credits | $10 | 10¢ |
-| 500 credits | $40 | 8¢ |
-| 1000 credits | $70 | 7¢ |
-
-### 8.3 Free Credits
-
-- New users: 10 credits (one-time)
-- No recurring free credits
-
-### 8.4 Pro Subscription
-
-| Plan | Price | Credits/Month |
-|------|-------|---------------|
-| Pro Monthly | $9/mo | 200 credits |
-| Pro Yearly | $86/yr | 2400 credits (20% off) |
-
----
-
-## 9. Data & Storage
-
-### 9.1 Anonymous Users (No Account)
-
-- **Credits:** 10 free credits
-- **Storage:** localStorage
-- **Retention:** 24 hours if <10 credits, indefinite if ≥10 credits
-- **Features:** Can use all tools
-
-### 9.2 Registered Users
-
-- **Credits:** Bought or Pro subscription
-- **Storage:** MongoDB
-- **Features:** Dashboard, saved documents, analytics
-
-### 9.3 Save Banner
-
-- Trigger: After download
-- Show to: Free users with 10+ credits
-- Options: "Turn on Storage", "Not Interested", "Never show again"
-- Default: OFF (closed)
-
----
-
-## 10. Authentication
-
-- **Methods:** Email + Password, Google OAuth
-- **Session:** JWT in httpOnly cookies, 7-day expiry
-- **Password Reset:** Email verification code
-
----
-
-## 11. SEO Strategy
-
-### 11.1 Page Categories
-
-| Category | Pages | Examples |
-|----------|-------|----------|
-| Core Tools | 9 | /generate, /convert, /translate |
-| Conversion Matrix | 200+ | /convert/pdf-to-docx |
-| Extract Text | 6+ | /extract-text-from-pdf, /pdf-to-text |
-| PDF Tools | 6+ | /merge-pdf, /split-pdf |
-| Style | 3+ | /change-style |
-
-### 11.2 Target Keywords
-
-- "free pdf converter" (100K+ searches)
-- "free merge pdf" (50K+)
-- "free compress pdf" (40K+)
-- "free pdf to word" (80K+)
-- "extract text from pdf" (high intent)
-
----
-
-## 12. Success Metrics (First 12 Months)
+
+## The Core Promise
+
+**Free for basic. AI-powered for perfect. You choose.**
+
+Every tool works immediately — no account, no credit card. If you want AI-enhanced quality, you pay with credits. If not, the basic version is always free.
+
+
+## Tools
+
+### 1. Generate Document
+
+Create professional documents from scratch using AI.
+
+**How it works:**
+1. Type what you want in the text box (e.g., "create an invoice for web design services")
+2. Optionally select a document structure from the dropdown (Invoice, Report, Resume, Essay, etc.)
+3. Optionally add images — describe where they should go
+4. Click Generate
+5. Preview the result, make edits inline or with AI commands, then download
+
+**What it produces:** Structured documents in your chosen format — PDF by default, also available as DOCX, TXT, or Markdown.
+
+**Cost:** 1 credit per 100 words generated. Images cost 1 extra credit each (max 5 per document).
+
+**Templates:** Use "Explore Styles" to browse pre-built templates for Business, Academic, Legal, Personal, and Creative documents.
+
+
+### 2. Convert Files
+
+Convert between 200+ format pairs. Completely free for everyone.
+
+**How it works:**
+1. Upload any file (or drag and drop)
+2. We detect the format automatically
+3. Select what format you want to convert to
+4. Click Convert
+5. Download your converted file
+
+**Quality:** Every conversion preserves your original formatting, fonts, images, and layout. A "100% quality as promised" guarantee is shown after every successful conversion.
+
+**Supported formats:**
+- **Documents:** DOC, DOCX, ODT, RTF, TXT, PDF
+- **Spreadsheets:** XLS, XLSX, ODS, CSV
+- **Presentations:** PPT, PPTX, ODP
+- **eBooks:** EPUB, MOBI, AZW
+- **Images:** JPG, PNG, WEBP, TIFF, BMP
+- **Markup:** HTML, Markdown
+
+**Cost:** FREE — always, for everyone, no limits.
+
+
+### 3. Translate
+
+Translate documents between 10 languages while preserving original formatting.
+
+**Languages:** English, Spanish, French, German, Italian, Portuguese, Chinese, Japanese, Korean, Arabic.
+
+**How it works:**
+1. Select your source language and target language
+2. Upload a file or paste text directly
+3. Click Translate
+4. Preview before/after, then download
+
+**Cost:** 1 credit per 50 translated words.
+
+
+### 4. Voice to Document
+
+Record your voice and get a formatted document. AI removes filler words and structures the content.
+
+**How it works:**
+1. Hold the record button and speak (max 2 minutes)
+2. Or upload a pre-recorded audio file (MP3, WAV, M4A)
+3. AI transcribes your speech, removes filler words ("um", "uh", "like")
+4. AI structures the transcription into a proper document
+5. Preview, edit if needed, then download
+
+**Language:** English only in this release.
+
+**Cost:** 1 credit per 100 words transcribed and formatted.
+
+
+### 5. Extract Text (OCR)
+
+Pull text out of PDFs, images, and scanned documents.
+
+**How it works:**
+1. Upload a PDF or image (JPG, PNG, scanned document)
+2. AI extracts all text using OCR
+3. View the extracted text
+4. Copy to clipboard or download
+
+**If accuracy is imperfect:** Click "Try Again" and describe what needs correction. The AI re-processes with your feedback.
+
+**Cost:** 1 credit per 50 words extracted.
+
+
+### 6. Merge PDF
+
+Combine multiple PDFs into a single file.
+
+**How it works:**
+1. Upload multiple PDF files
+2. Arrange them in the order you want (drag or use arrows)
+3. We ask: "Which file goes first?" to confirm the order
+4. Click Merge
+5. Download the combined PDF
+
+**Cost:** FREE — always, for everyone.
+
+
+### 7. Split PDF
+
+Separate pages from a PDF into individual files.
+
+**How it works:**
+1. Upload a PDF
+2. Choose how to split:
+   - **Range:** "Pages 1-3 separate from pages 4-6"
+   - **Custom:** "Pages 1, 3, 5 separate from 2, 4, 6"
+3. Click Split
+4. Download individual PDFs
+
+**Cost:** FREE — always, for everyone.
+
+
+### 8. Compress PDF
+
+Reduce PDF file size without losing quality.
+
+**How it works:**
+1. Upload a PDF
+2. Select compression level: Low (best quality), Medium (balanced), or High (smallest file)
+3. Click Compress
+4. See original size vs compressed size
+5. Download the compressed file
+
+**Cost:** FREE — always, for everyone.
+
+
+### 9. Change Style
+
+Apply a new visual style to any document. AI restyles your content while preserving all information.
+
+**How it works:**
+1. Upload a document
+2. Select a style (Professional, Academic, Creative, Legal, etc.)
+3. AI converts the document to text, then recreates it in the new style
+4. Preview before/after, then download
+
+**Cost:** 1 credit per 100 words.
+
+
+### 10. Mailcraft (Admin Only)
+
+AI-powered email template assistant for administrators. Generate email templates from natural language descriptions, edit HTML, and preview on desktop and mobile.
+
+Available only to admin users at `/mailcraft`.
+
+
+## Who This Is For
+
+Cremy Docs serves everyone. Here are the most common use cases:
+
+| Person | What They Do |
+|--------|-------------|
+| **Job seeker** | Resume, cover letter, CV generation |
+| **Freelancer** | Proposals, invoices, contracts |
+| **Student** | Essays, research papers, thesis documents |
+| **Small business owner** | Invoices, proposals, business reports |
+| **HR professional** | Job descriptions, offer letters, memos |
+| **Marketer** | Blog posts, newsletters, briefs |
+| **Educator** | Syllabi, lesson plans, assignments |
+| **Anyone** | Free PDF tools — merge, split, compress, convert |
+
+
+## Why Cremy Docs
+
+### All-in-One Platform
+
+Most competitors do one thing — one site converts PDFs, another generates documents, a third handles OCR. Cremy Docs does all nine in one place. No switching tabs, no remembering passwords for five different services.
+
+### Free Where It Counts
+
+Conversions, PDF merging, splitting, and compression are completely free with no limits. No sign-up. No watermarks. No "3 free conversions then pay." Many users never spend a cent.
+
+### AI-Powered When You Want More
+
+For document generation, translation, OCR, and styling, you pay with credits for AI-enhanced quality. No subscription required — just buy the credits you need when you need them. Or subscribe to Pro for monthly credits.
+
+### Quality That Counts
+
+Every conversion preserves your formatting, fonts, and layout. AI-generated documents are structured, professional, and ready to use. We guarantee 100% conversion quality on every file.
+
+
+## Credits
+
+Cremy Docs uses a credit system. Some tools are always free. Some use credits for AI-quality output.
+
+### Credit Costs
+
+| Action | Cost |
+|--------|------|
+| Generate Document | 1 credit per 100 words |
+| AI Edit | 1 credit per 10 edits |
+| Translate | 1 credit per 50 words |
+| Extract Text (OCR) | 1 credit per 50 words |
+| Change Style | 1 credit per 100 words |
+| Add Image to Document | 1 credit per image (max 5) |
+| Convert Files | FREE |
+| Merge PDF | FREE |
+| Split PDF | FREE |
+| Compress PDF | FREE |
+
+### Getting Credits
+
+**Free credits:** New registered users get 10 credits after email verification.
+
+**Buy credits anytime:**
+| Bundle | Price |
+|--------|-------|
+| 100 credits | $10 |
+| 500 credits | $40 |
+| 1,000 credits | $70 |
+
+**Pro subscription:**
+| Plan | Price | Credits |
+|------|-------|---------|
+| Pro Monthly | $9/month | 200 credits/month |
+| Pro Yearly | $86/year | 2,400 credits/year |
+
+Pro subscribers also get unlimited cloud storage, version history, folder organization, and advanced analytics.
+
+
+## Payment Methods
+
+You can pay with any of these processors. We show the best options based on your region:
+
+- **Flutterwave** — Card, bank transfer, mobile money (Africa)
+- **Paystack** — Card, bank transfer, USSD (Nigeria)
+- **Stripe** — Card, Apple Pay, Google Pay (International)
+- **PayPal** — PayPal wallet (International)
+
+All processors accept international cards as a fallback.
+
+
+## Account Types
+
+### No Account (Guest)
+- Use all nine tools immediately
+- Documents saved in your browser (localStorage)
+- Credits are session-based
+- No history or cloud storage
+
+### Free Account
+- 10 free credits on signup
+- All nine tools fully available
+- Documents saved in your browser
+- Activity history
+- Can buy credits anytime
+
+### Pro Account
+- 200 credits/month (Monthly) or 2,400/year (Yearly)
+- All documents saved to cloud (MongoDB)
+- Version history — restore any previous version
+- Folder organization
+- Usage analytics dashboard
+- Priority support
+
+
+## Blog
+
+Cremy Docs has a built-in blog at `/blog`. Administrators can create posts by uploading Markdown or HTML files, pasting content directly, or generating with AI. Posts can be saved as drafts, published immediately, or scheduled for a future date. Each post gets automatic SEO metadata. The blog is fully manageable from the admin panel at `/admin/blog`.
+
+
+## The Platform at a Glance
+
+| Feature | Guest | Free Account | Pro |
+|---------|-------|-------------|-----|
+| All 9 tools | Yes | Yes | Yes |
+| Free conversions | Yes | Yes | Yes |
+| AI document generation | With credits | With credits | With subscription credits |
+| Cloud storage | No | Optional (localStorage) | Yes (MongoDB) |
+| Version history | No | No | Yes |
+| Folders | No | No | Yes |
+| Analytics dashboard | No | Basic | Full |
+| Priority support | No | No | Yes |
+
+
+## How Users Flow Through the Platform
+
+### Creating a Document
+1. Visit `/generate`
+2. Type or paste content, select a template if desired
+3. Click Generate — AI streams the document in real time
+4. Preview the result, make edits if needed
+5. Download in PDF, DOCX, or TXT format
+
+### Converting a File
+1. Visit `/convert` (or any of the 200+ conversion pages like `/convert/pdf-to-word`)
+2. Upload the file — format is auto-detected
+3. Select target format
+4. Click Convert — see the result instantly
+5. Download
+
+### Buying Credits
+1. Visit `/buy-credits`
+2. Select a credit bundle
+3. Choose a payment method (region-appropriate options shown)
+4. Complete checkout on the processor's page
+5. Credits appear in your account immediately
+
+### Upgrading to Pro
+1. Visit `/pro`
+2. Choose Monthly or Yearly plan
+3. Choose a payment method
+4. Complete checkout — Pro features activate immediately
+5. Credits are added, cloud storage is enabled
+
+
+## Where to Find Everything
+
+### Main Tools
+| Page | What You Do |
+|------|------------|
+| `/generate` | Create documents from text |
+| `/convert` | Convert files between formats |
+| `/translate` | Translate documents |
+| `/voice` | Voice to document |
+| `/extract-text` | Extract text via OCR |
+| `/merge-pdf` | Combine PDFs |
+| `/split-pdf` | Separate PDF pages |
+| `/compress-pdf` | Reduce PDF size |
+| `/change-style` | Restyle documents |
+
+### SEO Discovery Pages (200+ pages)
+These pages help people find Cremy Docs through search engines. They are pre-loaded with the correct source and target formats:
+- `/convert/pdf-to-word` — "Convert PDF to Word"
+- `/convert/jpg-to-pdf` — "Convert JPG to PDF"
+- `/pdf-to-text` — "Extract Text from PDF"
+- `/image-to-text` — "Extract Text from Images"
+- `/combine-pdf` — "Combine PDF Files"
+- `/reduce-pdf-size` — "Reduce PDF File Size"
+- And 200+ more format-specific discovery pages
+
+### Your Account
+| Page | What You Do |
+|------|------------|
+| `/dashboard` | View documents, credits, activity |
+| `/settings` | Manage profile, preferences, storage |
+| `/credits` | Buy credit bundles |
+| `/account/subscription` | Manage Pro subscription |
+| `/account/billing` | View payment history |
+
+### Company & Legal
+| Page | What |
+|------|------|
+| `/about` | About Cremy Docs |
+| `/features` | All features explained |
+| `/how-it-works` | Step-by-step walkthrough |
+| `/blog` | Tips, guides, and insights |
+| `/contact` | Get in touch |
+| `/privacy` | Privacy policy |
+| `/terms` | Terms of service |
+| `/pro` | Pro subscription details |
+
+
+## Success Metrics
 
 | Metric | Month 3 | Month 6 | Month 12 |
 |--------|---------|---------|----------|
@@ -432,56 +397,23 @@ Three ways to edit:
 | Monthly Revenue | $2,000 | $10,000 | $50,000 |
 | Free Conversions | 50,000 | 300,000 | 1,000,000 |
 
----
 
-## 13. The Competitive Edge
+## Competitive Positioning
 
-### Why Cremy Docs Wins
+**Why Cremy Docs wins:**
 
-1. **Free Unlimited Conversions** — No competitor offers this
-2. **All-In-One** — Never leave the platform
-3. **No Watermarks** — Builds trust
-4. **Pay-as-you-go** — No subscription required
-5. **AI Quality Option** — Perfect when it matters
-6. **Speed** — Target: <3 seconds
-7. **250+ SEO Pages** — Dominate search
+1. **Free unlimited conversions** — no competitor offers this without watermarks or limits
+2. **All ten tools in one platform** — never switch between five different websites
+3. **No subscription needed** — use immediately, pay only for AI-quality output
+4. **AI-enhanced quality** — better than library-only tools, cheaper than full AI subscriptions
+5. **250+ SEO-optimized pages** — users find Cremy Docs through search for any format conversion they need
+6. **Region-aware payments** — Flutterwave for Africa, Paystack for Nigeria, Stripe/PayPal internationally
 
-### The Formula
+
+## The Formula
 
 ```
-FREE TOOLS → TRAFFIC → CREDITS → REVENUE
-     ↓           ↓          ↓
-  SEO DOMINATION   USERS    MONEY
+FREE TOOLS → ORGANIC TRAFFIC → USERS → CREDITS/PRO → REVENUE
 ```
 
----
-
-## 14. Technical Stack
-
-| Layer | Technology |
-|---|---|
-| Frontend | Next.js 14 (App Router), TypeScript, Tailwind CSS, shadcn/ui |
-| State | Zustand |
-| Backend | Next.js API Routes |
-| Database | MongoDB (Pro users) |
-| Auth | Custom JWT + Google OAuth |
-| AI | Plug-and-play (configurable in admin) |
-| Streaming | WebSocket |
-| File Storage | Local/S3 |
-| Payments | Paddle or LemonSqueezy (global-friendly) |
-
----
-
-## 15. Open Questions
-
-1. **Payment processor:** Stripe has limitations with international cards. Paddle or LemonSqueezy recommended for global coverage.
-
-2. **AI model:** Confirm provider (OpenAI/Anthropic/DeepSeek) and configure in admin panel.
-
-3. **Voice languages:** Start with English only, expand based on demand.
-
----
-
-*Document owned by Product Team*
-*Version 3.0*
-*Last Updated: April 2026*
+Free PDF tools drive search traffic. Users discover the platform, try free tools, then use credits for AI-powered features like document generation and translation. Some never pay — and that is fine. They tell others. The ones who need more buy credits or subscribe to Pro.

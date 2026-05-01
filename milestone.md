@@ -215,27 +215,42 @@ interface AnonymousUser {
 
 **Routes:**
 ```
-/                           # Homepage (tool showcase, quick actions)
-/generate                   # Document generation page
-/preview                    # Document preview & editing page
-/convert                    # File conversion tool (main)
-/convert/[from]-[to]        # SEO conversion pages (200 paths)
-/templates                  # Template gallery
-/templates/[category]       # Templates by category
-/templates/[category]/[id] # Individual template
-/translate                 # Translation page
-/voice                      # Voice-to-document page
-/extract-text-from-pdf      # Extract text from PDF
-/merge-pdf                  # Merge multiple PDFs
-/split-pdf                  # Split PDF into pages
-/compress-pdf               # Compress PDF file size
-/edit-file                  # Edit file (remove pages, rotate, etc)
-/change-style               # Change document style (full page)
-/auth/login                 # Login modal/page
-/auth/register              # Register modal/page
-/dashboard                  # User dashboard (Pro)
-/settings                   # User settings
-/admin                      # Admin panel
+/                           # Homepage (tool showcase) — app/(public)/page.tsx
+/generate                   # Document generation — app/(dashboard)/generate/page.tsx
+/preview                    # Document preview & editing — app/(dashboard)/preview/page.tsx
+/convert                    # File conversion tool — app/convert/page.tsx
+/convert/[slug]             # SEO conversion pages (200 paths) — app/convert/[slug]/page.tsx
+/templates                  # Template gallery — app/(public)/templates/page.tsx
+/templates/[category]       # Templates by category — app/(public)/templates/[category]/page.tsx
+/templates/[category]/[id]  # Individual template — app/(public)/templates/[category]/[id]/page.tsx
+/translate                  # Translation page — app/(dashboard)/translate/page.tsx
+/voice                      # Voice-to-document — app/(dashboard)/voice/page.tsx
+/extract-text               # Extract text OCR landing — app/extract-text/page.tsx
+/extract-text-from-pdf      # Extract text tool — app/(dashboard)/extract-text-from-pdf/page.tsx
+/merge-pdf                  # Merge PDFs — app/(dashboard)/merge-pdf/page.tsx
+/split-pdf                  # Split PDF — app/(dashboard)/split-pdf/page.tsx
+/compress-pdf               # Compress PDF — app/(dashboard)/compress-pdf/page.tsx
+/edit-file                  # Edit file — app/(dashboard)/edit-file/page.tsx
+/change-style               # Change document style — app/(dashboard)/change-style/page.tsx
+/format                     # Format templates index — app/format/page.tsx
+/format/[formatId]          # Individual format page — app/format/[formatId]/page.tsx
+/auth/login                 # Login — app/(auth)/login/page.tsx
+/auth/register              # Register — app/(auth)/register/page.tsx
+/dashboard                  # User dashboard — app/(dashboard)/dashboard/page.tsx
+/settings                   # User settings — app/(dashboard)/settings/page.tsx
+/admin                      # Admin panel — app/admin/page.tsx
+/pro                        # Pro upgrade — app/(public)/pro/page.tsx
+/blog                       # Blog index — app/blog/page.tsx
+/blog/[slug]                # Blog post — app/blog/[slug]/page.tsx
+/about                      # About page — app/about/page.tsx
+/features                   # Features page — app/features/page.tsx
+/how-it-works               # How it works — app/how-it-works/page.tsx
+/contact                    # Contact page — app/contact/page.tsx
+/privacy                    # Privacy policy — app/privacy/page.tsx
+/terms                      # Terms of service — app/terms/page.tsx
+/buy-credits                # Buy credits — app/buy-credits/page.tsx
+/account/subscription       # Subscription mgmt — app/account/subscription/page.tsx
+/account/billing            # Payment history — app/account/billing/page.tsx
 ```
 
 ### Homepage Layout (Tool Showcase)
