@@ -71,10 +71,16 @@ export function middleware(request: NextRequest) {
     response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   }
 
+  const isDev = process.env.NODE_ENV === 'development';
+
   const nonce = generateNonce();
   const cspWithNonce = {
     ...CSP_DIRECTIVES,
-    'script-src': [...(CSP_DIRECTIVES['script-src'] || []), `'nonce-${nonce}'`],
+    'script-src': [
+      ...(CSP_DIRECTIVES['script-src'] || []),
+      ...(isDev ? ["'unsafe-eval'"] : []),
+      `'nonce-${nonce}'`,
+    ],
   };
 
   response.headers.set('Content-Security-Policy', buildCSP(cspWithNonce));

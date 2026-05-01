@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
+import connectDB from '@/lib/mongodb';
 import { getRedis } from '@/lib/redis';
 
 export const dynamic = 'force-dynamic';
@@ -35,6 +36,7 @@ export async function GET() {
 
   const mongodbStart = Date.now();
   try {
+    await connectDB();
     const mongoState = mongoose.connection.readyState;
     if (mongoState === 1) {
       health.services.mongodb = {

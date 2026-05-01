@@ -3,12 +3,8 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   
-  // API routes configuration
-  api: {
-    bodyParser: {
-      sizeLimit: '10MB',
-    },
-  },
+  // Body parser size limit
+  serverExternalPackages: [],
   
   // Environment variables for client-side
   env: {
