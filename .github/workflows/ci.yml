@@ -32,14 +32,14 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mongodb:
-        image: mongo:7.0
+        image: mongo:6.0
         ports:
           - 27017:27017
         options: >-
           --health-cmd "mongosh --eval db.adminCommand('ping')"
-          --health-interval 15s
-          --health-timeout 10s
-          --health-retries 10
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
       redis:
         image: redis:7-alpine
@@ -47,9 +47,9 @@ jobs:
           - 6379:6379
         options: >-
           --health-cmd "redis-cli ping"
-          --health-interval 15s
-          --health-timeout 10s
-          --health-retries 10
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout repository
@@ -60,6 +60,19 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+
+      - name: Diagnose service containers
+        if: always()
+        run: |
+          echo "=== DOCKER CONTAINERS ==="
+          docker ps -a || true
+          echo "=== MONGODB LOGS ==="
+          docker logs $(docker ps -aq --filter "name=mongodb" | head -1) 2>/dev/null || echo "No mongodb container found"
+          echo "=== REDIS LOGS ==="
+          docker logs $(docker ps -aq --filter "name=redis" | head -1) 2>/dev/null || echo "No redis container found"
+          echo "=== CONNECTIVITY CHECK ==="
+          nc -zv localhost 27017 2>&1 || echo "MongoDB port 27017 not reachable"
+          nc -zv localhost 6379 2>&1 || echo "Redis port 6379 not reachable"
 
       - name: Install dependencies
         run: npm ci
