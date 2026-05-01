@@ -25,7 +25,7 @@ export interface JWTService {
 
 function generateAccessToken(payload: TokenPayload): string {
   return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: JWT_EXPIRES_IN,
+    expiresIn: '15m',
     issuer: 'cremy-docs',
     jwtid: uuidv4(),
   });
@@ -33,7 +33,7 @@ function generateAccessToken(payload: TokenPayload): string {
 
 function generateRefreshToken(payload: TokenPayload): string {
   return jwt.sign(payload, JWT_SECRET + '-refresh', {
-    expiresIn: REFRESH_TOKEN_EXPIRES_IN,
+    expiresIn: '7d',
     issuer: 'cremy-docs',
     jwtid: uuidv4(),
   });

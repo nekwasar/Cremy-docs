@@ -200,7 +200,7 @@ export default function VoicePage() {
             <AudioUploader
               onFileSelected={handleFileUpload}
               onError={(msg) => setError(msg)}
-              disabled={recordingStatus === 'processing'}
+              disabled={false}
             />
           )}
         </div>

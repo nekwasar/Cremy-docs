@@ -1,6 +1,6 @@
 import { validateImage, checkImageQuality } from './image-validation';
 import { compressImageIfNeeded, blobToBase64 } from './image-compression';
-import { addImage, storeImages, clearImages, ImageRecord } from './image-storage';
+import { addImage, storeImages, clearImages, getImages, ImageRecord } from './image-storage';
 
 interface PipelineResult {
   success: boolean;

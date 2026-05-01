@@ -35,7 +35,7 @@ export async function logCreditOperation(entry: AuditEntry): Promise<void> {
 export async function getCreditHistory(
   userId: string,
   options: { startDate?: Date; endDate?: Date; type?: string; limit?: number }
-): Promise<CreditTransaction[]> {
+): Promise<(typeof CreditTransaction)[]> {
   await connectDB();
 
   const query: Record<string, unknown> = { userId };
@@ -63,7 +63,7 @@ export async function searchAuditLogs(
     endDate?: Date;
   },
   options: { page?: number; limit?: number }
-): Promise<{ logs: CreditTransaction[]; total: number; pages: number }> {
+): Promise<{ logs: (typeof CreditTransaction)[]; total: number; pages: number }> {
   await connectDB();
 
   const dbQuery: Record<string, unknown> = {};

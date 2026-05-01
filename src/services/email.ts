@@ -21,7 +21,9 @@ class EmailService {
       if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
         console.warn('Email: SMTP not configured, emails will be logged only');
         this.transporter = nodemailer.createTransport({
-          jsonTransport: true,
+          host: 'localhost',
+          port: 25,
+          ignoreTLS: true,
         });
       } else {
         this.transporter = nodemailer.createTransport({
@@ -50,9 +52,7 @@ class EmailService {
 
     if (process.env.NODE_ENV !== 'production') {
       console.log(`[Email] Sent to ${options.to}: ${info.messageId}`);
-      if (transporter.options.jsonTransport) {
-        console.log(`[Email] Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
-      }
+      console.log(`[Email] Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
     }
   }
 

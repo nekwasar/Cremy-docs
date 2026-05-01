@@ -15,7 +15,7 @@ interface VoiceState {
   setAudioBlob: (blob: Blob | null) => void;
   setTranscribedText: (text: string | null) => void;
   setFormattedText: (text: string | null) => void;
-  setDuration: (duration: number) => void;
+  setDuration: (duration: number | ((prev: number) => number)) => void;
   setDocumentId: (id: string | null) => void;
   setError: (error: string | null) => void;
   setInputMode: (mode: 'record' | 'upload') => void;
@@ -36,7 +36,7 @@ export const useVoiceStore = create<VoiceState>((set) => ({
   setAudioBlob: (blob) => set({ audioBlob: blob }),
   setTranscribedText: (text) => set({ transcribedText: text }),
   setFormattedText: (text) => set({ formattedText: text }),
-  setDuration: (duration) => set({ duration }),
+  setDuration: (duration) => set((state) => ({ duration: typeof duration === 'function' ? duration(state.duration) : duration })),
   setDocumentId: (id) => set({ documentId: id }),
   setError: (error) => set({ error }),
   setInputMode: (mode) => set({ inputMode: mode }),

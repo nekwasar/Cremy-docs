@@ -10,7 +10,7 @@ const PRO_SUBSCRIPTION_BONUS = 10;
 export async function generateReferralCode(userId: string): Promise<string> {
   await connectDB();
 
-  const user = await User.findById(userId);
+  const user = await User.findById(userId) as any;
   if (!user) throw new Error('User not found');
 
   if (user.referralCode) {
@@ -27,7 +27,7 @@ export async function generateReferralCode(userId: string): Promise<string> {
 export async function getUserReferralCode(userId: string): Promise<string | null> {
   await connectDB();
 
-  const user = await User.findById(userId);
+  const user = await User.findById(userId) as any;
   if (!user) return null;
 
   return user.referralCode || null;

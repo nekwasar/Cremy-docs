@@ -14,7 +14,7 @@ export async function allocateProCredits(userId: string, plan: 'monthly' | 'year
 
   const creditAmount = plan === 'monthly' ? PRO_CREDIT_MONTHLY : PRO_CREDIT_YEARLY;
 
-  const user = await User.findById(userId);
+  const user = await User.findById(userId) as any;
   if (!user) return;
 
   const previousProCredits = user.proCredits || 0;
@@ -46,7 +46,7 @@ export async function allocateProCredits(userId: string, plan: 'monthly' | 'year
 export async function expireProCredits(userId: string): Promise<number> {
   await connectDB();
 
-  const user = await User.findById(userId);
+  const user = await User.findById(userId) as any;
   if (!user) return 0;
 
   const now = new Date();
@@ -94,7 +94,7 @@ export async function renewProCredits(userId: string, plan: 'monthly' | 'yearly'
   const subscription = await Subscription.findOne({ userId, status: 'active' });
   if (!subscription) return;
 
-  const previousProCredits = (await User.findById(userId))?.proCredits || 0;
+  const previousProCredits = (await User.findById(userId) as any)?.proCredits || 0;
 
   await expireProCredits(userId);
 
@@ -106,7 +106,7 @@ export async function getProCreditStatus(
 ): Promise<{ proCredits: number; expiresAt: Date | null }> {
   await connectDB();
 
-  const user = await User.findById(userId);
+  const user = await User.findById(userId) as any;
   if (!user) return { proCredits: 0, expiresAt: null };
 
   return {

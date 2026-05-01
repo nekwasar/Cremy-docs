@@ -67,6 +67,7 @@ export function parseAIDocumentResponse(content: string, userId: string): Docume
     format: 'markdown',
     sections,
     metadata: {
+      format: 'markdown',
       wordCount,
       createdAt: new Date(),
       tone: 'professional',

@@ -86,6 +86,7 @@ export async function updateBlogPost(
     seoDescription: string;
     status: 'draft' | 'published' | 'scheduled';
     scheduledAt: Date;
+    publishedAt: Date;
   }>
 ): Promise<boolean> {
   const db = await getMongoDb();

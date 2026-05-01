@@ -11,7 +11,7 @@ export function detectUserRegion(): {
     return { countryCode: 'US', isAfrican: false, isNigeria: false, recommendedProcessors: ['stripe', 'paypal'] };
   }
 
-  const countryCode = 'US';
+  let countryCode = 'US' as string;
   const isAfrican = AFRICAN_COUNTRIES.includes(countryCode);
   const isNigeria = countryCode === NIGERIA;
 

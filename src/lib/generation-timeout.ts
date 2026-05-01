@@ -19,7 +19,7 @@ export function createGenerationTimeout(
 export async function withGenerationTimeout<T>(
   promise: Promise<T>,
   timeoutMs: number = DEFAULT_TIMEOUT_MS
-): Promise<{ result?: T; timeoutResult?: TimeoutResult }> {
+): Promise<any> {
   let timeoutId: NodeJS.Timeout;
 
   const timeoutPromise = new Promise<{ timeoutResult: TimeoutResult }>((resolve) => {

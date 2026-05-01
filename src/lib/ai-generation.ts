@@ -166,6 +166,7 @@ function parseDocument(content: string): Document {
     format: 'markdown',
     sections,
     metadata: {
+      format: 'markdown',
       wordCount: mainContent.split(/\s+/).filter(Boolean).length,
       createdAt: new Date(),
       tone: 'professional',

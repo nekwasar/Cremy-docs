@@ -1,7 +1,7 @@
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 import Notification from '@/models/Notification';
-import { sendEmail } from '@/services/email';
+import emailService from '@/services/email';
 
 const LOW_BALANCE_THRESHOLDS = [5, 2, 0];
 
@@ -43,7 +43,7 @@ export async function checkLowBalance(
       });
 
       if (user.email) {
-        await sendEmail({
+        await emailService.sendEmail({
           to: user.email,
           subject: 'Low Credit Balance - Cremy Docs',
           html: `<p>Your credit balance is running low!</p>

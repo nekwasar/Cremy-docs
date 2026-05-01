@@ -48,7 +48,7 @@ export function getStorageInfo(): {
   usedBytes: number;
 } {
   const schema = getStorageSchema();
-  const { used } = { used: 0, available: 0 };
+  const used = 0;
   return {
     initialized: !!schema.userId,
     isAnonymous: schema.isAnonymous,

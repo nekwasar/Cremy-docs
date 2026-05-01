@@ -7,6 +7,7 @@ export interface ICreditTransaction extends Document {
   balance: number;
   description?: string;
   referenceId?: mongoose.Types.ObjectId;
+  referenceModel?: 'Document' | 'Subscription' | 'Payment';
   paymentId?: string;
   creditsBefore: number;
   creditsAfter: number;

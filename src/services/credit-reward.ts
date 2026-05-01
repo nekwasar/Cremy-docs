@@ -7,7 +7,7 @@ const SIGNUP_REWARD_CREDITS = 10;
 export async function addSignupReward(userId: string): Promise<boolean> {
   await connectDB();
 
-  const user = await User.findById(userId);
+  const user = await User.findById(userId) as any;
   if (!user) return false;
 
   if (user.receivedSignupReward) {
@@ -38,7 +38,7 @@ export async function addSignupReward(userId: string): Promise<boolean> {
 export async function checkSignupRewardEligible(userId: string): Promise<boolean> {
   await connectDB();
 
-  const user = await User.findById(userId);
+  const user = await User.findById(userId) as any;
   if (!user) return false;
 
   return !user.receivedSignupReward && user.isEmailVerified;
@@ -47,7 +47,7 @@ export async function checkSignupRewardEligible(userId: string): Promise<boolean
 export async function hasReceivedSignupReward(userId: string): Promise<boolean> {
   await connectDB();
 
-  const user = await User.findById(userId);
+  const user = await User.findById(userId) as any;
   if (!user) return false;
 
   return user.receivedSignupReward ?? false;

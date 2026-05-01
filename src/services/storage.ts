@@ -122,10 +122,7 @@ export class StorageService {
   }
 
   static getStorageHealth() {
-    return {
-      isFull: isStorageFull(),
-      ...handleStorageFull(),
-    };
+    return handleStorageFull();
   }
 
   static clear() {

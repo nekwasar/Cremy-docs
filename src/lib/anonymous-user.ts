@@ -185,4 +185,4 @@ export function isUserAnonymous(): boolean {
   return typeof window !== 'undefined' && !getAnonymousUser();
 }
 
-export { AnonymousUserData, AnonymousDocument };
+export type { AnonymousUserData, AnonymousDocument };

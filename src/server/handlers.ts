@@ -1,11 +1,6 @@
 import { Socket } from 'socket.io';
 import { SOCKET_EVENTS, SocketEventType } from './events';
 
-interface StreamHandler {
-  emit(event: string, data: any): void;
-  userId: string;
-}
-
 export function registerSocketHandlers(socket: Socket): void {
   const eventTypes: SocketEventType[] = ['generate', 'edit', 'format', 'translate', 'summarize', 'cancel'];
 
@@ -15,7 +10,7 @@ export function registerSocketHandlers(socket: Socket): void {
 
       try {
         const handler = await getHandler(definition.handler);
-        const result = await handler(socket as unknown as StreamHandler, payload);
+        const result = await (handler as any)(socket, payload);
         socket.emit('complete', { document: result });
       } catch (error: any) {
         socket.emit('error', {
@@ -27,18 +22,18 @@ export function registerSocketHandlers(socket: Socket): void {
   }
 }
 
-async function getHandler(name: string): Promise<(socket: Socket, payload: any) => Promise<any>> {
+async function getHandler(name: string): Promise<(handler: any, payload: any) => Promise<any>> {
   switch (name) {
     case 'generate-handler':
-      return (await import('./generate-handler')).handleGenerate;
+      return (await import('./generate-handler')).handleGenerate as any;
     case 'edit-handler':
-      return (await import('./edit-handler')).handleEdit;
+      return (await import('./edit-handler')).handleEdit as any;
     case 'format-handler':
-      return (await import('./format-handler')).handleFormat;
+      return (await import('./format-handler')).handleFormat as any;
     case 'translate-handler':
-      return (await import('./translate-handler')).handleTranslate;
+      return (await import('./translate-handler')).handleTranslate as any;
     case 'summarize-handler':
-      return (await import('./summarize-handler')).handleSummarize;
+      return (await import('./summarize-handler')).handleSummarize as any;
     default:
       throw new Error(`Unknown handler: ${name}`);
   }

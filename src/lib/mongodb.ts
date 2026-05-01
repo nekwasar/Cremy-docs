@@ -49,5 +49,5 @@ export default connectDB;
 
 export async function getMongoDb() {
   const conn = await connectDB();
-  return conn.db;
+  return conn.connection.db;
 }

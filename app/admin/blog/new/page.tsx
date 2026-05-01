@@ -44,7 +44,7 @@ export default function AdminBlogNewPage() {
       seoTitle: seoTitle.trim() || title.trim(),
       seoDescription: seoDescription.trim() || excerpt.trim(),
       status,
-      scheduledAt: status === 'scheduled' ? scheduledAt : undefined,
+      scheduledAt: status === 'scheduled' ? (scheduledAt || undefined) : undefined,
     });
 
     if (result) {

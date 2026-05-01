@@ -11,13 +11,13 @@ interface StoragePreference {
 export async function getStoragePreference(userId: string): Promise<boolean> {
   await connectDB();
 
-  const user = await User.findById(userId);
+  const user = await User.findById(userId) as any;
   if (!user) return false;
 
   const subscription = user.subscription;
   if (subscription === 'pro') return true;
 
-  const settings = await User.findById(userId).select('useMongoDB');
+  const settings = await User.findById(userId).select('useMongoDB') as any;
   return settings?.useMongoDB ?? false;
 }
 
@@ -25,7 +25,7 @@ export async function setStoragePreference(
   userId: string,
   useMongoDB: boolean
 ): Promise<boolean> {
-  const user = await User.findById(userId);
+  const user = await User.findById(userId) as any;
   if (!user) return false;
 
   const isPro = user.subscription === 'pro';
@@ -84,7 +84,7 @@ export async function migrateMongoToLocal(userId: string): Promise<{ title: stri
 
   return documents.map((d) => ({
     title: d.title,
-    content: d.content,
+      content: d.content || '',
   }));
 }
 
@@ -93,7 +93,7 @@ export async function getStorageStats(
 ): Promise<{ totalDocuments: number; storageUsed: number; storageType: string }> {
   await connectDB();
 
-  const user = await User.findById(userId);
+  const user = await User.findById(userId) as any;
   if (!user) return { totalDocuments: 0, storageUsed: 0, storageType: 'localStorage' };
 
   const useMongoDB = user.useMongoDB ?? false;
@@ -129,7 +129,7 @@ export async function getStorageStats(
 export async function deleteOldLocalStorageData(userId: string): Promise<void> {
   await connectDB();
 
-  const user = await User.findById(userId);
+  const user = await User.findById(userId) as any;
   if (!user?.useMongoDB) return;
 
   await User.findByIdAndUpdate(userId, { useMongoDB: false });

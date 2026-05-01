@@ -7,7 +7,7 @@ import { TemplateGrid } from '../../../_components/TemplateGrid';
 import { CategoryFilters } from '../../../_components/CategoryFilters';
 import { TemplatePreviewModal } from '../../../_components/TemplatePreviewModal';
 
-interface Template {
+interface TemplateItem {
   _id: string;
   name: string;
   description: string;
@@ -20,13 +20,13 @@ interface Template {
 export default function TemplatesCategoryPage() {
   const searchParams = useSearchParams();
   const category = searchParams.get('category') || '';
-  const [templates, setTemplates] = useState<Template[]>([]);
+  const [templates, setTemplates] = useState<TemplateItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('popular');
   const [formatFilter, setFormatFilter] = useState('');
   const [premiumFilter, setPremiumFilter] = useState<boolean | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateItem | null>(null);
 
   useEffect(() => {
     if (category) {

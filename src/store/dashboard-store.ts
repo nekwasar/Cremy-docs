@@ -25,7 +25,7 @@ interface DashboardState {
   selectedFolder: string | null;
   isLoading: boolean;
   searchQuery: string;
-  sortBy: 'newest' | 'oldest' | 'name' | 'format';
+  sortBy: string;
   filterFormat: string;
   activityLoggingEnabled: boolean;
   analyticsData: {
@@ -40,7 +40,7 @@ interface DashboardState {
   setSelectedFolder: (folderId: string | null) => void;
   setLoading: (loading: boolean) => void;
   setSearchQuery: (query: string) => void;
-  setSortBy: (sort: 'newest' | 'oldest' | 'name' | 'format') => void;
+  setSortBy: (sort: string) => void;
   setFilterFormat: (format: string) => void;
   setActivityLogging: (enabled: boolean) => void;
   setAnalyticsData: (data: Partial<DashboardState['analyticsData']>) => void;

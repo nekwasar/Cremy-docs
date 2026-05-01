@@ -17,7 +17,7 @@ export async function expireProCredits(): Promise<void> {
     );
   }
 
-  return { expired: proUsers.length };
+  return;
 }
 
 export async function allocateProCredits(userId: string, plan: 'monthly' | 'yearly'): Promise<void> {
