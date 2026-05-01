@@ -25,6 +25,7 @@ export default function TemplateDetailPage() {
     if (id) {
       fetchTemplate();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const fetchTemplate = async () => {

@@ -18,7 +18,9 @@ const anonymousUserSchema = z.object({
   }).optional(),
 });
 
-async function handleAuthCheck(request: NextRequest): Promise<{ userId: string; isAnonymous: boolean } | NextResponse {
+type AuthCheckResult = { userId: string; isAnonymous: boolean } | NextResponse;
+
+async function handleAuthCheck(request: NextRequest): Promise<AuthCheckResult> {
   const authHeader = request.headers.get('authorization');
   const anonId = request.cookies.get('anonId')?.value;
 

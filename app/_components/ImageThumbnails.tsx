@@ -23,6 +23,7 @@ export function ImageThumbnails({
       <div>
         {images.map((img) => (
           <div key={img.id}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={img.base64}
               alt={img.altText || img.fileName}

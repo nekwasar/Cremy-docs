@@ -75,7 +75,7 @@ export default function LoginPage() {
       </p>
 
       <p>
-        Don't have an account? <Link href="/auth/register">Sign up</Link>
+        Don&apos;t have an account? <Link href="/auth/register">Sign up</Link>
       </p>
     </div>
   );

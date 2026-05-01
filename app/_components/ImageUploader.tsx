@@ -69,6 +69,7 @@ export function ImageUploader({
         onClick={() => fileInputRef.current?.click()}
       >
         {preview ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img src={preview} alt="Preview" style={{ maxWidth: '200px' }} />
         ) : (
           <p>{isDragging ? 'Drop file here' : 'Click or drag to upload'}</p>

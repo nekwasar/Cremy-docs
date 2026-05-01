@@ -52,6 +52,7 @@ export default function DashboardPage() {
     if (!user) return;
     loadDashboard();
     logActivity('dashboard_view', 'Visited dashboard');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const loadDashboard = async () => {
@@ -90,6 +91,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (user) loadDashboard();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, sortBy, filterFormat, selectedFolder]);
 
   const handleDelete = async (docId: string) => {

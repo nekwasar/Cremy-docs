@@ -32,6 +32,7 @@ export default function TemplatesCategoryPage() {
     if (category) {
       fetchTemplates();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category]);
 
   const fetchTemplates = async () => {

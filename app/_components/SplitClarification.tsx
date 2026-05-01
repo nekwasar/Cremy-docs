@@ -52,7 +52,7 @@ export function SplitClarification({ totalPages, onConfirm }: SplitClarification
         </div>
       ) : (
         <div>
-          <p>Enter pages separated by commas (e.g. "1 3 5, 2 4 6"):</p>
+          <p>Enter pages separated by commas (e.g. &quot;1 3 5, 2 4 6&quot;):</p>
           <input
             type="text"
             value={customPages}

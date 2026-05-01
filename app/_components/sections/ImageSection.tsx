@@ -46,6 +46,7 @@ export function ImageSection({
 
   return (
     <div {...attrs} onClick={() => setShowOptions(!showOptions)}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={content.src} alt={content.alt} />
       {showOptions && (
         <div>

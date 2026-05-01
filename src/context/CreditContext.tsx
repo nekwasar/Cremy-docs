@@ -56,6 +56,7 @@ export function CreditProvider({ children }: CreditProviderProps) {
     } catch {
       return false;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [credits, setCredits]);
 
   const addCredits = useCallback(async (amount: number): Promise<boolean> => {

@@ -13,6 +13,7 @@ async function widgetHandler(request: NextRequest, user: AuthUser) {
         { error: { message: 'User not found', code: 'USER_NOT_FOUND' } },
         { status: 404 }
       );
+    }
 
     const isPro = dbUser.role === 'pro' || dbUser.role === 'admin';
     const credits = dbUser.credits;

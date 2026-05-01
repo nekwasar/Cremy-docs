@@ -20,6 +20,7 @@ export default function AdminApiKeysPage() {
           setStats(data.data.stats || stats);
         }
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAddKey = async () => {

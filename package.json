@@ -9,10 +9,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "next lint --max-warnings 0",
     "type-check": "tsc --noEmit",
     "setup": "node scripts/setup.mjs",
     "postinstall": "npm run setup",
+    "lint-staged": "lint-staged",
     "dev:docker": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d",
     "prod:docker": "docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build",
     "docker:down": "docker compose down",
@@ -50,6 +51,15 @@
     "typescript": "^5.4.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix --max-warnings 0",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "engines": {
     "node": ">=18.0.0",
