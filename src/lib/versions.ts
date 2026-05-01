@@ -43,7 +43,7 @@ export async function getVersions(
   return db.collection('document_versions')
     .find({ documentId, userId })
     .sort({ versionNumber: -1 })
-    .toArray() as Promise<DocumentVersion[]>;
+    .toArray() as unknown as Promise<DocumentVersion[]>;
 }
 
 export async function getVersionById(versionId: string): Promise<DocumentVersion | null> {

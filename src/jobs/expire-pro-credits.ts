@@ -26,7 +26,7 @@ export async function allocateProCredits(userId: string, plan: 'monthly' | 'year
   const credits = plan === 'monthly' ? 200 : 2400;
   
   await db.collection('users').updateOne(
-    { _id: userId },
+    { _id: userId as any },
     { $set: { proCredits: credits } }
   );
 

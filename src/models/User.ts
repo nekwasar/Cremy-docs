@@ -9,6 +9,7 @@ export interface IUser extends Document {
   role: 'free' | 'pro' | 'admin';
   isEmailVerified: boolean;
   receivedSignupReward?: boolean;
+  proCredits?: number;
   referralCode?: string;
   emailVerificationToken?: string;
   emailVerificationExpires?: Date;
