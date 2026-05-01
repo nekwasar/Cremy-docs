@@ -24,6 +24,7 @@ export function ThemeToggle() {
   useEffect(() => {
     const saved = localStorage.getItem('theme') as Theme;
     if (saved) setTheme(saved);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleThemeChange = (newTheme: Theme) => {
