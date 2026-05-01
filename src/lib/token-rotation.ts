@@ -150,6 +150,7 @@ export async function rotateRefreshToken(
 
   const accessToken = await generateAccessToken({
     sub: decoded.sub,
+    email: decoded.email || '',
     role: 'user',
     isEmailVerified: true,
   });

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import type { Db } from 'mongodb';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://mongo:27017/cremy-docs';
 
@@ -47,7 +48,10 @@ async function connectDB(): Promise<typeof mongoose> {
 
 export default connectDB;
 
-export async function getMongoDb() {
+export async function getMongoDb(): Promise<Db> {
   const conn = await connectDB();
+  if (!conn.connection.db) {
+    throw new Error('Database connection not established');
+  }
   return conn.connection.db;
 }
