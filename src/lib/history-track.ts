@@ -46,5 +46,5 @@ export async function getUserGenerationHistory(
       .countDocuments({ userId, eventType: 'generation' }),
   ]);
 
-  return { history: history as GenerationHistory[], total };
+  return { history: history as unknown as GenerationHistory[], total };
 }

@@ -17,10 +17,10 @@ export async function cancelUserGeneration(userId: string): Promise<CancelResult
 
     const db = await getMongoDb();
     
-    const user = await db.collection('users').findOne({ _id: userId });
+    const user = await db.collection('users').findOne({ _id: userId as any });
     if (user) {
       await db.collection('users').updateOne(
-        { _id: userId },
+        { _id: userId as any },
         { $inc: { credits: 1 } }
       );
 

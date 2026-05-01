@@ -51,7 +51,7 @@ export async function getUserFolders(userId: string): Promise<FolderData[]> {
 
 export async function deleteFolder(folderId: string, userId: string): Promise<boolean> {
   const db = await getMongoDb();
-  await db.collection('folders').deleteOne({ _id: folderId, userId });
+  await db.collection('folders').deleteOne({ _id: folderId as any, userId });
   await db.collection('documents').updateMany(
     { userId, folderId },
     { $unset: { folderId: '' } }
@@ -62,6 +62,6 @@ export async function deleteFolder(folderId: string, userId: string): Promise<bo
 export async function moveToFolder(documentId: string, folderId: string | null, userId: string): Promise<boolean> {
   const db = await getMongoDb();
   const update = folderId ? { $set: { folderId } } : { $unset: { folderId: '' } };
-  const result = await db.collection('documents').updateOne({ _id: documentId, userId }, update);
+  const result = await db.collection('documents').updateOne({ _id: documentId as any, userId }, update);
   return result.modifiedCount > 0;
 }

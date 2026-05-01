@@ -38,7 +38,7 @@ export async function loadDocument(
   const db = await getMongoDb();
 
   const document = await db.collection('documents').findOne({
-    _id: documentId,
+    _id: documentId as any,
     userId,
   });
 
@@ -46,7 +46,7 @@ export async function loadDocument(
     return null;
   }
 
-  return document as Document;
+  return document as unknown as Document;
 }
 
 export async function listDocuments(
@@ -68,7 +68,7 @@ export async function listDocuments(
     db.collection('documents').countDocuments({ userId }),
   ]);
 
-  return { documents: documents as Document[], total };
+  return { documents: documents as unknown as Document[], total };
 }
 
 export async function deleteDocument(
@@ -78,7 +78,7 @@ export async function deleteDocument(
   const db = await getMongoDb();
 
   const result = await db.collection('documents').deleteOne({
-    _id: documentId,
+    _id: documentId as any,
     userId,
   });
 

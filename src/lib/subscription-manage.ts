@@ -16,7 +16,7 @@ export async function handleSubscriptionRenew(userId: string): Promise<void> {
   );
 
   await db.collection('users').updateOne(
-    { _id: userId },
+    { _id: userId as any },
     { $inc: { credits } }
   );
 
@@ -38,7 +38,7 @@ export async function handleSubscriptionExpire(userId: string): Promise<void> {
   );
 
   await db.collection('users').updateOne(
-    { _id: userId },
+    { _id: userId as any },
     { $set: { role: 'free' } }
   );
 }

@@ -88,7 +88,7 @@ export async function handleProToFreeDowngrade(userId: string): Promise<{
 }> {
   try {
     const db = await (await import('@/lib/mongodb')).getMongoDb();
-    const user = await db.collection('users').findOne({ _id: userId });
+    const user = await db.collection('users').findOne({ _id: userId as any });
 
     if (!user || user.role !== 'pro') {
       return { message: '', preservedData: true };
@@ -103,7 +103,7 @@ export async function handleProToFreeDowngrade(userId: string): Promise<{
           { $set: { status: 'expired', updatedAt: now } }
         );
         await db.collection('users').updateOne(
-          { _id: userId },
+          { _id: userId as any },
           { $set: { role: 'free' } }
         );
       }

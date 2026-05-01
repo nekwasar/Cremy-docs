@@ -28,7 +28,7 @@ export async function assessCreditCapacity(
 
   try {
     const db = await getMongoDb();
-    const user = await db.collection('users').findOne({ _id: userId });
+    const user = await db.collection('users').findOne({ _id: userId as any });
 
     if (!user) {
       return {

@@ -13,7 +13,7 @@ export async function getTemplateContext(templateId: string): Promise<TemplateSt
   try {
     const db = await getMongoDb();
     
-    const template = await db.collection('templates').findOne({ _id: templateId });
+    const template = await db.collection('templates').findOne({ _id: templateId as any });
     
     if (!template) {
       return null;

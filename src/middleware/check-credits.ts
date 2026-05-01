@@ -21,7 +21,7 @@ export async function checkCreditsMiddleware(request: NextRequest): Promise<Next
   try {
     const db = await getMongoDb();
     
-    const user = await db.collection('users').findOne({ _id: userId });
+    const user = await db.collection('users').findOne({ _id: userId as any });
     
     if (user && user.credits <= 0 && url.pathname.startsWith('/generate')) {
       return NextResponse.redirect(new URL('/credits?reason=exhausted', request.url));

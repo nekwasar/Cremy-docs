@@ -51,7 +51,7 @@ export async function loadPartialDocument(
   const db = await getMongoDb();
   
   const document = await db.collection('documents').findOne({
-    _id: documentId,
+    _id: documentId as any,
     userId,
     status: 'partial',
   });

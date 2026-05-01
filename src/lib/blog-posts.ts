@@ -95,7 +95,7 @@ export async function updateBlogPost(
     update.publishedAt = new Date();
   }
   const result = await db.collection('blog_posts').updateOne(
-    { _id: id },
+    { _id: id as any },
     { $set: update }
   );
   return result.modifiedCount > 0;
@@ -103,7 +103,7 @@ export async function updateBlogPost(
 
 export async function deleteBlogPost(id: string): Promise<boolean> {
   const db = await getMongoDb();
-  const result = await db.collection('blog_posts').deleteOne({ _id: id });
+  const result = await db.collection('blog_posts').deleteOne({ _id: id as any });
   return result.deletedCount > 0;
 }
 

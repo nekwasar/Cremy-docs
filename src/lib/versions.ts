@@ -27,7 +27,7 @@ export async function saveVersion(document: Document): Promise<number> {
   await db.collection('document_versions').insertOne(versionData);
   
   await db.collection('documents').updateOne(
-    { _id: document.id },
+    { _id: document.id as any },
     { $inc: { versions: 1 }, $set: { updatedAt: new Date() } }
   );
 
@@ -49,7 +49,7 @@ export async function getVersions(
 export async function getVersionById(versionId: string): Promise<DocumentVersion | null> {
   const db = await getMongoDb();
   
-  return db.collection('document_versions').findOne({ _id: versionId }) as Promise<DocumentVersion | null>;
+  return db.collection('document_versions').findOne({ _id: versionId as any }) as Promise<DocumentVersion | null>;
 }
 
 export async function restoreVersion(
@@ -63,7 +63,7 @@ export async function restoreVersion(
   if (!version) return null;
 
   const document = await db.collection('documents').findOne({
-    _id: documentId,
+    _id: documentId as any,
     userId,
   });
 
@@ -81,11 +81,11 @@ export async function restoreVersion(
   };
 
   await db.collection('documents').updateOne(
-    { _id: documentId },
+    { _id: documentId as any },
     { $set: updatedDocument }
   );
 
-  await saveVersion(updatedDocument as Document);
+  await saveVersion(updatedDocument as unknown as Document);
 
-  return updatedDocument as Document;
+  return updatedDocument as unknown as Document;
 }

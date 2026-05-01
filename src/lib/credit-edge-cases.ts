@@ -15,7 +15,7 @@ export async function checkCreditsBeforeAction(
   estimatedCost: number
 ): Promise<CreditCheckResult> {
   const db = await getMongoDb();
-  const user = await db.collection('users').findOne({ _id: userId });
+  const user = await db.collection('users').findOne({ _id: userId as any });
 
   if (!user) {
     return {
@@ -110,7 +110,7 @@ export async function handleMidGenerationCreditExhaustion(
   message: string;
 }> {
   const db = await getMongoDb();
-  const user = await db.collection('users').findOne({ _id: userId });
+  const user = await db.collection('users').findOne({ _id: userId as any });
 
   if (!user) {
     return { shouldStop: true, creditsLeft: 0, message: 'User not found. Generation stopped.' };
@@ -155,7 +155,7 @@ export async function handleProSubscriptionExpiry(userId: string): Promise<void>
       );
 
       await db.collection('users').updateOne(
-        { _id: userId },
+        { _id: userId as any },
         { $set: { role: 'free' } }
       );
 
@@ -198,7 +198,7 @@ export async function processRefundRequest(
 
     const refundAmount = Math.abs(transaction.amount);
     await db.collection('users').updateOne(
-      { _id: userId },
+      { _id: userId as any },
       { $inc: { credits: refundAmount } }
     );
 

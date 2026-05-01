@@ -37,5 +37,5 @@ export async function getUserConversions(
     db.collection('conversion_history').countDocuments({ userId }),
   ]);
 
-  return { entries: entries as ConvertHistoryEntry[], total };
+  return { entries: entries as unknown as ConvertHistoryEntry[], total };
 }

@@ -10,7 +10,7 @@ export async function checkAndDeductCredits(
   }
 
   const db = await getMongoDb();
-  const user = await db.collection('users').findOne({ _id: userId });
+  const user = await db.collection('users').findOne({ _id: userId as any });
 
   if (!user) {
     return { allowed: false, remaining: 0, error: 'User not found' };
@@ -29,7 +29,7 @@ export async function checkAndDeductCredits(
   }
 
   await db.collection('users').updateOne(
-    { _id: userId },
+    { _id: userId as any },
     { $inc: { credits: -requiredCredits } }
   );
 
@@ -43,7 +43,7 @@ export async function refundCredits(
 ): Promise<void> {
   const db = await getMongoDb();
   await db.collection('users').updateOne(
-    { _id: userId },
+    { _id: userId as any },
     { $inc: { credits: amount } }
   );
 

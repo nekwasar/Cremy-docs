@@ -37,7 +37,7 @@ export async function getUserDocuments(
   const skip = (page - 1) * limit;
 
   const [documents, total] = await Promise.all([
-    db.collection('documents').find(filter).sort(sortMap[sort] || sortMap.newest).skip(skip).limit(limit).toArray(),
+    db.collection('documents').find(filter).sort((sortMap[sort] || sortMap.newest) as any).skip(skip).limit(limit).toArray(),
     db.collection('documents').countDocuments(filter),
   ]);
 
@@ -46,14 +46,14 @@ export async function getUserDocuments(
 
 export async function deleteDocumentPermanently(documentId: string, userId: string): Promise<boolean> {
   const db = await getMongoDb();
-  const result = await db.collection('documents').deleteOne({ _id: documentId, userId });
+  const result = await db.collection('documents').deleteOne({ _id: documentId as any, userId });
   return result.deletedCount > 0;
 }
 
 export async function bulkDeleteDocuments(documentIds: string[], userId: string): Promise<number> {
   const db = await getMongoDb();
   const result = await db.collection('documents').deleteMany({
-    _id: { $in: documentIds },
+    _id: { $in: documentIds } as any,
     userId,
   });
   return result.deletedCount;

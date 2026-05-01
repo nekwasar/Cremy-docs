@@ -115,7 +115,7 @@ export default function TemplatesCategoryPage() {
       />
 
       <TemplatePreviewModal
-        template={selectedTemplate}
+        template={selectedTemplate as any}
         onClose={() => setSelectedTemplate(null)}
         onUseTemplate={handleUseTemplate}
       />

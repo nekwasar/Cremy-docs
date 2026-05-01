@@ -48,7 +48,7 @@ export async function getUserHistory(
     db.collection('generation_history').countDocuments(filter),
   ]);
 
-  return { entries: entries as GenerationHistoryEntry[], total };
+  return { entries: entries as unknown as GenerationHistoryEntry[], total };
 }
 
 export async function getGenerationStats(userId: string): Promise<{

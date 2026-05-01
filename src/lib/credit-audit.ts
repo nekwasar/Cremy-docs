@@ -52,7 +52,7 @@ export async function getCreditHistory(
 
   return CreditTransaction.find(query)
     .sort({ createdAt: -1 })
-    .limit(options.limit || 100);
+    .limit(options.limit || 100) as unknown as (typeof CreditTransaction)[];
 }
 
 export async function searchAuditLogs(
@@ -81,7 +81,7 @@ export async function searchAuditLogs(
   const skip = (page - 1) * limit;
 
   const [logs, total] = await Promise.all([
-    CreditTransaction.find(dbQuery).sort({ createdAt: -1 }).skip(skip).limit(limit),
+    CreditTransaction.find(dbQuery).sort({ createdAt: -1 }).skip(skip).limit(limit) as unknown as (typeof CreditTransaction)[],
     CreditTransaction.countDocuments(dbQuery),
   ]);
 
@@ -103,7 +103,7 @@ export async function exportAuditLogs(
     const rows = logs
       .map(
         (log) =>
-          `${log.createdAt.toISOString()},${log.type},${log.amount},${log.balance},"${log.description}"`
+          `${(log as any).createdAt.toISOString()},${(log as any).type},${(log as any).amount},${(log as any).balance},"${(log as any).description}"`
       )
       .join('\n');
     return headers + rows;

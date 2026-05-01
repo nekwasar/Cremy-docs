@@ -20,7 +20,7 @@ export async function getSession(sessionId: string): Promise<SessionData | null>
       return null;
     }
 
-    return session as SessionData;
+    return session as unknown as SessionData;
   } catch {
     return null;
   }
@@ -57,7 +57,7 @@ export async function addMessage(
       {
         $push: { messages: { role, content } },
         $set: { expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) },
-      }
+      } as any
     );
   } catch {}
 }
@@ -73,7 +73,7 @@ export async function addFileToSession(
       {
         $push: { uploadedFiles: file },
         $set: { expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) },
-      }
+      } as any
     );
   } catch {}
 }

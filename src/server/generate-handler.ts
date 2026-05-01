@@ -32,19 +32,19 @@ export async function handleGenerate(
   }
 
   const db = await getMongoDb();
-  const user = await db.collection('users').findOne({ _id: handler.userId });
+  const user = await db.collection('users').findOne({ _id: handler.userId as any });
   
   if (!user || user.credits < 1) {
     throw new GenerationError(GenerationErrorCode.INSUFFICIENT_CREDITS, 'Insufficient credits');
   }
 
   await db.collection('users').updateOne(
-    { _id: handler.userId },
+    { _id: handler.userId as any },
     { $inc: { credits: -1 } }
   );
 
   const template = payload.templateId
-    ? await db.collection('templates').findOne({ _id: payload.templateId })
+    ? await db.collection('templates').findOne({ _id: payload.templateId as any })
     : null;
 
   const prompt = buildGeneratePrompt({
