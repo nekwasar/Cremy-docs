@@ -11,6 +11,9 @@ export interface IUser extends Document {
   receivedSignupReward?: boolean;
   proCredits?: number;
   proCreditsExpires?: Date;
+  useMongoDB?: boolean;
+  storageEnabledAt?: Date;
+  referredBy?: string;
   referralCode?: string;
   emailVerificationToken?: string;
   emailVerificationExpires?: Date;
