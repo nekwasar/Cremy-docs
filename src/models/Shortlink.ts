@@ -31,7 +31,6 @@ const shortlinkSchema = new Schema<IShortlink>(
       type: String,
       required: true,
       unique: true,
-      index: true,
     },
     fullUrl: {
       type: String,

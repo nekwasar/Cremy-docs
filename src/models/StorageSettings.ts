@@ -17,7 +17,6 @@ const storageSettingsSchema = new Schema<IStorageSettings>(
       ref: 'User',
       required: true,
       unique: true,
-      index: true,
     },
     storageType: {
       type: String,

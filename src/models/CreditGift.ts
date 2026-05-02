@@ -63,7 +63,6 @@ const creditGiftSchema = new Schema<ICreditGift>(
   }
 );
 
-creditGiftSchema.index({ code: 1 });
 creditGiftSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 const CreditGift: Model<ICreditGift> =

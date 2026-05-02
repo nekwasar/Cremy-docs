@@ -31,7 +31,6 @@ const inviteSchema = new Schema<IInvite>(
       type: String,
       required: true,
       unique: true,
-      index: true,
     },
     role: {
       type: String,

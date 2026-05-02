@@ -105,7 +105,6 @@ const documentSchema = new Schema<IDocument>(
 documentSchema.index({ userId: 1, createdAt: -1 });
 documentSchema.index({ userId: 1, status: 1 });
 documentSchema.index({ isPublic: 1, createdAt: -1 });
-documentSchema.index({ shareToken: 1 });
 
 const DocumentModel: Model<IDocument> =
   mongoose.models.Document || mongoose.model<IDocument>('Document', documentSchema);

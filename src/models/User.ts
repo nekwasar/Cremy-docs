@@ -38,7 +38,6 @@ const userSchema = new Schema<IUser>(
       unique: true,
       lowercase: true,
       trim: true,
-      index: true,
     },
     password: {
       type: String,
@@ -158,8 +157,6 @@ userSchema.methods.toJWTPayload = function () {
   };
 };
 
-userSchema.index({ email: 1 });
-userSchema.index({ googleId: 1 });
 userSchema.index({ createdAt: -1 });
 
 const User: Model<IUser> =

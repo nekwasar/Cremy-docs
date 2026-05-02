@@ -4,6 +4,8 @@ import User from '@/models/User';
 import { jwtService } from '@/services/jwt';
 import { addSignupReward } from '@/services/credit-reward';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const token = request.nextUrl.searchParams.get('token');

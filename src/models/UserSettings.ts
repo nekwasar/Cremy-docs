@@ -23,7 +23,6 @@ const userSettingsSchema = new Schema<IUserSettings>(
       ref: 'User',
       required: true,
       unique: true,
-      index: true,
     },
     defaultFormat: {
       type: String,

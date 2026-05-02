@@ -2,6 +2,8 @@ import { getPublishedPosts } from '@/lib/blog-posts';
 import { generatePageMetadata } from '@/config/seo';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = generatePageMetadata({
   title: 'Blog',
   description: 'Tips, guides, and insights about document creation, file conversion, AI tools, and productivity.',
