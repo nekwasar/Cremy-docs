@@ -7,7 +7,6 @@ import { handleImageError } from '@/lib/image-errors';
 import { getImageLimitForUser } from '@/lib/image-limits';
 import { ImageThumbnails } from './ImageThumbnails';
 import { ImageCreditDisplay } from './ImageCreditDisplay';
-import { ImageUploadProgress } from './ImageUploadProgress';
 
 interface AddImageButtonProps {
   imageCount: number;
@@ -104,11 +103,6 @@ export function AddImageButton({
         creditCost={useImageStore.getState().getTotalCredits()}
       />
 
-      <ImageUploadProgress
-        progress={uploadProgress}
-        isUploading={isUploading}
-        error={uploadError || undefined}
-      />
 
       <button
         type="button"

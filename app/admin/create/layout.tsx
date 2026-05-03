@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>;
+  return <Suspense fallback={null}>{children}</Suspense>;
 }

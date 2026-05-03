@@ -29,13 +29,13 @@ export default function DashboardLayout({
         <header>
           <div>
             <span>💰</span>
-            <span>Loading...</span>
+            
           </div>
           <div>
             <button>Account</button>
           </div>
         </header>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={null}>
           <main>{children}</main>
         </Suspense>
       </div>

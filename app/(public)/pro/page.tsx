@@ -21,7 +21,7 @@ export default function ProPage() {
             <li>Basic templates</li>
             <li>Standard formats</li>
           </ul>
-          <Link href="/auth/register">Get Started Free</Link>
+          <Link href="/register">Get Started Free</Link>
         </div>
 
         <div>

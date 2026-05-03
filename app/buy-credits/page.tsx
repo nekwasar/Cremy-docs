@@ -73,7 +73,7 @@ export default function BuyCreditsPage() {
         onClick={handlePurchase}
         disabled={!selectedPack || !processor || loading}
       >
-        {loading ? 'Processing...' : `Buy Credits - $${selectedPackData?.price || 0}`}
+        {selectedPackData ? `Buy Credits - $${selectedPackData.price || 0}` : 'Buy Credits'}
       </button>
     </div>
   );

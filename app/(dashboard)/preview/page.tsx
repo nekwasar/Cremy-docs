@@ -138,7 +138,6 @@ export default function PreviewPage() {
     return (
       <div>
         <Link href="/generate">← Back</Link>
-        <p>Loading document...</p>
       </div>
     );
   }

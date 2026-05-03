@@ -30,9 +30,6 @@ export default function AdminBlogPage() {
     loadPosts();
   };
 
-  if (loading) return <p>Loading...</p>;
-
-  return (
     <div>
       <AdminSidebar />
       <div>

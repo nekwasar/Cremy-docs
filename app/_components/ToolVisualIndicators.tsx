@@ -34,7 +34,7 @@ export function ToolVisualIndicators({ activeTool, toolStatus }: ToolVisualIndic
       <span>{config?.indicator || '🔧'}</span>
       <span>{config?.label || activeTool}</span>
       {toolStatus && (
-        <span>{toolStatus === 'processing' ? 'Processing...' : toolStatus === 'complete' ? '✓' : ''}</span>
+        <span>{toolStatus === 'complete' ? '✓' : ''}</span>
       )}
     </div>
   );

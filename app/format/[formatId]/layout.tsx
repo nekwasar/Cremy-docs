@@ -29,5 +29,5 @@ export default function FormatPageLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>;
+  return <Suspense fallback={null}>{children}</Suspense>;
 }

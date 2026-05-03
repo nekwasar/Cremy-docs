@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import s from '@/styles/components/QuickActions.module.css';
 
 const TOOLS = [
   { name: 'Generate', path: '/generate' },
@@ -14,12 +15,12 @@ const TOOLS = [
 
 export function QuickActions() {
   return (
-    <section>
-      <h2>All Tools</h2>
-      <div>
+    <section style={{padding:'var(--space-16) 0'}}>
+      <h2 style={{textAlign:'center',marginBottom:'var(--space-8)'}}>All Tools</h2>
+      <div className={`${s.grid} ${s.soft}`}>
         {TOOLS.map((tool) => (
-          <Link key={tool.path} href={tool.path}>
-            {tool.name}
+          <Link key={tool.path} href={tool.path} className={s.cell}>
+            <span className={s.label}>{tool.name}</span>
           </Link>
         ))}
       </div>

@@ -36,9 +36,7 @@ export default function AdminAnalyticsPage() {
           <button onClick={() => setDateRange('90d')}>90 Days</button>
         </div>
 
-        {loading ? (
-          <p>Loading analytics...</p>
-        ) : (
+        {loading ? null : (
           <div>
             <h2>Overview</h2>
             <div>

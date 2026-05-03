@@ -29,7 +29,7 @@ export default function SubscriptionPage() {
     window.location.reload();
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return null;
 
   return (
     <div>

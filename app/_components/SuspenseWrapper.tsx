@@ -7,13 +7,13 @@ interface SuspenseWrapperProps {
 }
 
 export function SuspenseWrapper({ children }: SuspenseWrapperProps) {
-  return <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>;
+  return <Suspense fallback={null}>{children}</Suspense>;
 }
 
 export function withSuspense<P extends object>(Component: ComponentType<P>): ComponentType<P> {
   return function SuspenseHOC(props: P) {
     return (
-      <Suspense fallback={<p>Loading...</p>}>
+      <Suspense fallback={null}>
         <Component {...props} />
       </Suspense>
     );

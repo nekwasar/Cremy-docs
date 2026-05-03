@@ -23,7 +23,7 @@ export function SummarizePreview({
   const summaryWords = summary.split(/\s+/).filter(Boolean).length;
 
   if (isLoading) {
-    return <p>Generating summary...</p>;
+    return null;
   }
 
   return (

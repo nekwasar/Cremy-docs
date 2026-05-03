@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import i from '@/styles/components/Input.module.css';
+import f from '@/styles/components/FormGroup.module.css';
 
 interface FormInputProps {
   label: string;
@@ -24,17 +26,17 @@ export function FormInput({
   placeholder,
 }: FormInputProps) {
   const [touched, setTouched] = useState(false);
-
   const showError = touched && error;
 
   return (
-    <div>
-      <label htmlFor={name}>
+    <div className={f.group}>
+      <label htmlFor={name} className={f.label}>
         {label}
-        {required && <span>*</span>}
+        {required && <span className={f.required}>*</span>}
       </label>
       <input
         id={name}
+        className={`${i.input} ${i.soft}`}
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -44,7 +46,7 @@ export function FormInput({
         aria-describedby={showError ? `${name}-error` : undefined}
       />
       {showError && (
-        <span id={`${name}-error`} role="alert">
+        <span id={`${name}-error`} role="alert" className={f.error}>
           {error}
         </span>
       )}

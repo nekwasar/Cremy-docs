@@ -25,7 +25,7 @@ export function VersionHistory({ documentId, userId, onRestore }: VersionHistory
     setLoading(false);
   };
 
-  if (loading) return <p>Loading versions...</p>;
+  if (loading) return null;
 
   return (
     <div>

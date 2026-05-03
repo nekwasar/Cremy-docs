@@ -173,7 +173,7 @@ export default function VoicePage() {
         <RecordingFeedback isRecording={true} duration={duration} />
       )}
 
-      {recordingStatus === 'processing' && <TranscriptionLoading />}
+      {recordingStatus === 'processing' && null}
 
       {error && (
         <div>

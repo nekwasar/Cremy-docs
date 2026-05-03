@@ -12,8 +12,8 @@ export function HeaderUserMenu({}: HeaderUserMenuProps): ReactNode {
   if (!isAuthenticated) {
     return (
       <div>
-        <Link href="/auth/login">Login</Link>
-        <Link href="/auth/register">Sign Up</Link>
+        <Link href="/login">Login</Link>
+        <Link href="/register">Sign Up</Link>
       </div>
     );
   }

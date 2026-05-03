@@ -20,7 +20,6 @@ export function ConvertProgress({ progress, isConverting, step }: ConvertProgres
         <div>
           {progress < 30 && <p>Analyzing file...</p>}
           {progress >= 30 && progress < 70 && <p>Converting content...</p>}
-          {progress >= 70 && progress < 100 && <p>Generating output...</p>}
         </div>
       )}
     </div>

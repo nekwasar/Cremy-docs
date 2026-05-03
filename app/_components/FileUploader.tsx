@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import d from '@/styles/components/Dropzone.module.css';
 
 interface FileUploaderProps {
   onFileSelected: (file: File) => void;
@@ -35,21 +36,17 @@ export function FileUploader({
     if (file) handleFile(file);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) handleFile(file);
-  };
-
   return (
     <div
+      className={`${d.zone} ${d.soft} ${isDragging ? d.zoneDrag : ''}`}
       onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
       onDragLeave={() => setIsDragging(false)}
       onDrop={handleDrop}
       onClick={() => fileInputRef.current?.click()}
     >
-      {isDragging ? <p>Drop file here</p> : <p>Drag and drop or click to {label.toLowerCase()}</p>}
+      {isDragging ? <p className={d.softText}>Drop file here</p> : <p className={d.softText}>Drag and drop or click to {label.toLowerCase()}</p>}
       <input ref={fileInputRef} type="file" accept={accept} onChange={handleChange} style={{ display: 'none' }} />
-      {error && <p>{error}</p>}
+      {error && <p style={{fontSize:'var(--text-xs)',marginTop:'var(--space-2)'}}>{error}</p>}
     </div>
   );
 }

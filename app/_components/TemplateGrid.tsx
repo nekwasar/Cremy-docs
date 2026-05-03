@@ -17,7 +17,7 @@ interface TemplateGridProps {
 
 export function TemplateGrid({ templates, onSelectTemplate, isLoading = false }: TemplateGridProps) {
   if (isLoading) {
-    return <p>Loading templates...</p>;
+    return null;
   }
 
   if (templates.length === 0) {

@@ -63,9 +63,7 @@ export default function TemplatesPage() {
         </select>
       </div>
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : filtered.length > 0 ? (
+      {loading ? null : filtered.length > 0 ? (
         <div>
           {filtered.map((template) => (
             <Link key={template._id} href={`/templates/${template.category}/${template._id}`}>

@@ -43,7 +43,7 @@ export default function TemplateDetailPage() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return null;
   if (!template) return <div>Template not found</div>;
 
   return (

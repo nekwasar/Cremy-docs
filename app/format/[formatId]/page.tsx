@@ -13,10 +13,8 @@ import { FormatDescription } from '../../_components/FormatDescription';
 import { FormatCreditCost } from '../../_components/FormatCreditCost';
 import { UseThisFormatButton } from '../../_components/UseThisFormatButton';
 import { GenerateInputBox } from '../../_components/GenerateInputBox';
-import { GenerateButton } from '../../_components/GenerateButton';
 import { CreditEstimateDisplay } from '../../_components/CreditEstimateDisplay';
 import { ClearInput } from '../../_components/ClearInput';
-import { DocumentSkeleton } from '../../_components/DocumentSkeleton';
 
 export default function FormatPage() {
   const params = useParams();
@@ -72,11 +70,6 @@ export default function FormatPage() {
 
       {isGenerating ? (
         <div>
-          <DocumentSkeleton
-            title={format.name}
-            sections={[]}
-            progress={50}
-          />
           <button onClick={cancel}>Cancel</button>
         </div>
       ) : generatedDocumentId ? (
@@ -104,17 +97,6 @@ export default function FormatPage() {
               hasContent={!!inputValue}
               hasDocument={false}
               onClear={() => setInputValue('')}
-            />
-            <GenerateButton
-              onClick={handleGenerate}
-              state={
-                isGenerating
-                  ? 'loading'
-                  : !inputValue.trim()
-                  ? 'disabled'
-                  : 'idle'
-              }
-              creditEstimate={creditEstimate}
             />
           </div>
         </div>

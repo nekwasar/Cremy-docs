@@ -45,9 +45,7 @@ export function DocumentHistory({
           <option value="name">Name A-Z</option>
         </select>
       </div>
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : documents.length === 0 ? (
+      {isLoading ? null : documents.length === 0 ? (
         <p>No documents found.</p>
       ) : (
         <ul>

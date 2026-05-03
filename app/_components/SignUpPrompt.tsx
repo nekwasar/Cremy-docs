@@ -23,7 +23,7 @@ export function SignUpPrompt() {
         <p>You have {credits} credits remaining. Sign up to get 10 more free credits and save your documents!</p>
         
         <div>
-          <Link href="/auth/register">
+          <Link href="/register">
             Sign Up Free
           </Link>
           <button onClick={() => setShowPrompt(false)}>

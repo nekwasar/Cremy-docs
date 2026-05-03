@@ -43,7 +43,7 @@ export function MailcraftAssistant({ onGenerate }: MailcraftAssistantProps) {
         rows={4}
       />
       <button onClick={handleGenerate} disabled={loading || !prompt.trim()}>
-        {loading ? 'Generating...' : 'Generate Email Template'}
+        Generate Email Template
       </button>
     </div>
   );

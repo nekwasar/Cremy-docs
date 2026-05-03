@@ -37,7 +37,7 @@ export default function AdminLoginPage() {
         </div>
         {error && <p>{error}</p>}
         <button type="submit" disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
+          Login
         </button>
       </form>
     </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, createContext, useContext } from 'react';
+import t from '@/styles/components/Toast.module.css';
 
 type ToastType = 'success' | 'error' | 'info';
 
@@ -39,11 +40,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div>
+      <div style={{position:'fixed',bottom:'var(--space-4)',right:'var(--space-4)',zIndex:200,display:'flex',flexDirection:'column',gap:'var(--space-2)'}}>
         {toasts.map((toast) => (
-          <div key={toast.id} className={`toast toast-${toast.type}`}>
+          <div key={toast.id} className={`${t.toast} ${t.soft} ${t.bottomRight}`}>
             <span>{toast.message}</span>
-            <button onClick={() => removeToast(toast.id)}>×</button>
+            <button onClick={() => removeToast(toast.id)} className={t.dismiss}>×</button>
           </div>
         ))}
       </div>

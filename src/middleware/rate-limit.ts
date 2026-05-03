@@ -9,8 +9,8 @@ interface RateLimitConfig {
 }
 
 const RATE_LIMITS: RateLimitConfig[] = [
-  { endpoint: '/api/auth/login', windowMs: 60000, maxRequests: 5, strategy: 'sliding' },
-  { endpoint: '/api/auth/register', windowMs: 3600000, maxRequests: 3, strategy: 'fixed' },
+  { endpoint: '/api/login', windowMs: 60000, maxRequests: 5, strategy: 'sliding' },
+  { endpoint: '/api/register', windowMs: 3600000, maxRequests: 3, strategy: 'fixed' },
   { endpoint: '/api/auth/forgot-password', windowMs: 86400000, maxRequests: 3, strategy: 'fixed' },
   { endpoint: '/api/generate', windowMs: 60000, maxRequests: 10, strategy: 'sliding' },
   { endpoint: '/api/edit', windowMs: 60000, maxRequests: 20, strategy: 'sliding' },

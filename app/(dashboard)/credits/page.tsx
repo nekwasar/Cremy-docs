@@ -57,7 +57,7 @@ export default function CreditsPage() {
               onClick={() => handlePurchase(pkg.id)}
               disabled={purchasing === pkg.id}
             >
-              {purchasing === pkg.id ? 'Processing...' : 'Buy'}
+              Buy
             </button>
           </div>
         ))}

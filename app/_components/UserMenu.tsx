@@ -21,8 +21,8 @@ export function UserMenu() {
         </div>
       ) : (
         <div>
-          <Link href="/auth/login">Login</Link>
-          <Link href="/auth/register">Sign Up</Link>
+          <Link href="/login">Login</Link>
+          <Link href="/register">Sign Up</Link>
         </div>
       )}
     </div>

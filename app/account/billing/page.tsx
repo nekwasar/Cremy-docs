@@ -16,7 +16,7 @@ export default function BillingPage() {
       });
   }, []);
 
-  if (loading) return <p>Loading payment history...</p>;
+  if (loading) return null;
 
   return (
     <div>

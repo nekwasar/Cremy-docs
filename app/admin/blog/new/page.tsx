@@ -138,7 +138,7 @@ export default function AdminBlogNewPage() {
         <div>
           <button onClick={handlePreview}>Preview</button>
           <button onClick={handlePublish} disabled={loading}>
-            {loading ? 'Publishing...' : status === 'published' ? 'Publish' : status === 'scheduled' ? 'Schedule' : 'Save Draft'}
+            {status === 'published' ? 'Publish' : status === 'scheduled' ? 'Schedule' : 'Save Draft'}
           </button>
         </div>
       </div>

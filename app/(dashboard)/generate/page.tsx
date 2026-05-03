@@ -11,8 +11,6 @@ import { DocStructureSelector } from '../../_components/DocStructureSelector';
 import { ExploreStylesButton } from '../../_components/ExploreStylesButton';
 import { AddImageButton } from '../../_components/AddImageButton';
 import { ClearInput } from '../../_components/ClearInput';
-import { GenerateButton } from '../../_components/GenerateButton';
-import { DocumentSkeleton } from '../../_components/DocumentSkeleton';
 import { TemplatePreviewModal } from '../../_components/TemplatePreviewModal';
 import { CreditBalance } from '../../_components/CreditBalance';
 
@@ -70,11 +68,6 @@ export default function GeneratePage() {
 
       {isGenerating && isStreaming ? (
         <div>
-          <DocumentSkeleton
-            title={streamedContent ? 'Generating...' : undefined}
-            sections={[]}
-            progress={streamedContent ? 50 : 10}
-          />
           <button onClick={cancel}>Cancel</button>
         </div>
       ) : generatedDocumentId ? (
@@ -107,17 +100,6 @@ export default function GeneratePage() {
               hasContent={!!inputValue}
               hasDocument={!!generatedDocumentId}
               onClear={clearInput}
-            />
-            <GenerateButton
-              onClick={handleGenerate}
-              state={
-                isGenerating
-                  ? 'loading'
-                  : !inputValue.trim()
-                  ? 'disabled'
-                  : 'idle'
-              }
-              creditEstimate={creditEstimate}
             />
           </div>
 
