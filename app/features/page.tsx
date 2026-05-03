@@ -1,5 +1,7 @@
 import { generatePageMetadata } from '@/config/seo';
 import Link from 'next/link';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
 
 export const metadata = generatePageMetadata({
   title: 'Features',
@@ -20,16 +22,20 @@ export default function FeaturesPage() {
   ];
 
   return (
-    <div>
-      <h1>All Features</h1>
-      <p>Everything you can do with Cremy Docs — all free to use.</p>
-      {features.map((feature, i) => (
-        <div key={i}>
-          <h2>{feature.title}</h2>
-          <p>{feature.description}</p>
-        </div>
-      ))}
-      <Link href="/">Start Creating</Link>
+    <div style={{maxWidth:'var(--container-md)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
+      <h1 style={{fontSize:'var(--text-2xl)',fontWeight:'var(--weight-bold)',marginBottom:'var(--space-4)'}}>All Features</h1>
+      <p style={{marginBottom:'var(--space-6)',color:'var(--color-text-muted)'}}>Everything you can do with Cremy Docs — all free to use.</p>
+
+      <div style={{display:'flex',flexDirection:'column',gap:'var(--space-4)',marginBottom:'var(--space-8)'}}>
+        {features.map((feature, i) => (
+          <div key={i} className={`${c.card} ${c.soft}`}>
+            <h2 style={{fontSize:'var(--text-lg)',fontWeight:'var(--weight-semibold)',marginBottom:'var(--space-2)'}}>{feature.title}</h2>
+            <p style={{color:'var(--color-text-muted)'}}>{feature.description}</p>
+          </div>
+        ))}
+      </div>
+
+      <Link href="/" className={`${b.btn} ${b.soft}`}>Start Creating</Link>
     </div>
   );
 }

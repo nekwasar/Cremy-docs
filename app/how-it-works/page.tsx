@@ -1,5 +1,7 @@
 import { generatePageMetadata } from '@/config/seo';
 import Link from 'next/link';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
 
 export const metadata = generatePageMetadata({
   title: 'How It Works',
@@ -16,16 +18,20 @@ export default function HowItWorksPage() {
   ];
 
   return (
-    <div>
-      <h1>How It Works</h1>
-      <p>Create professional documents in 4 simple steps.</p>
-      {steps.map((step) => (
-        <div key={step.step}>
-          <h2>Step {step.step}: {step.title}</h2>
-          <p>{step.description}</p>
-        </div>
-      ))}
-      <Link href="/generate">Try It Now</Link>
+    <div style={{maxWidth:'var(--container-md)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
+      <h1 style={{fontSize:'var(--text-2xl)',fontWeight:'var(--weight-bold)',marginBottom:'var(--space-4)'}}>How It Works</h1>
+      <p style={{marginBottom:'var(--space-6)',color:'var(--color-text-muted)'}}>Create professional documents in 4 simple steps.</p>
+
+      <div style={{display:'flex',flexDirection:'column',gap:'var(--space-4)',marginBottom:'var(--space-8)'}}>
+        {steps.map((step) => (
+          <div key={step.step} className={`${c.card} ${c.soft}`}>
+            <h2 style={{fontSize:'var(--text-lg)',fontWeight:'var(--weight-semibold)',marginBottom:'var(--space-2)'}}>Step {step.step}: {step.title}</h2>
+            <p style={{color:'var(--color-text-muted)'}}>{step.description}</p>
+          </div>
+        ))}
+      </div>
+
+      <Link href="/generate" className={`${b.btn} ${b.soft}`}>Try It Now</Link>
     </div>
   );
 }
