@@ -1,4 +1,6 @@
 import { generatePageMetadata } from '@/config/seo';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
 import Link from 'next/link';
 
 export const metadata = generatePageMetadata({
@@ -9,29 +11,11 @@ export const metadata = generatePageMetadata({
 
 export default function PdfToTextPage() {
   return (
-    <div>
-      <h1>PDF to Text Converter</h1>
-      <p>Extract text from any PDF document instantly. Free, fast, and preserves document structure.</p>
-
-      <Link href="/extract-text-from-pdf">Convert PDF to Text Now</Link>
-
-      <div>
-        <h2>Why Convert PDF to Text?</h2>
-        <ul>
-          <li>Make PDFs searchable and editable</li>
-          <li>Extract content for data processing</li>
-          <li>Copy text from scanned documents</li>
-          <li>Preserve all text content from your PDFs</li>
-        </ul>
-      </div>
-
-      <div>
-        <h2>Related Tools</h2>
-        <ul>
-          <li><Link href="/extract-text">Extract Text Tool</Link></li>
-          <li><Link href="/image-to-text">Image to Text</Link></li>
-          <li><Link href="/scanned-pdf-to-text">Scanned PDF to Text</Link></li>
-        </ul>
+    <div style={{maxWidth:'var(--container-md)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
+      <h1 style={{fontSize:'var(--text-2xl)',fontWeight:'var(--weight-bold)',marginBottom:'var(--space-4)'}}>PDF to Text Converter</h1>
+      <div className={`${c.card} ${c.soft}`} style={{padding:'var(--space-8)'}}>
+        <p>Extract text from any PDF document instantly. Free, fast, and preserves document structure.</p>
+        <Link href="/extract-text-from-pdf" className={`${b.btn} ${b.soft}`}>Convert PDF to Text Now</Link>
       </div>
     </div>
   );

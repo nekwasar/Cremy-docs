@@ -1,4 +1,6 @@
 import { generatePageMetadata } from '@/config/seo';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
 import Link from 'next/link';
 
 export const metadata = generatePageMetadata({
@@ -9,28 +11,11 @@ export const metadata = generatePageMetadata({
 
 export default function ImageToTextPage() {
   return (
-    <div>
-      <h1>Image to Text Converter</h1>
-      <p>Extract text from any image — JPG, PNG, WEBP, and more. Free online OCR.</p>
-
-      <Link href="/extract-text-from-pdf">Extract Text from Image Now</Link>
-
-      <div>
-        <h2>Supported Image Formats</h2>
-        <ul>
-          <li>JPG / JPEG — photos and scanned documents</li>
-          <li>PNG — screenshots and graphics</li>
-          <li>WEBP — modern web images</li>
-        </ul>
-      </div>
-
-      <div>
-        <h2>Related Tools</h2>
-        <ul>
-          <li><Link href="/jpg-to-text">JPG to Text</Link></li>
-          <li><Link href="/png-to-text">PNG to Text</Link></li>
-          <li><Link href="/pdf-to-text">PDF to Text</Link></li>
-        </ul>
+    <div style={{maxWidth:'var(--container-md)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
+      <h1 style={{fontSize:'var(--text-2xl)',fontWeight:'var(--weight-bold)',marginBottom:'var(--space-4)'}}>Image to Text Converter</h1>
+      <div className={`${c.card} ${c.soft}`} style={{padding:'var(--space-8)'}}>
+        <p>Extract text from any image — JPG, PNG, WEBP, and more. Free online OCR with no registration and no watermarks.</p>
+        <Link href="/extract-text-from-pdf" className={`${b.btn} ${b.soft}`}>Extract Text from Image Now</Link>
       </div>
     </div>
   );

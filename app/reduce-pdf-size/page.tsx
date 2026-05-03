@@ -1,4 +1,6 @@
 import { generatePageMetadata } from '@/config/seo';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
 import Link from 'next/link';
 
 export const metadata = generatePageMetadata({
@@ -9,29 +11,11 @@ export const metadata = generatePageMetadata({
 
 export default function ReducePdfSizePage() {
   return (
-    <div>
-      <h1>Reduce PDF File Size Online</h1>
-      <p>Compress and reduce PDF file size without losing quality. Make your PDFs smaller for email, upload, and storage.</p>
-
-      <Link href="/compress-pdf">Reduce PDF Size Now</Link>
-
-      <div>
-        <h2>Why Reduce PDF Size?</h2>
-        <ul>
-          <li>Fit within email attachment limits</li>
-          <li>Upload faster to cloud storage</li>
-          <li>Save storage space on your device</li>
-          <li>Share documents more easily online</li>
-        </ul>
-      </div>
-
-      <div>
-        <h2>Related Tools</h2>
-        <ul>
-          <li><Link href="/compress-pdf">Compress PDF</Link></li>
-          <li><Link href="/merge-pdf">Merge PDF</Link></li>
-          <li><Link href="/split-pdf">Split PDF</Link></li>
-        </ul>
+    <div style={{maxWidth:'var(--container-md)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
+      <h1 style={{fontSize:'var(--text-2xl)',fontWeight:'var(--weight-bold)',marginBottom:'var(--space-4)'}}>Reduce PDF File Size Online</h1>
+      <div className={`${c.card} ${c.soft}`} style={{padding:'var(--space-8)'}}>
+        <p>Compress and reduce PDF file size without losing quality. Make your PDFs smaller for email, upload, and storage.</p>
+        <Link href="/compress-pdf" className={`${b.btn} ${b.soft}`}>Reduce PDF Size Now</Link>
       </div>
     </div>
   );
