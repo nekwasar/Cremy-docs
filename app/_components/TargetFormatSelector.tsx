@@ -1,5 +1,8 @@
 'use client';
 
+import i from '@/styles/components/Input.module.css';
+import sl from '@/styles/components/Select.module.css';
+
 interface TargetFormatSelectorProps {
   sourceFormat: string;
   value: string;
@@ -21,8 +24,13 @@ export function TargetFormatSelector({ sourceFormat, value, onChange, disabled =
 
   return (
     <div>
-      <label>Convert to:</label>
-      <select value={value} onChange={(e) => onChange(e.target.value)} disabled={disabled}>
+      <label className={i.label}>Convert to:</label>
+      <select
+        className={`${i.input} ${i.soft} ${sl.trigger} ${sl.soft}`}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+      >
         {formats.map((format) => (
           <option key={format} value={format}>
             {FORMAT_LABELS[format] || format.toUpperCase()}

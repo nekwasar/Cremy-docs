@@ -7,6 +7,8 @@ import { CreditPackSelect } from '../_components/CreditPackSelect';
 import { PaymentMethodSelect } from '../_components/PaymentMethodSelect';
 import type { ProcessorName } from '@/config/payment';
 import Link from 'next/link';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
 
 export default function BuyCreditsPage() {
   const router = useRouter();
@@ -57,19 +59,30 @@ export default function BuyCreditsPage() {
   };
 
   return (
-    <div>
+    <div style={{ maxWidth: 'var(--container-md)', margin: '0 auto', padding: 'var(--space-8) var(--space-6)' }}>
       <h1>Buy Credits</h1>
-      <p>Current balance: {credits} credits</p>
+      <p style={{ color: 'var(--color-text-secondary)', marginBottom: 'var(--space-6)' }}>
+        Current balance: {credits} credits
+      </p>
 
-      <CreditPackSelect packs={packs} selected={selectedPack} onSelect={setSelectedPack} />
+      <div style={{ marginBottom: 'var(--space-6)' }}>
+        <CreditPackSelect packs={packs} selected={selectedPack} onSelect={setSelectedPack} />
+      </div>
 
       {selectedPack && (
-        <PaymentMethodSelect value={processor} onChange={setProcessor} />
+        <div style={{ marginBottom: 'var(--space-6)' }}>
+          <PaymentMethodSelect value={processor} onChange={setProcessor} />
+        </div>
       )}
 
-      {error && <p>{error}</p>}
+      {error && (
+        <div className={c.card} style={{ padding: 'var(--space-4)', border: '1px solid var(--color-error)', marginBottom: 'var(--space-4)' }}>
+          <p>{error}</p>
+        </div>
+      )}
 
       <button
+        className={`${b.btn} ${b.soft}`}
         onClick={handlePurchase}
         disabled={!selectedPack || !processor || loading}
       >

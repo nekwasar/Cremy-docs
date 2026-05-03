@@ -13,6 +13,8 @@ import { AddImageButton } from '../../_components/AddImageButton';
 import { ClearInput } from '../../_components/ClearInput';
 import { TemplatePreviewModal } from '../../_components/TemplatePreviewModal';
 import { CreditBalance } from '../../_components/CreditBalance';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
 
 export default function GeneratePage() {
   const {
@@ -49,64 +51,68 @@ export default function GeneratePage() {
   };
 
   return (
-    <div>
-      <div>
+    <div style={{maxWidth:'var(--container-lg)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'var(--space-4)'}}>
         <Link href="/">Logo</Link>
         <CreditBalance />
         <Link href="/dashboard">Account</Link>
       </div>
 
       <div>
-        <Link href="/">Home</Link>
-        <span> / </span>
-        <span>Generate</span>
+        <Link href="/" style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Home</Link>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)',margin:'0 var(--space-2)'}}>/</span>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Generate</span>
       </div>
 
-      <div>
+      <div style={{marginBottom:'var(--space-4)'}}>
         <ExploreStylesButton onClick={() => setShowTemplates(true)} />
       </div>
 
       {isGenerating && isStreaming ? (
-        <div>
-          <button onClick={cancel}>Cancel</button>
+        <div className={c.soft}>
+          <button className={b.soft} onClick={cancel}>Cancel</button>
         </div>
       ) : generatedDocumentId ? (
-        <div>
+        <div className={c.soft}>
           <p>Document generated!</p>
-          <Link href={`/preview?doc=${generatedDocumentId}`}>
+          <Link href={`/preview?doc=${generatedDocumentId}`} className={b.soft}>
             View Document
           </Link>
         </div>
       ) : (
-        <div>
+        <div className={c.soft}>
           <GenerateInputBox
             value={inputValue}
             onChange={setInputValue}
             disabled={isGenerating}
           />
 
-          <DocStructureSelector
-            value={selectedStructure}
-            onChange={setStructure}
-          />
+          <div style={{marginTop:'var(--space-4)'}}>
+            <DocStructureSelector
+              value={selectedStructure}
+              onChange={setStructure}
+            />
+          </div>
 
-          <AddImageButton
-            imageCount={images.length}
-            onImageAdd={addImage}
-          />
+          <div style={{marginTop:'var(--space-4)'}}>
+            <AddImageButton
+              imageCount={images.length}
+              onImageAdd={addImage}
+            />
+          </div>
 
-          <div>
+          <div style={{marginTop:'var(--space-4)',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
             <ClearInput
               hasContent={!!inputValue}
               hasDocument={!!generatedDocumentId}
               onClear={clearInput}
             />
-          </div>
 
-          <CreditEstimateDisplay
-            credits={creditEstimate}
-            isLoading={isGenerating}
-          />
+            <CreditEstimateDisplay
+              credits={creditEstimate}
+              isLoading={isGenerating}
+            />
+          </div>
         </div>
       )}
 

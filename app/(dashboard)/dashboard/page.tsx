@@ -17,6 +17,9 @@ import { TemplateFavorites } from '../../_components/TemplateFavorites';
 import { AutoSaveIndicator } from '../../_components/AutoSaveIndicator';
 import { BulkActions } from '../../_components/BulkActions';
 import { CreditBalance } from '../../_components/CreditBalance';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
+import i from '@/styles/components/Input.module.css';
 
 export default function DashboardPage() {
   const { user, credits } = useUserStore();
@@ -131,19 +134,29 @@ export default function DashboardPage() {
     setSelectedIds(next);
   };
 
-  if (isLoading) return <p>Loading dashboard...</p>;
+  if (isLoading) return null;
 
   if (!isPro) {
     return (
-      <div>
+      <div style={{maxWidth:'var(--container-lg)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
+        <div>
+          <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Home</span>
+          <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)',margin:'0 var(--space-2)'}}>/</span>
+          <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Dashboard</span>
+        </div>
         <h1>Dashboard</h1>
-        <CreditBalance />
+
+        <div className={c.soft} style={{marginBottom:'var(--space-4)'}}>
+          <CreditBalance />
+        </div>
+
         <FreeDashboard
           credits={credits}
           activityLog={analyticsData.activityTimeline}
         />
-        <div>
-          <h2>Recent Documents</h2>
+
+        <div className={c.soft}>
+          <h2 className={c.header}>Recent Documents</h2>
           {documents.length === 0 ? (
             <p>No documents yet. <Link href="/generate">Create one</Link></p>
           ) : (
@@ -153,7 +166,9 @@ export default function DashboardPage() {
                   <Link href={`/preview?doc=${doc._id || doc.id}`}>
                     {doc.title || 'Untitled'}
                   </Link>
-                  <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
+                  <span style={{marginLeft:'var(--space-4)',color:'var(--color-text-muted)',fontSize:'var(--text-sm)'}}>
+                    {new Date(doc.createdAt).toLocaleDateString()}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -164,78 +179,108 @@ export default function DashboardPage() {
   }
 
   return (
-    <div>
-      <h1>Pro Dashboard</h1>
-      <CreditBalance />
-
-      <AutoSaveIndicator
-        enabled={true}
-        storageType="mongodb"
-      />
-
+    <div style={{maxWidth:'var(--container-lg)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
       <div>
-        <label>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Home</span>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)',margin:'0 var(--space-2)'}}>/</span>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Dashboard</span>
+      </div>
+      <h1>Pro Dashboard</h1>
+
+      <div className={c.soft} style={{marginBottom:'var(--space-4)'}}>
+        <CreditBalance />
+      </div>
+
+      <div className={c.soft} style={{marginBottom:'var(--space-4)'}}>
+        <AutoSaveIndicator
+          enabled={true}
+          storageType="mongodb"
+        />
+      </div>
+
+      <div className={c.soft} style={{marginBottom:'var(--space-4)'}}>
+        <label className={i.label}>
           <input
             type="checkbox"
             checked={activityLoggingEnabled}
             onChange={(e) => setActivityLogging(e.target.checked)}
           />
-          Enable Activity Logging
+          {' '}Enable Activity Logging
         </label>
       </div>
 
-      <AnalyticsWidget
-        documentsThisMonth={analyticsData.documentsThisMonth}
-        creditsUsedThisMonth={analyticsData.creditsUsedThisMonth}
-        mostUsedFormats={analyticsData.mostUsedFormats}
-      />
+      <div style={{marginBottom:'var(--space-4)'}}>
+        <AnalyticsWidget
+          documentsThisMonth={analyticsData.documentsThisMonth}
+          creditsUsedThisMonth={analyticsData.creditsUsedThisMonth}
+          mostUsedFormats={analyticsData.mostUsedFormats}
+        />
+      </div>
 
-      <ActivityTimeline timeline={analyticsData.activityTimeline} />
+      <div className={c.soft} style={{marginBottom:'var(--space-4)'}}>
+        <ActivityTimeline timeline={analyticsData.activityTimeline} />
+      </div>
 
-      <FolderManager />
+      <div className={c.soft} style={{marginBottom:'var(--space-4)'}}>
+        <FolderManager />
+      </div>
 
-      <BulkActions
-        selectedIds={Array.from(selectedIds)}
-        onDeleteSelected={handleBulkDelete}
-        onExportAll={handleExportAll}
-        onSelectAll={() => setSelectedIds(new Set(documents.map((d: any) => d._id || d.id)))}
-        onDeselectAll={() => setSelectedIds(new Set())}
-        totalDocuments={documents.length}
-      />
+      <div className={c.soft} style={{marginBottom:'var(--space-4)'}}>
+        <BulkActions
+          selectedIds={Array.from(selectedIds)}
+          onDeleteSelected={handleBulkDelete}
+          onExportAll={handleExportAll}
+          onSelectAll={() => setSelectedIds(new Set(documents.map((d: any) => d._id || d.id)))}
+          onDeselectAll={() => setSelectedIds(new Set())}
+          totalDocuments={documents.length}
+        />
+      </div>
 
-      <DocumentFilterBar
-        onSearch={setSearchQuery}
-        onSort={setSortBy}
-        onFilter={setFilterFormat}
-      />
+      <div className={c.soft} style={{marginBottom:'var(--space-4)'}}>
+        <DocumentFilterBar
+          onSearch={setSearchQuery}
+          onSort={setSortBy}
+          onFilter={setFilterFormat}
+        />
+      </div>
 
-      <div>
-        <h2>Documents ({documents.length})</h2>
-        <Link href="/generate">Create New</Link>
+      <div className={c.soft} style={{marginBottom:'var(--space-4)'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'var(--space-4)'}}>
+          <h2 className={c.header}>Documents ({documents.length})</h2>
+          <Link href="/generate" className={b.editorial}>Create New</Link>
+        </div>
 
         {documents.length === 0 ? (
           <p>No documents found.</p>
         ) : (
-          <ul>
+          <ul style={{listStyle:'none',padding:0,margin:0}}>
             {documents.map((doc: any) => (
-              <li key={doc._id || doc.id}>
-                <input
-                  type="checkbox"
-                  checked={selectedIds.has(doc._id || doc.id)}
-                  onChange={() => toggleSelect(doc._id || doc.id)}
-                />
-                <Link href={`/preview?doc=${doc._id || doc.id}`}>
-                  <strong>{doc.title || 'Untitled'}</strong>
-                </Link>
-                <span>{doc.format || 'txt'}</span>
-                <span>{doc.wordCount || 0} words</span>
-                <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
-                <div>
-                  <button onClick={() => setSelectedDocument(doc)}>Details</button>
-                  <button onClick={() => handleDelete(doc._id || doc.id)}>Delete</button>
-                  <Link href={`/generate?regenerate=${doc._id || doc.id}`}>
-                    Regenerate
+              <li key={doc._id || doc.id} style={{padding:'var(--space-3) 0',borderBottom:'1px solid var(--color-border)'}}>
+                <div style={{display:'flex',alignItems:'center',gap:'var(--space-3)'}}>
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(doc._id || doc.id)}
+                    onChange={() => toggleSelect(doc._id || doc.id)}
+                  />
+                  <Link href={`/preview?doc=${doc._id || doc.id}`}>
+                    <strong>{doc.title || 'Untitled'}</strong>
                   </Link>
+                  <span style={{color:'var(--color-text-muted)',fontSize:'var(--text-sm)'}}>
+                    {doc.format || 'txt'}
+                  </span>
+                  <span style={{color:'var(--color-text-muted)',fontSize:'var(--text-sm)'}}>
+                    {doc.wordCount || 0} words
+                  </span>
+                  <span style={{color:'var(--color-text-muted)',fontSize:'var(--text-sm)'}}>
+                    {new Date(doc.createdAt).toLocaleDateString()}
+                  </span>
+                  <div style={{marginLeft:'auto',display:'flex',gap:'var(--space-2)'}}>
+                    <button className={b.minimal} onClick={() => setSelectedDocument(doc)}>Details</button>
+                    <button className={b.minimal} onClick={() => handleDelete(doc._id || doc.id)}>Delete</button>
+                    <Link href={`/generate?regenerate=${doc._id || doc.id}`} className={b.minimal}>
+                      Regenerate
+                    </Link>
+                  </div>
                 </div>
               </li>
             ))}
@@ -244,12 +289,16 @@ export default function DashboardPage() {
       </div>
 
       {selectedDocument && (
-        <div>
-          <h2>{selectedDocument.title}</h2>
-          <button onClick={() => setSelectedDocument(null)}>Close</button>
-          <button onClick={() => setShowVersionHistory(!showVersionHistory)}>
-            {showVersionHistory ? 'Hide' : 'Show'} Version History
-          </button>
+        <div className={c.soft} style={{marginBottom:'var(--space-4)'}}>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'var(--space-3)'}}>
+            <h2 className={c.header}>{selectedDocument.title}</h2>
+            <div style={{display:'flex',gap:'var(--space-2)'}}>
+              <button className={b.minimal} onClick={() => setSelectedDocument(null)}>Close</button>
+              <button className={b.minimal} onClick={() => setShowVersionHistory(!showVersionHistory)}>
+                {showVersionHistory ? 'Hide' : 'Show'} Version History
+              </button>
+            </div>
+          </div>
           {showVersionHistory && (
             <VersionHistory
               documentId={(selectedDocument as any)._id || selectedDocument.id}
@@ -268,13 +317,13 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div>
-        <h2>Quick Actions</h2>
-        <div>
-          <Link href="/generate">Generate Document</Link>
-          <Link href="/convert">Convert File</Link>
-          <Link href="/templates">Browse Templates</Link>
-          <Link href="/settings">Settings</Link>
+      <div className={c.soft}>
+        <h2 className={c.header}>Quick Actions</h2>
+        <div style={{display:'flex',gap:'var(--space-3)',flexWrap:'wrap'}}>
+          <Link href="/generate" className={b.soft}>Generate Document</Link>
+          <Link href="/convert" className={b.minimal}>Convert File</Link>
+          <Link href="/templates" className={b.minimal}>Browse Templates</Link>
+          <Link href="/settings" className={b.minimal}>Settings</Link>
         </div>
       </div>
     </div>

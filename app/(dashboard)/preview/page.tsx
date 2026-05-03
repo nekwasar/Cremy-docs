@@ -16,6 +16,8 @@ import { UndoToast } from '../../_components/UndoToast';
 import { ToolVisualIndicators } from '../../_components/ToolVisualIndicators';
 import { CreditBalance } from '../../_components/CreditBalance';
 import { useGenerateStore } from '@/store/generate-store';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
 
 export default function PreviewPage() {
   const searchParams = useSearchParams();
@@ -135,68 +137,68 @@ export default function PreviewPage() {
   };
 
   if (isLoading) {
-    return (
-      <div>
-        <Link href="/generate">← Back</Link>
-      </div>
-    );
+    return null;
   }
 
   if (error) {
     return (
-      <div>
-        <Link href="/generate">← Back</Link>
+      <div style={{maxWidth:'var(--container-lg)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
+        <Link href="/generate">Back</Link>
         <h1>Error</h1>
         <p>{error}</p>
-        <Link href="/generate">Return to Generate</Link>
+        <Link href="/generate" className={b.soft}>Return to Generate</Link>
       </div>
     );
   }
 
   if (!document) {
     return (
-      <div>
-        <Link href="/generate">← Back</Link>
+      <div style={{maxWidth:'var(--container-lg)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
+        <Link href="/generate">Back</Link>
         <h1>No Document Found</h1>
         <p>The document could not be found. It may have been deleted or you may not have access.</p>
-        <Link href="/generate">Create New Document</Link>
+        <Link href="/generate" className={b.soft}>Create New Document</Link>
       </div>
     );
   }
 
   return (
-    <div>
-      <div>
+    <div style={{maxWidth:'var(--container-lg)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'var(--space-4)'}}>
         <Link href="/">Logo</Link>
         <CreditBalance />
         <Link href="/dashboard">Account</Link>
       </div>
 
-      <div>
-        <Link href="/">Home</Link>
-        <span> / </span>
-        <Link href="/generate">Generate</Link>
-        <span> / </span>
-        <span>Preview</span>
+      <div style={{marginBottom:'var(--space-4)'}}>
+        <Link href="/" style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Home</Link>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)',margin:'0 var(--space-2)'}}>/</span>
+        <Link href="/generate" style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Generate</Link>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)',margin:'0 var(--space-2)'}}>/</span>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Preview</span>
       </div>
 
-      <ToolVisualIndicators
-        activeTool={useToolIndicatorStore.getState().activeTool}
-        toolStatus="complete"
-      />
+      <div style={{marginBottom:'var(--space-4)'}}>
+        <ToolVisualIndicators
+          activeTool={useToolIndicatorStore.getState().activeTool}
+          toolStatus="complete"
+        />
+      </div>
 
-      <PreviewToolbar
-        isFullEdit={fullEditMode}
-        canUndo={useUndoStore.getState().history.length > 0}
-        canRedo={false}
-        onToggleEdit={() => setFullEditMode(!fullEditMode)}
-        onUndo={() => useUndoStore.getState().undo()}
-        onRedo={() => {}}
-        onDownload={handleDownload}
-        onRegenerate={handleRegenerate}
-      />
+      <div className={c.soft} style={{marginBottom:'var(--space-4)'}}>
+        <PreviewToolbar
+          isFullEdit={fullEditMode}
+          canUndo={useUndoStore.getState().history.length > 0}
+          canRedo={false}
+          onToggleEdit={() => setFullEditMode(!fullEditMode)}
+          onUndo={() => useUndoStore.getState().undo()}
+          onRedo={() => {}}
+          onDownload={handleDownload}
+          onRegenerate={handleRegenerate}
+        />
+      </div>
 
-      <div>
+      <div className={c.soft} style={{marginBottom:'var(--space-4)'}}>
         <DocumentRenderer
           content={editContent}
           editable={true}
@@ -205,13 +207,15 @@ export default function PreviewPage() {
         />
       </div>
 
-      <div>
+      <div className={c.soft} style={{marginBottom:'var(--space-4)'}}>
         <AIEditInput onSubmit={handleAIEdit} isLoading={false} />
       </div>
 
       {docId && (
-        <div>
-          <p>Edit in preview page - any unexpected output can be edited here.</p>
+        <div style={{marginBottom:'var(--space-4)'}}>
+          <p style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>
+            Edit in preview page - any unexpected output can be edited here.
+          </p>
         </div>
       )}
 

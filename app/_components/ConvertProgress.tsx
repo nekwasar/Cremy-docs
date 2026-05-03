@@ -10,18 +10,12 @@ export function ConvertProgress({ progress, isConverting, step }: ConvertProgres
   if (!isConverting && progress === 0) return null;
 
   return (
-    <div>
-      <div>
-        <progress value={progress} max={100}>{progress}%</progress>
-        <span>{progress}%</span>
+    <div style={{ marginTop: 'var(--space-4)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+        <progress value={progress} max={100} style={{ flex: 1 }}>{progress}%</progress>
+        <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>{progress}%</span>
       </div>
-      {step && <p>{step}</p>}
-      {isConverting && (
-        <div>
-          {progress < 30 && <p>Analyzing file...</p>}
-          {progress >= 30 && progress < 70 && <p>Converting content...</p>}
-        </div>
-      )}
+      {step && <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginTop: 'var(--space-1)' }}>{step}</p>}
     </div>
   );
 }

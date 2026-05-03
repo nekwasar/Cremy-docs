@@ -2,6 +2,8 @@
 
 import { useState, useRef } from 'react';
 import { useUserStore } from '@/store/user-store';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
 
 export default function EditFilePage() {
   const [file, setFile] = useState<File | null>(null);
@@ -44,34 +46,51 @@ export default function EditFilePage() {
   };
 
   return (
-    <div>
+    <div style={{maxWidth:'var(--container-lg)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
+      <div>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Tools</span>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)',margin:'0 var(--space-2)'}}>/</span>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Edit File</span>
+      </div>
       <h1>Edit File</h1>
 
-      <input
-        type="file"
-        ref={fileInput}
-        onChange={handleFileSelect}
-        accept=".pdf,.docx"
-        hidden
-      />
+      <div className={c.soft}>
+        <input
+          type="file"
+          ref={fileInput}
+          onChange={handleFileSelect}
+          accept=".pdf,.docx"
+          hidden
+        />
 
-      <div onClick={() => fileInput.current?.click()}>
-        {file ? <p>{file.name}</p> : <p>Click to select file</p>}
+        <div
+          onClick={() => fileInput.current?.click()}
+          style={{
+            border:'2px dashed var(--color-border)',
+            borderRadius:'var(--radius-md)',
+            padding:'var(--space-8) var(--space-4)',
+            textAlign:'center',
+            cursor:'pointer',
+            marginBottom:'var(--space-4)',
+          }}
+        >
+          {file ? <p>{file.name}</p> : <p>Click to select file</p>}
+        </div>
+
+        <div style={{display:'flex',gap:'var(--space-3)',flexWrap:'wrap',marginBottom:'var(--space-4)'}}>
+          <button className={b.soft} onClick={() => handleEdit('remove-pages')}>
+            Remove Pages
+          </button>
+          <button className={b.soft} onClick={() => handleEdit('rotate')}>
+            Rotate Pages
+          </button>
+          <button className={b.soft} onClick={() => handleEdit('reorder')}>
+            Reorder Pages
+          </button>
+        </div>
+
+        <button className={b.editorial}>Download Edited File</button>
       </div>
-
-      <div>
-        <button onClick={() => handleEdit('remove-pages')}>
-          Remove Pages
-        </button>
-        <button onClick={() => handleEdit('rotate')}>
-          Rotate Pages
-        </button>
-        <button onClick={() => handleEdit('reorder')}>
-          Reorder Pages
-        </button>
-      </div>
-
-      <button>Download Edited File</button>
     </div>
   );
 }

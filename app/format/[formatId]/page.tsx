@@ -15,6 +15,8 @@ import { UseThisFormatButton } from '../../_components/UseThisFormatButton';
 import { GenerateInputBox } from '../../_components/GenerateInputBox';
 import { CreditEstimateDisplay } from '../../_components/CreditEstimateDisplay';
 import { ClearInput } from '../../_components/ClearInput';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
 
 export default function FormatPage() {
   const params = useParams();
@@ -43,7 +45,7 @@ export default function FormatPage() {
 
   if (!format) {
     return (
-      <div>
+      <div style={{ maxWidth: 'var(--container-lg)', margin: '0 auto', padding: 'var(--space-8) var(--space-6)' }}>
         <h1>Format Not Found</h1>
         <Link href="/format">View all formats</Link>
       </div>
@@ -56,31 +58,37 @@ export default function FormatPage() {
   };
 
   return (
-    <div>
-      <Link href="/format">← All Formats</Link>
+    <div style={{ maxWidth: 'var(--container-lg)', margin: '0 auto', padding: 'var(--space-8) var(--space-6)' }}>
+      <Link href="/format" style={{ display: 'inline-block', marginBottom: 'var(--space-4)' }}>
+        ← All Formats
+      </Link>
 
-      <FormatPreview
-        previewUrl={format.previewUrl}
-        formatName={format.name}
-      />
+      <div className={c.card} style={{ padding: 0, marginBottom: 'var(--space-6)' }}>
+        <FormatPreview
+          previewUrl={format.previewUrl}
+          formatName={format.name}
+        />
+      </div>
 
-      <FormatName name={format.name} category={format.category} />
-      <FormatDescription description={format.description} />
-      <FormatCreditCost creditCost={format.creditCost} />
+      <div style={{ marginBottom: 'var(--space-6)' }}>
+        <FormatName name={format.name} category={format.category} />
+        <FormatDescription description={format.description} />
+        <FormatCreditCost creditCost={format.creditCost} />
+      </div>
 
       {isGenerating ? (
-        <div>
-          <button onClick={cancel}>Cancel</button>
+        <div style={{ display: 'flex', gap: 'var(--space-3)', marginBottom: 'var(--space-4)' }}>
+          <button className={`${b.btn} ${b.raw}`} onClick={cancel}>Cancel</button>
         </div>
       ) : generatedDocumentId ? (
-        <div>
+        <div className={c.card} style={{ padding: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
           <p>Document generated!</p>
-          <Link href={`/preview?doc=${generatedDocumentId}`}>
+          <Link href={`/preview?doc=${generatedDocumentId}`} className={`${b.btn} ${b.soft}`} style={{ marginTop: 'var(--space-3)' }}>
             View Document
           </Link>
         </div>
       ) : (
-        <div>
+        <div style={{ marginBottom: 'var(--space-6)' }}>
           <GenerateInputBox
             value={inputValue}
             onChange={setInputValue}
@@ -92,7 +100,7 @@ export default function FormatPage() {
             isLoading={isGenerating}
           />
 
-          <div>
+          <div style={{ marginTop: 'var(--space-3)' }}>
             <ClearInput
               hasContent={!!inputValue}
               hasDocument={false}
@@ -102,12 +110,14 @@ export default function FormatPage() {
         </div>
       )}
 
-      <UseThisFormatButton formatId={formatId} />
+      <div style={{ marginBottom: 'var(--space-6)' }}>
+        <UseThisFormatButton formatId={formatId} />
+      </div>
 
       {error && (
-        <div>
+        <div className={c.card} style={{ padding: 'var(--space-4)', border: '1px solid var(--color-error)' }}>
           <p>Error: {error}</p>
-          <button onClick={() => useFormatStore.getState().setError(null)}>
+          <button className={`${b.btn} ${b.raw} ${b.sm}`} onClick={() => useFormatStore.getState().setError(null)} style={{ marginTop: 'var(--space-2)' }}>
             Dismiss
           </button>
         </div>

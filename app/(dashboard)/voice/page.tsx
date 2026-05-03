@@ -16,6 +16,8 @@ import { LanguageNotice } from '../../_components/LanguageNotice';
 import { CreditBalance } from '../../_components/CreditBalance';
 import { convertAudioToText, convertAudioFileToText } from '@/lib/audio-to-text';
 import { handleTranscriptionError } from '@/lib/transcription-errors';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
 
 export default function VoicePage() {
   const {
@@ -144,107 +146,131 @@ export default function VoicePage() {
   );
 
   return (
-    <div>
-      <div>
+    <div style={{maxWidth:'var(--container-lg)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'var(--space-4)'}}>
         <Link href="/">Logo</Link>
         <CreditBalance />
         <Link href="/dashboard">Account</Link>
       </div>
 
-      <div>
-        <Link href="/">Home</Link>
-        <span> / </span>
-        <span>Voice</span>
+      <div style={{marginBottom:'var(--space-2)'}}>
+        <Link href="/" style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Home</Link>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)',margin:'0 var(--space-2)'}}>/</span>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Voice</span>
       </div>
 
       <h1>Voice to Document</h1>
       <LanguageNotice />
 
-      <div>
-        <button onClick={() => setInputMode('record')} disabled={inputMode === 'record'}>
-          Record
-        </button>
-        <button onClick={() => setInputMode('upload')} disabled={inputMode === 'upload'}>
-          Upload
-        </button>
-      </div>
-
-      {recordingStatus === 'recording' && (
-        <RecordingFeedback isRecording={true} duration={duration} />
-      )}
-
-      {recordingStatus === 'processing' && null}
-
-      {error && (
-        <div>
-          <p>{error}</p>
-          {recordingStatus !== 'processing' && (
-            <button onClick={() => setError(null)}>Dismiss</button>
-          )}
+      <div className={c.soft}>
+        <div style={{display:'flex',gap:'var(--space-3)',marginBottom:'var(--space-4)'}}>
+          <button
+            className={b.soft}
+            onClick={() => setInputMode('record')}
+            disabled={inputMode === 'record'}
+          >
+            Record
+          </button>
+          <button
+            className={b.minimal}
+            onClick={() => setInputMode('upload')}
+            disabled={inputMode === 'upload'}
+          >
+            Upload
+          </button>
         </div>
-      )}
 
-      {!audioBlob && recordingStatus !== 'processing' && (
-        <div>
-          {inputMode === 'record' ? (
-            <div>
-              <RecordButton
-                onRecordingComplete={handleRecordingComplete}
-                onRecordingStart={handleRecordingStart}
-                onRecordingCancel={handleRecordingCancel}
-                disabled={recordingStatus === 'recording'}
-              />
-              <p>Hold button to record. Release to stop. Max 2 minutes.</p>
-            </div>
-          ) : (
-            <AudioUploader
-              onFileSelected={handleFileUpload}
-              onError={(msg) => setError(msg)}
-              disabled={false}
-            />
-          )}
-        </div>
-      )}
+        {recordingStatus === 'recording' && (
+          <RecordingFeedback isRecording={true} duration={duration} />
+        )}
 
-      {audioBlob && !transcribedText && recordingStatus === 'idle' && (
-        <div>
-          <AudioPlayback audioBlob={audioBlob} />
-          <div>
-            <button onClick={handleProcessRecording}>
-              Convert to Document ({credits} credits available)
-            </button>
-            <RerecordButton onClick={handleReRecord} />
-          </div>
-        </div>
-      )}
+        {recordingStatus === 'processing' && null}
 
-      {formattedText && (
-        <div>
-          <div>
-            <h3>Formatted Document</h3>
-            <pre>{formattedText}</pre>
-          </div>
-
-          {transcribedText && (
-            <details>
-              <summary>View Raw Transcription</summary>
-              <pre>{transcribedText}</pre>
-            </details>
-          )}
-
-          <VoiceEdit
-            originalTranscription={transcribedText || ''}
-            onReprocess={handleReprocess}
-          />
-
-          <div>
-            <VoiceDownload documentId={documentId || undefined} formattedText={formattedText} />
-            {documentId && (
-              <Link href={`/preview?doc=${documentId}`}>Preview Document</Link>
+        {error && (
+          <div style={{marginBottom:'var(--space-4)',padding:'var(--space-3)',background:'var(--color-error-muted)',borderRadius:'var(--radius-sm)'}}>
+            <p style={{color:'var(--color-error)',margin:0}}>{error}</p>
+            {recordingStatus !== 'processing' && (
+              <button className={b.minimal} onClick={() => setError(null)} style={{marginTop:'var(--space-2)'}}>
+                Dismiss
+              </button>
             )}
           </div>
-        </div>
-      )}
+        )}
+
+        {!audioBlob && recordingStatus !== 'processing' && (
+          <div>
+            {inputMode === 'record' ? (
+              <div style={{textAlign:'center',padding:'var(--space-6) 0'}}>
+                <RecordButton
+                  onRecordingComplete={handleRecordingComplete}
+                  onRecordingStart={handleRecordingStart}
+                  onRecordingCancel={handleRecordingCancel}
+                  disabled={recordingStatus === 'recording'}
+                />
+                <p style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)',marginTop:'var(--space-3)'}}>
+                  Hold button to record. Release to stop. Max 2 minutes.
+                </p>
+              </div>
+            ) : (
+              <AudioUploader
+                onFileSelected={handleFileUpload}
+                onError={(msg) => setError(msg)}
+                disabled={false}
+              />
+            )}
+          </div>
+        )}
+
+        {audioBlob && !transcribedText && recordingStatus === 'idle' && (
+          <div style={{textAlign:'center',padding:'var(--space-4) 0'}}>
+            <AudioPlayback audioBlob={audioBlob} />
+            <div style={{display:'flex',gap:'var(--space-3)',justifyContent:'center',marginTop:'var(--space-4)'}}>
+              <button className={b.soft} onClick={handleProcessRecording}>
+                Convert to Document ({credits} credits available)
+              </button>
+              <RerecordButton onClick={handleReRecord} />
+            </div>
+          </div>
+        )}
+
+        {formattedText && (
+          <div>
+            <div className={c.soft} style={{marginBottom:'var(--space-4)'}}>
+              <h3 className={c.header}>Formatted Document</h3>
+              <pre style={{whiteSpace:'pre-wrap',fontSize:'var(--text-sm)',color:'var(--color-text)'}}>
+                {formattedText}
+              </pre>
+            </div>
+
+            {transcribedText && (
+              <details style={{marginBottom:'var(--space-4)'}}>
+                <summary style={{cursor:'pointer',fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>
+                  View Raw Transcription
+                </summary>
+                <pre style={{whiteSpace:'pre-wrap',fontSize:'var(--text-sm)',marginTop:'var(--space-2)'}}>
+                  {transcribedText}
+                </pre>
+              </details>
+            )}
+
+            <div style={{marginBottom:'var(--space-4)'}}>
+              <VoiceEdit
+                originalTranscription={transcribedText || ''}
+                onReprocess={handleReprocess}
+              />
+            </div>
+
+            <div style={{display:'flex',gap:'var(--space-3)',alignItems:'center'}}>
+              <VoiceDownload documentId={documentId || undefined} formattedText={formattedText} />
+              {documentId && (
+                <Link href={`/preview?doc=${documentId}`} className={b.minimal}>
+                  Preview Document
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

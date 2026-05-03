@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { validatePasswordComplexity } from '@/lib/password-complexity';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
+import i from '@/styles/components/Input.module.css';
 
 export default function AdminCreatePage() {
   const searchParams = useSearchParams();
@@ -50,37 +53,39 @@ export default function AdminCreatePage() {
   };
 
   return (
-    <div>
-      <h1>Create Admin Account</h1>
+    <div style={{maxWidth:480,margin:'0 auto',padding:'var(--space-16) var(--space-6)'}}>
+      <h1 style={{fontSize:'var(--text-2xl)',fontWeight:'var(--weight-bold)',marginBottom:'var(--space-6)',textAlign:'center'}}>Create Admin Account</h1>
       {token ? (
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label>Username</label>
-            <input value={username} onChange={(e) => setUsername(e.target.value)} required />
+        <form onSubmit={handleSubmit} className={`${c.card} ${c.soft}`}>
+          <div className={i.group}>
+            <label className={i.label}>Username</label>
+            <input className={`${i.input} ${i.soft}`} value={username} onChange={(e) => setUsername(e.target.value)} required />
           </div>
-          <div>
-            <label>Password</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <div className={i.group}>
+            <label className={i.label}>Password</label>
+            <input className={`${i.input} ${i.soft}`} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
             {complexity && (
-              <div>
-                <p>Strength: {complexity.strength}</p>
-                {complexity.errors.map((err, i) => (
-                  <p key={i}>{err}</p>
+              <div style={{marginTop:'var(--space-2)'}}>
+                <p style={{fontSize:'var(--text-xs)',fontWeight:'var(--weight-medium)',marginBottom:'var(--space-1)'}}>Strength: {complexity.strength}</p>
+                {complexity.errors.map((err, idx) => (
+                  <p key={idx} style={{fontSize:'var(--text-xs)',color:'var(--color-error)'}}>{err}</p>
                 ))}
               </div>
             )}
           </div>
-          <div>
-            <label>Confirm Password</label>
-            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+          <div className={i.group}>
+            <label className={i.label}>Confirm Password</label>
+            <input className={`${i.input} ${i.soft}`} type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
           </div>
-          {error && <p>{error}</p>}
-          <button type="submit" disabled={loading}>
-            {loading ? 'Creating...' : 'Create Admin Account'}
+          {error && <p style={{color:'var(--color-error)',fontSize:'var(--text-sm)',marginBottom:'var(--space-4)'}}>{error}</p>}
+          <button className={`${b.btn} ${b.soft} ${b.btnFull}`} type="submit" disabled={loading}>
+            Create Admin Account
           </button>
         </form>
       ) : (
-        <p>Invalid or missing invite token.</p>
+        <div className={`${c.card} ${c.soft}`}>
+          <p style={{fontSize:'var(--text-base)',color:'var(--color-text-secondary)',textAlign:'center'}}>Invalid or missing invite token.</p>
+        </div>
       )}
     </div>
   );

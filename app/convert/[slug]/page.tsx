@@ -18,6 +18,9 @@ import { detectFormat } from '@/lib/format-detection';
 import { validateConvertFile } from '@/lib/format-validation';
 import { checkFileSize } from '@/lib/file-size';
 import { convertWithAI } from '@/lib/ai-conversion';
+import s from '@/styles/pages/convert.module.css';
+import b from '@/styles/components/Button.module.css';
+import c from '@/styles/components/Card.module.css';
 
 export default function ConvertSlugPage() {
   const params = useParams();
@@ -49,7 +52,7 @@ export default function ConvertSlugPage() {
 
   if (!pair) {
     return (
-      <div>
+      <div className={s.page}>
         <h1>Conversion Not Found</h1>
         <Link href="/convert">View all conversions</Link>
       </div>
@@ -115,7 +118,7 @@ export default function ConvertSlugPage() {
   ]);
 
   return (
-    <div>
+    <div className={s.page}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -125,10 +128,12 @@ export default function ConvertSlugPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLD) }}
       />
 
-      <div>
-        <Link href="/">Logo</Link>
-        <CreditBalance />
-        <Link href="/dashboard">Account</Link>
+      <div className={s.header}>
+        <div className={s.headerRow}>
+          <Link href="/">Logo</Link>
+          <CreditBalance />
+          <Link href="/dashboard">Account</Link>
+        </div>
       </div>
 
       <ConvertBreadcrumb
@@ -144,67 +149,80 @@ export default function ConvertSlugPage() {
       <ConvertFreeNotice />
 
       {error && (
-        <div>
+        <div className={c.card} style={{ padding: 'var(--space-4)', marginBottom: 'var(--space-4)', border: '1px solid var(--color-error)', borderRadius: 'var(--radius-md)' }}>
           <p>{error}</p>
-          <button onClick={() => setError(null)}>Dismiss</button>
+          <button className={`${b.btn} ${b.raw} ${b.sm}`} onClick={() => setError(null)}>Dismiss</button>
         </div>
       )}
 
-      {!sourceFile ? (
-        <div>
-          <ConvertUploadZone onFileSelected={handleFileSelected} />
-          <p>Supported source: {pair.sourceLabel} (and compatible formats)</p>
-          <p>Output format: {pair.targetLabel}</p>
-        </div>
-      ) : (
-        <div>
-          <div>
-            <div>
-              <p>Source: <strong>{sourceFile.name}</strong></p>
-              {sizeInfo && <p>Size: {sizeInfo.formattedSize}</p>}
+      <div className={s.toolArea}>
+        {!sourceFile ? (
+          <div className={s.uploadSection}>
+            <ConvertUploadZone onFileSelected={handleFileSelected} />
+            <p style={{ marginTop: 'var(--space-3)', fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>
+              Supported source: {pair.sourceLabel} (and compatible formats)
+            </p>
+            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>
+              Output format: {pair.targetLabel}
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className={c.card} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-3) var(--space-4)' }}>
+              <div>
+                <p>Source: <strong>{sourceFile.name}</strong></p>
+                {sizeInfo && <p>Size: {sizeInfo.formattedSize}</p>}
+              </div>
+              <button className={`${b.btn} ${b.raw} ${b.sm}`} onClick={() => setSourceFile(null)}>Remove</button>
             </div>
-            <button onClick={() => setSourceFile(null)}>Remove</button>
-          </div>
 
-          <div>
-            <p>Converting from: <strong>{pair.sourceLabel}</strong> → <strong>{pair.targetLabel}</strong></p>
-          </div>
+            <div className={s.formatRow}>
+              <p>Converting from: <strong>{pair.sourceLabel}</strong> <span className={s.arrow}>→</span> <strong>{pair.targetLabel}</strong></p>
+            </div>
 
-          {showComplete && convertedBlob ? (
-            <ConvertComplete
-              onPreview={() => {}}
-              onDownload={handleDownload}
-            />
-          ) : (
-            <button
-              onClick={handleConvert}
-              disabled={isConverting || !sourceFile}
-            >
-              {isConverting ? 'Converting...' : `Convert to ${pair.targetLabel}`}
-            </button>
-          )}
+            <div className={s.actions}>
+              {showComplete && convertedBlob ? (
+                <ConvertComplete
+                  onPreview={() => {}}
+                  onDownload={handleDownload}
+                />
+              ) : (
+                <button
+                  className={`${b.btn} ${b.soft}`}
+                  onClick={handleConvert}
+                  disabled={isConverting || !sourceFile}
+                >
+                  Convert to {pair.targetLabel}
+                </button>
+              )}
+            </div>
 
-          <ConvertProgress progress={progress} isConverting={isConverting} />
+            <ConvertProgress progress={progress} isConverting={isConverting} />
 
-          {convertedBlob && (
-            <ConvertDownload
-              blob={convertedBlob}
-              fileName={`${sourceFile.name.replace(/\.[^.]+$/, '')}.${targetFormat || pair.targetFormat}`}
-            />
-          )}
-        </div>
-      )}
-
-      <div>
-        <div dangerouslySetInnerHTML={{ __html: content?.replace(/\n\n/g, '<br/><br/>') || '' }} />
+            {convertedBlob && (
+              <div className={s.previewArea}>
+                <ConvertDownload
+                  blob={convertedBlob}
+                  fileName={`${sourceFile.name.replace(/\.[^.]+$/, '')}.${targetFormat || pair.targetFormat}`}
+                />
+              </div>
+            )}
+          </>
+        )}
       </div>
 
+      {content && (
+        <div className={s.previewArea}>
+          <div dangerouslySetInnerHTML={{ __html: content.replace(/\n\n/g, '<br/><br/>') }} />
+        </div>
+      )}
+
       {relatedPairs.length > 0 && (
-        <div>
+        <div className={s.previewArea}>
           <h2>Related Conversions</h2>
-          <ul>
+          <ul style={{ marginTop: 'var(--space-3)', paddingLeft: 'var(--space-4)' }}>
             {relatedPairs.map((rp) => (
-              <li key={rp.slug}>
+              <li key={rp.slug} style={{ marginBottom: 'var(--space-2)' }}>
                 <Link href={`/convert/${rp.slug}`}>
                   Convert {rp.sourceLabel} to {rp.targetLabel}
                 </Link>

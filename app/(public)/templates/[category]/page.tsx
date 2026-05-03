@@ -6,6 +6,9 @@ import { useSearchParams } from 'next/navigation';
 import { TemplateGrid } from '../../../_components/TemplateGrid';
 import { CategoryFilters } from '../../../_components/CategoryFilters';
 import { TemplatePreviewModal } from '../../../_components/TemplatePreviewModal';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
+import i from '@/styles/components/Input.module.css';
 
 interface TemplateItem {
   _id: string;
@@ -89,9 +92,11 @@ export default function TemplatesCategoryPage() {
   };
 
   return (
-    <div>
-      <Link href="/templates">← All Templates</Link>
-      <h1>{category} Templates</h1>
+    <div style={{ maxWidth: 'var(--container-lg)', margin: '0 auto', padding: 'var(--space-8) var(--space-6)' }}>
+      <Link href="/templates" style={{ display: 'inline-block', marginBottom: 'var(--space-4)' }}>
+        ← All Templates
+      </Link>
+      <h1 style={{ marginBottom: 'var(--space-4)' }}>{category} Templates</h1>
 
       <CategoryFilters
         onSort={setSortBy}
@@ -106,7 +111,9 @@ export default function TemplatesCategoryPage() {
         category={category}
       />
 
-      <SearchBarLocal onSearch={setSearchQuery} />
+      <div style={{ marginBottom: 'var(--space-6)' }}>
+        <SearchBarLocal onSearch={setSearchQuery} />
+      </div>
 
       <TemplateGrid
         templates={mappedTemplates}
@@ -126,6 +133,7 @@ export default function TemplatesCategoryPage() {
 function SearchBarLocal({ onSearch }: { onSearch: (q: string) => void }) {
   return (
     <input
+      className={`${i.input} ${i.soft}`}
       type="text"
       placeholder="Search in this category..."
       onChange={(e) => onSearch(e.target.value)}

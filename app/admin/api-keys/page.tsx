@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { AdminSidebar } from '../../_components/AdminSidebar';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
+import i from '@/styles/components/Input.module.css';
 
 export default function AdminApiKeysPage() {
   const [apiKey, setApiKey] = useState<string | null>(null);
@@ -44,31 +47,33 @@ export default function AdminApiKeysPage() {
   };
 
   return (
-    <div>
+    <div style={{display:'flex'}}>
       <AdminSidebar />
-      <div>
-        <h1>API Key Management</h1>
+      <div style={{maxWidth:'var(--container-xl)',margin:'0 auto',padding:'var(--space-8) var(--space-6)',flex:1}}>
+        <h1 style={{fontSize:'var(--text-2xl)',fontWeight:'var(--weight-bold)',marginBottom:'var(--space-6)'}}>API Key Management</h1>
 
         {apiKey ? (
-          <div>
-            <p>Current Key: {maskedKey}</p>
-            <p>Status: {stats.status}</p>
-            <p>Last Used: {stats.lastUsed || 'Never'}</p>
-            <button onClick={handleRemoveKey}>Remove Key</button>
+          <div className={`${c.card} ${c.soft}`} style={{marginBottom:'var(--space-6)'}}>
+            <p style={{fontSize:'var(--text-base)',marginBottom:'var(--space-2)',fontFamily:'var(--font-mono)'}}>Current Key: {maskedKey}</p>
+            <p style={{fontSize:'var(--text-sm)',color:'var(--color-text-secondary)',marginBottom:'var(--space-2)'}}>Status: {stats.status}</p>
+            <p style={{fontSize:'var(--text-sm)',color:'var(--color-text-secondary)',marginBottom:'var(--space-4)'}}>Last Used: {stats.lastUsed || 'Never'}</p>
+            <button className={`${b.btn} ${b.raw}`} onClick={handleRemoveKey}>Remove Key</button>
           </div>
         ) : (
-          <p>No API key configured. Add one to enable AI features.</p>
+          <div className={`${c.card} ${c.soft}`} style={{marginBottom:'var(--space-6)'}}>
+            <p style={{fontSize:'var(--text-base)',color:'var(--color-text-secondary)'}}>No API key configured. Add one to enable AI features.</p>
+          </div>
         )}
 
-        <div>
-          <button onClick={handleAddKey}>Add New API Key</button>
+        <div style={{marginBottom:'var(--space-6)'}}>
+          <button className={`${b.btn} ${b.soft}`} onClick={handleAddKey}>Add New API Key</button>
         </div>
 
         {showNew && newKey && (
-          <div>
-            <p>New API Key (copy now - won&apos;t be shown again):</p>
-            <pre>{newKey}</pre>
-            <button onClick={() => navigator.clipboard.writeText(newKey)}>Copy</button>
+          <div className={`${c.card} ${c.soft}`}>
+            <p style={{fontSize:'var(--text-sm)',fontWeight:'var(--weight-medium)',marginBottom:'var(--space-3)'}}>New API Key (copy now &mdash; won&apos;t be shown again):</p>
+            <pre style={{background:'var(--color-input-bg)',padding:'var(--space-3)',borderRadius:'var(--radius-xs)',fontFamily:'var(--font-mono)',fontSize:'var(--text-sm)',marginBottom:'var(--space-3)',overflowX:'auto'}}>{newKey}</pre>
+            <button className={`${b.btn} ${b.raw}`} onClick={() => navigator.clipboard.writeText(newKey)}>Copy</button>
           </div>
         )}
       </div>

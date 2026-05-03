@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import { useUserStore } from '@/store/user-store';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
+import i from '@/styles/components/Input.module.css';
 
 const STYLES = ['Business', 'Academic', 'Legal', 'Creative', 'Personal'];
 
@@ -40,24 +43,33 @@ export default function ChangeStylePage() {
   };
 
   return (
-    <div>
+    <div style={{maxWidth:'var(--container-lg)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
       <h1>Change Document Style</h1>
 
-      <select value={style} onChange={(e) => setStyle(e.target.value)}>
-        {STYLES.map((s) => (
-          <option key={s} value={s}>{s}</option>
-        ))}
-      </select>
+      <div className={c.soft}>
+        <div className={i.group}>
+          <label className={i.label}>Style</label>
+          <select className={i.soft} value={style} onChange={(e) => setStyle(e.target.value)}>
+            {STYLES.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+        </div>
 
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Paste content here..."
-      />
+        <div className={i.group}>
+          <label className={i.label}>Content</label>
+          <textarea
+            className={`${i.soft} ${i.textarea}`}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="Paste content here..."
+          />
+        </div>
 
-      <button onClick={handleChange} disabled={!content.trim() || isChanging}>
-        {isChanging ? 'Applying...' : 'Apply Style (1 credit)'}
-      </button>
+        <button className={b.soft} onClick={handleChange} disabled={!content.trim() || isChanging}>
+          Apply Style (1 credit)
+        </button>
+      </div>
     </div>
   );
 }

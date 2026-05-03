@@ -16,6 +16,9 @@ import { validateConvertFile } from '@/lib/format-validation';
 import { checkFileSize } from '@/lib/file-size';
 import { convertWithAI } from '@/lib/ai-conversion';
 import Link from 'next/link';
+import s from '@/styles/pages/convert.module.css';
+import b from '@/styles/components/Button.module.css';
+import c from '@/styles/components/Card.module.css';
 
 export default function ConvertPage() {
   const {
@@ -92,11 +95,13 @@ export default function ConvertPage() {
   const sizeInfo = sourceFile ? checkFileSize(sourceFile) : null;
 
   return (
-    <div>
-      <div>
-        <Link href="/">Logo</Link>
-        <CreditBalance />
-        <Link href="/dashboard">Account</Link>
+    <div className={s.page}>
+      <div className={s.header}>
+        <div className={s.headerRow}>
+          <Link href="/">Logo</Link>
+          <CreditBalance />
+          <Link href="/dashboard">Account</Link>
+        </div>
       </div>
 
       <ConvertBreadcrumb
@@ -110,59 +115,70 @@ export default function ConvertPage() {
       <ConvertFreeNotice />
 
       {error && (
-        <div>
+        <div className={c.card} style={{ padding: 'var(--space-4)', marginBottom: 'var(--space-4)', border: '1px solid var(--color-error)', borderRadius: 'var(--radius-md)' }}>
           <p>{error}</p>
-          <button onClick={() => setError(null)}>Dismiss</button>
+          <button className={`${b.btn} ${b.raw} ${b.sm}`} onClick={() => setError(null)}>Dismiss</button>
         </div>
       )}
 
-      {!sourceFile ? (
-        <ConvertUploadZone onFileSelected={handleFileSelected} />
-      ) : (
-        <div>
-          <div>
-            <div>
-              <p>Source File: <strong>{sourceFile.name}</strong></p>
-              {sizeInfo && <p>Size: {sizeInfo.formattedSize}</p>}
-              {sourceFormat && <p>Format: {sourceFormat.toUpperCase()}</p>}
-            </div>
-            <button onClick={() => setSourceFile(null)}>Remove</button>
+      <div className={s.toolArea}>
+        {!sourceFile ? (
+          <div className={s.uploadSection}>
+            <ConvertUploadZone onFileSelected={handleFileSelected} />
           </div>
+        ) : (
+          <>
+            <div className={c.card} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-3) var(--space-4)' }}>
+              <div>
+                <p>Source File: <strong>{sourceFile.name}</strong></p>
+                {sizeInfo && <p>Size: {sizeInfo.formattedSize}</p>}
+                {sourceFormat && <p>Format: {sourceFormat.toUpperCase()}</p>}
+              </div>
+              <button className={`${b.btn} ${b.raw} ${b.sm}`} onClick={() => setSourceFile(null)}>Remove</button>
+            </div>
 
-          <TargetFormatSelector
-            sourceFormat={sourceFormat}
-            value={targetFormat}
-            onChange={setTargetFormat}
-            disabled={isConverting}
-          />
+            <div className={s.formatRow}>
+              <TargetFormatSelector
+                sourceFormat={sourceFormat}
+                value={targetFormat}
+                onChange={setTargetFormat}
+                disabled={isConverting}
+              />
+            </div>
 
-          {showComplete && convertedBlob ? (
-            <ConvertComplete
-              onPreview={() => {}}
-              onDownload={handleDownload}
+            <div className={s.actions}>
+              {showComplete && convertedBlob ? (
+                <ConvertComplete
+                  onPreview={() => {}}
+                  onDownload={handleDownload}
+                />
+              ) : (
+                <button
+                  className={`${b.btn} ${b.soft}`}
+                  onClick={handleConvert}
+                  disabled={isConverting || !sourceFile}
+                >
+                  Convert to {targetFormat.toUpperCase()}
+                </button>
+              )}
+            </div>
+
+            <ConvertProgress
+              progress={progress}
+              isConverting={isConverting}
             />
-          ) : (
-            <button
-              onClick={handleConvert}
-              disabled={isConverting || !sourceFile}
-            >
-              {isConverting ? 'Converting...' : `Convert to ${targetFormat.toUpperCase()}`}
-            </button>
-          )}
 
-          <ConvertProgress
-            progress={progress}
-            isConverting={isConverting}
-          />
-
-          {convertedBlob && (
-            <ConvertDownload
-              blob={convertedBlob}
-              fileName={`${sourceFile.name.replace(/\.[^.]+$/, '')}.${targetFormat}`}
-            />
-          )}
-        </div>
-      )}
+            {convertedBlob && (
+              <div className={s.previewArea}>
+                <ConvertDownload
+                  blob={convertedBlob}
+                  fileName={`${sourceFile.name.replace(/\.[^.]+$/, '')}.${targetFormat}`}
+                />
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useBlogStore } from '@/store/blog-store';
 import { createBlogPost } from '@/lib/blog-posts';
 import { AdminSidebar } from '../../../_components/AdminSidebar';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
+import i from '@/styles/components/Input.module.css';
 
 export default function AdminBlogNewPage() {
   const router = useRouter();
@@ -65,22 +68,23 @@ export default function AdminBlogNewPage() {
   };
 
   return (
-    <div>
+    <div style={{display:'flex'}}>
       <AdminSidebar />
-      <div>
-        <h1>Create Blog Post</h1>
+      <div style={{maxWidth:'var(--container-xl)',margin:'0 auto',padding:'var(--space-8) var(--space-6)',flex:1}}>
+        <h1 style={{fontSize:'var(--text-2xl)',fontWeight:'var(--weight-bold)',marginBottom:'var(--space-6)'}}>Create Blog Post</h1>
 
-        {error && <p>{error}</p>}
+        {error && <p style={{color:'var(--color-error)',marginBottom:'var(--space-4)',fontSize:'var(--text-sm)'}}>{error}</p>}
 
-        <div>
-          <h2>Upload or Paste Content</h2>
-          <div>
-            <p>Upload .md, .html, or .ejs file:</p>
+        <div className={`${c.card} ${c.soft}`} style={{marginBottom:'var(--space-6)'}}>
+          <h2 style={{fontSize:'var(--text-lg)',fontWeight:'var(--weight-semibold)',marginBottom:'var(--space-4)'}}>Upload or Paste Content</h2>
+          <div style={{marginBottom:'var(--space-4)'}}>
+            <p style={{fontSize:'var(--text-sm)',marginBottom:'var(--space-2)'}}>Upload .md, .html, or .ejs file:</p>
             <input type="file" accept=".md,.html,.ejs,.txt" onChange={handleFileUpload} />
           </div>
           <div>
-            <p>Or paste content:</p>
+            <p style={{fontSize:'var(--text-sm)',marginBottom:'var(--space-2)'}}>Or paste content:</p>
             <textarea
+              className={`${i.input} ${i.soft} ${i.textarea}`}
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Paste markdown or HTML content here..."
@@ -89,55 +93,59 @@ export default function AdminBlogNewPage() {
           </div>
         </div>
 
-        <div>
-          <h2>Post Details</h2>
-          <div>
-            <label>Slug (URL path): /blog/<input value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="my-post-slug" /></label>
+        <div className={`${c.card} ${c.soft}`} style={{marginBottom:'var(--space-6)'}}>
+          <h2 style={{fontSize:'var(--text-lg)',fontWeight:'var(--weight-semibold)',marginBottom:'var(--space-4)'}}>Post Details</h2>
+          <div className={i.group}>
+            <label className={i.label}>Slug (URL path)</label>
+            <input className={`${i.input} ${i.soft}`} value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="my-post-slug" />
           </div>
-          <div>
-            <label>Title: <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Post title" /></label>
+          <div className={i.group}>
+            <label className={i.label}>Title</label>
+            <input className={`${i.input} ${i.soft}`} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Post title" />
           </div>
-          <div>
-            <label>Excerpt: <textarea value={excerpt} onChange={(e) => setExcerpt(e.target.value)} placeholder="Brief description" rows={2} /></label>
-          </div>
-        </div>
-
-        <div>
-          <h2>SEO Metadata</h2>
-          <div>
-            <label>SEO Title: <input value={seoTitle} onChange={(e) => setSeoTitle(e.target.value)} placeholder="Leave empty to use post title" /></label>
-          </div>
-          <div>
-            <label>SEO Description: <input value={seoDescription} onChange={(e) => setSeoDescription(e.target.value)} placeholder="Leave empty to use excerpt" /></label>
+          <div className={i.group}>
+            <label className={i.label}>Excerpt</label>
+            <textarea className={`${i.input} ${i.soft} ${i.textarea}`} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} placeholder="Brief description" rows={2} />
           </div>
         </div>
 
-        <div>
-          <h2>Publishing</h2>
-          <div>
-            <label>
-              <input type="radio" name="status" checked={status === 'draft'} onChange={() => setStatus('draft')} />
-              Save as Draft
-            </label>
-            <label>
-              <input type="radio" name="status" checked={status === 'published'} onChange={() => setStatus('published')} />
-              Publish Now
-            </label>
-            <label>
-              <input type="radio" name="status" checked={status === 'scheduled'} onChange={() => setStatus('scheduled')} />
-              Schedule
-            </label>
+        <div className={`${c.card} ${c.soft}`} style={{marginBottom:'var(--space-6)'}}>
+          <h2 style={{fontSize:'var(--text-lg)',fontWeight:'var(--weight-semibold)',marginBottom:'var(--space-4)'}}>SEO Metadata</h2>
+          <div className={i.group}>
+            <label className={i.label}>SEO Title</label>
+            <input className={`${i.input} ${i.soft}`} value={seoTitle} onChange={(e) => setSeoTitle(e.target.value)} placeholder="Leave empty to use post title" />
+          </div>
+          <div className={i.group}>
+            <label className={i.label}>SEO Description</label>
+            <input className={`${i.input} ${i.soft}`} value={seoDescription} onChange={(e) => setSeoDescription(e.target.value)} placeholder="Leave empty to use excerpt" />
+          </div>
+        </div>
+
+        <div className={`${c.card} ${c.soft}`} style={{marginBottom:'var(--space-6)'}}>
+          <h2 style={{fontSize:'var(--text-lg)',fontWeight:'var(--weight-semibold)',marginBottom:'var(--space-4)'}}>Publishing</h2>
+          <div style={{display:'flex',flexDirection:'column',gap:'var(--space-3)',marginBottom:'var(--space-4)'}}>
+            {[
+              { value: 'draft', label: 'Save as Draft' },
+              { value: 'published', label: 'Publish Now' },
+              { value: 'scheduled', label: 'Schedule' },
+            ].map((opt) => (
+              <label key={opt.value} style={{display:'flex',alignItems:'center',gap:'var(--space-2)',cursor:'pointer'}}>
+                <input type="radio" name="status" checked={status === opt.value} onChange={() => setStatus(opt.value as any)} />
+                <span style={{fontSize:'var(--text-sm)'}}>{opt.label}</span>
+              </label>
+            ))}
           </div>
           {status === 'scheduled' && (
-            <div>
-              <label>Publish date: <input type="datetime-local" onChange={(e) => setScheduledAt(e.target.value ? new Date(e.target.value) : null)} /></label>
+            <div className={i.group}>
+              <label className={i.label}>Publish date</label>
+              <input className={`${i.input} ${i.soft}`} type="datetime-local" onChange={(e) => setScheduledAt(e.target.value ? new Date(e.target.value) : null)} />
             </div>
           )}
         </div>
 
-        <div>
-          <button onClick={handlePreview}>Preview</button>
-          <button onClick={handlePublish} disabled={loading}>
+        <div style={{display:'flex',gap:'var(--space-3)'}}>
+          <button className={`${b.btn} ${b.raw}`} onClick={handlePreview}>Preview</button>
+          <button className={`${b.btn} ${b.soft}`} onClick={handlePublish} disabled={loading}>
             {status === 'published' ? 'Publish' : status === 'scheduled' ? 'Schedule' : 'Save Draft'}
           </button>
         </div>

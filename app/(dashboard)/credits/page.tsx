@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useUserStore } from '@/store/user-store';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
 
 const PACKAGES = [
   { id: 'starter', credits: 10, price: 9.99 },
@@ -43,21 +45,40 @@ export default function CreditsPage() {
   };
 
   return (
-    <div>
-      <h1>Buy Credits</h1>
-      <p>Current balance: {credits} credits</p>
-
+    <div style={{maxWidth:'var(--container-lg)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
       <div>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Account</span>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)',margin:'0 var(--space-2)'}}>/</span>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Credits</span>
+      </div>
+      <h1>Buy Credits</h1>
+
+      <div className={c.soft} style={{marginBottom:'var(--space-4)'}}>
+        <p style={{fontSize:'var(--text-lg)',fontWeight:'var(--weight-medium)'}}>
+          Current balance: {credits} credits
+        </p>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))',gap:'var(--space-4)'}}>
         {PACKAGES.map((pkg) => (
-          <div key={pkg.id}>
-            <h3>{pkg.credits} credits</h3>
-            {pkg.bonus && <p>+{pkg.bonus} bonus</p>}
-            <p>${pkg.price}</p>
+          <div key={pkg.id} className={c.soft}>
+            <h3 style={{fontSize:'var(--text-2xl)',fontWeight:'var(--weight-bold)',margin:'0 0 var(--space-1)'}}>
+              {pkg.credits} credits
+            </h3>
+            {pkg.bonus && (
+              <p style={{color:'var(--color-primary)',fontSize:'var(--text-sm)',margin:'0 0 var(--space-2)'}}>
+                +{pkg.bonus} bonus
+              </p>
+            )}
+            <p style={{fontSize:'var(--text-xl)',fontWeight:'var(--weight-semibold)',margin:'0 0 var(--space-4)'}}>
+              ${pkg.price}
+            </p>
             <button
+              className={b.soft}
               onClick={() => handlePurchase(pkg.id)}
               disabled={purchasing === pkg.id}
             >
-              Buy
+              {purchasing === pkg.id ? null : 'Buy'}
             </button>
           </div>
         ))}

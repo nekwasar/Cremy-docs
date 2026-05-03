@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useUserStore } from '@/store/user-store';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
 
 export default function SubscriptionPage() {
   const { user } = useUserStore();
@@ -32,34 +34,41 @@ export default function SubscriptionPage() {
   if (loading) return null;
 
   return (
-    <div>
-      <h1>Subscription Management</h1>
+    <div style={{ maxWidth: 'var(--container-md)', margin: '0 auto', padding: 'var(--space-8) var(--space-6)' }}>
+      <h1 style={{ marginBottom: 'var(--space-6)' }}>Subscription Management</h1>
 
       {subscription ? (
-        <div>
-          <h2>Current Plan: Pro {subscription.plan === 'yearly' ? 'Yearly' : 'Monthly'}</h2>
-          <p>Status: {subscription.status}</p>
-          <p>Next billing: {new Date(subscription.currentPeriodEnd).toLocaleDateString()}</p>
+        <div className={c.card} style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
+          <h2 style={{ marginBottom: 'var(--space-4)' }}>
+            Current Plan: Pro {subscription.plan === 'yearly' ? 'Yearly' : 'Monthly'}
+          </h2>
+          <p style={{ marginBottom: 'var(--space-2)' }}>Status: {subscription.status}</p>
+          <p style={{ marginBottom: 'var(--space-2)' }}>
+            Next billing: {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+          </p>
           {subscription.cancelAtPeriodEnd && (
-            <p>Your subscription will end on {new Date(subscription.currentPeriodEnd).toLocaleDateString()}</p>
+            <p style={{ color: 'var(--color-warning)', marginBottom: 'var(--space-4)' }}>
+              Your subscription will end on {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+            </p>
           )}
 
-          <div>
-            <h3>Actions</h3>
-            <Link href="/pro">Change Plan</Link>
+          <div style={{ display: 'flex', gap: 'var(--space-3)', marginTop: 'var(--space-4)' }}>
+            <Link href="/pro" className={`${b.btn} ${b.soft}`}>Change Plan</Link>
             {!subscription.cancelAtPeriodEnd && (
-              <button onClick={handleCancel}>Cancel Subscription</button>
+              <button className={`${b.btn} ${b.raw}`} onClick={handleCancel}>Cancel Subscription</button>
             )}
           </div>
         </div>
       ) : (
-        <div>
-          <p>You don&apos;{`t`} have an active subscription.</p>
-          <Link href="/pro">Upgrade to Pro</Link>
+        <div className={c.card} style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
+          <p style={{ marginBottom: 'var(--space-4)' }}>You don&apos;{`t`} have an active subscription.</p>
+          <Link href="/pro" className={`${b.btn} ${b.soft}`}>Upgrade to Pro</Link>
         </div>
       )}
 
-      <Link href="/account/billing">View Payment History</Link>
+      <Link href="/account/billing" className={`${b.btn} ${b.raw}`}>
+        View Payment History
+      </Link>
     </div>
   );
 }

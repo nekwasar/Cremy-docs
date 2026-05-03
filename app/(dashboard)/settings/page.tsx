@@ -3,6 +3,9 @@
 import { useState } from 'react';
 import { useUserStore } from '@/store/user-store';
 import { useSettingsStore } from '@/store/settings-store';
+import c from '@/styles/components/Card.module.css';
+import b from '@/styles/components/Button.module.css';
+import i from '@/styles/components/Input.module.css';
 
 export default function SettingsPage() {
   const { user, updateUser } = useUserStore();
@@ -28,38 +31,59 @@ export default function SettingsPage() {
   };
 
   return (
-    <div>
+    <div style={{maxWidth:'var(--container-lg)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
+      <div>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Account</span>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)',margin:'0 var(--space-2)'}}>/</span>
+        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Settings</span>
+      </div>
       <h1>Settings</h1>
 
-      <section>
-        <h2>Profile</h2>
-        <div>
-          <label>Name</label>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+      <div className={c.soft} style={{marginBottom:'var(--space-4)'}}>
+        <h2 className={c.header}>Profile</h2>
+        <div className={i.group}>
+          <label className={i.label}>Name</label>
+          <input
+            className={i.soft}
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
-        <div>
-          <label>Email</label>
-          <input type="email" value={user?.email || ''} disabled />
+        <div className={i.group}>
+          <label className={i.label}>Email</label>
+          <input
+            className={i.soft}
+            type="email"
+            value={user?.email || ''}
+            disabled
+          />
         </div>
-        <button onClick={handleSave}>Save</button>
-      </section>
+        <button className={b.soft} onClick={handleSave}>Save</button>
+      </div>
 
-      <section>
-        <h2>Appearance</h2>
-        <div>
-          <label>Theme</label>
-          <select value={theme} onChange={(e) => setTheme(e.target.value as 'light' | 'dark' | 'system')}>
+      <div className={c.soft} style={{marginBottom:'var(--space-4)'}}>
+        <h2 className={c.header}>Appearance</h2>
+        <div className={i.group}>
+          <label className={i.label}>Theme</label>
+          <select
+            className={i.soft}
+            value={theme}
+            onChange={(e) => setTheme(e.target.value as 'light' | 'dark' | 'system')}
+          >
             <option value="light">Light</option>
             <option value="dark">Dark</option>
             <option value="system">System</option>
           </select>
         </div>
-      </section>
+      </div>
 
-      <section>
-        <h2>Danger Zone</h2>
-        <button>Delete Account</button>
-      </section>
+      <div className={c.soft}>
+        <h2 className={c.header}>Danger Zone</h2>
+        <button className={b.soft} style={{background:'var(--color-error)',borderColor:'var(--color-error)'}}>
+          Delete Account
+        </button>
+      </div>
     </div>
   );
 }
