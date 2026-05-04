@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { loginAdmin } from '@/lib/admin-auth';
 import c from '@/styles/components/Card.module.css';
 import b from '@/styles/components/Button.module.css';
 import i from '@/styles/components/Input.module.css';
@@ -17,13 +16,17 @@ export default function AdminLoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const result = await loginAdmin(username, password);
-    if (result.success) {
-      router.push('/admin');
-    } else {
-      setError(result.error || 'Login failed');
+    setError('');
+    try {
+      const res = await fetch('/api/admin/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username,password}) });
+      const data = await res.json();
+      if (data.success) { router.push('/admin'); }
+      else { setError(data.error || 'Invalid credentials'); }
+    } catch {
+      setError('Login failed');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
