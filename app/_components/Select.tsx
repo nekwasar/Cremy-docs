@@ -46,7 +46,7 @@ export function Select({ value, onChange, options, placeholder, className, disab
         <span className={`${sl.chevron} ${open ? sl.openChevron : ''}`}>▼</span>
       </button>
       {open && (
-        <div className={`${sl.menu} ${sl.menuSoft}`} style={{position:'absolute',top:'100%',left:0,right:0,zIndex:50,minWidth:'100%'}}>
+        <div className={sl.menu} style={{position:'absolute',top:'100%',left:0,right:0,zIndex:50,minWidth:'100%'}}>
           {options.map(opt => (
             <div
               key={opt.value}
