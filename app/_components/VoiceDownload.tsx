@@ -1,54 +1,23 @@
 'use client';
 
-interface VoiceDownloadProps {
-  documentId?: string;
-  formattedText?: string;
-}
+import { Select } from './Select';
 
-export function VoiceDownload({ documentId, formattedText }: VoiceDownloadProps) {
-  const handleDownload = (format: string) => {
-    const content = formattedText || '';
+const OPTS = [
+  { value: 'pdf', label: 'PDF' },
+  { value: 'docx', label: 'DOCX' },
+  { value: 'txt', label: 'TXT' },
+];
 
-    if (format === 'txt') {
-      const blob = new Blob([content], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'voice-document.txt';
-      a.click();
-      URL.revokeObjectURL(url);
-      return;
-    }
-
-    if (documentId) {
-      fetch(`/api/documents/${documentId}/download?format=${format}`)
-        .then((res) => res.blob())
-        .then((blob) => {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `voice-document.${format}`;
-          a.click();
-          URL.revokeObjectURL(url);
-        })
-        .catch(console.error);
-    }
+export function VoiceDownload({ documentId }: { documentId: string }) {
+  const handleDownload = async (format: string) => {
+    const response = await fetch(`/api/documents/${documentId}/download?format=${format}`);
+    if (!response.ok) return;
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `document.${format}`; a.click();
+    URL.revokeObjectURL(url);
   };
 
-  return (
-    <select
-      onChange={(e) => {
-        if (e.target.value) {
-          handleDownload(e.target.value);
-          e.target.value = '';
-        }
-      }}
-      defaultValue=""
-    >
-      <option value="" disabled>Download</option>
-      <option value="pdf">PDF</option>
-      <option value="docx">DOCX</option>
-      <option value="txt">TXT</option>
-    </select>
-  );
+  return <Select options={OPTS} value="" onChange={handleDownload} placeholder="Download" />;
 }

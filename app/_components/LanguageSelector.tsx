@@ -1,57 +1,21 @@
 'use client';
 
-import { ReactNode, useState } from 'react';
-
-interface LanguageOption {
-  code: string;
-  name: string;
-}
+import { Select } from './Select';
 
 interface LanguageSelectorProps {
-  selected?: string;
-  onChange?: (langCode: string) => void;
+  value: string;
+  onChange: (lang: string) => void;
+  languages?: { code: string; name: string }[];
 }
 
-const languages: LanguageOption[] = [
-  { code: 'en', name: 'English' },
-  { code: 'es', name: 'Spanish' },
-  { code: 'fr', name: 'French' },
-  { code: 'de', name: 'German' },
-  { code: 'it', name: 'Italian' },
-  { code: 'pt', name: 'Portuguese' },
-  { code: 'zh', name: 'Chinese' },
-  { code: 'ja', name: 'Japanese' },
-  { code: 'ko', name: 'Korean' },
-  { code: 'ar', name: 'Arabic' },
+const DEFAULT_LANGUAGES = [
+  { code: 'en', name: 'English' }, { code: 'es', name: 'Spanish' }, { code: 'fr', name: 'French' },
+  { code: 'de', name: 'German' }, { code: 'it', name: 'Italian' }, { code: 'pt', name: 'Portuguese' },
+  { code: 'zh', name: 'Chinese' }, { code: 'ja', name: 'Japanese' }, { code: 'ko', name: 'Korean' },
+  { code: 'ru', name: 'Russian' }, { code: 'ar', name: 'Arabic' }, { code: 'hi', name: 'Hindi' },
 ];
 
-export function LanguageSelector({
-  selected = 'en',
-  onChange,
-}: LanguageSelectorProps): ReactNode {
-  const [value, setValue] = useState(selected);
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newValue = e.target.value;
-    setValue(newValue);
-    onChange?.(newValue);
-  };
-
-  return (
-    <div>
-      <label htmlFor="language-select">Language</label>
-      <select
-        id="language-select"
-        value={value}
-        onChange={handleChange}
-       
-      >
-        {languages.map((lang) => (
-          <option key={lang.code} value={lang.code}>
-            {lang.name}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
+export function LanguageSelector({ value, onChange, languages = DEFAULT_LANGUAGES }: LanguageSelectorProps) {
+  const opts = languages.map(l => ({ value: l.code, label: l.name }));
+  return <Select options={opts} value={value} onChange={onChange} placeholder="Language" />;
 }

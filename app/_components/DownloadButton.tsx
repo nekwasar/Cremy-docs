@@ -1,41 +1,23 @@
 'use client';
 
-interface DownloadButtonProps {
-  documentId: string;
-  disabled?: boolean;
-}
+import { Select } from './Select';
 
-export function DownloadButton({ documentId, disabled = false }: DownloadButtonProps) {
+const OPTS = [
+  { value: 'pdf', label: 'PDF' },
+  { value: 'docx', label: 'DOCX' },
+  { value: 'txt', label: 'TXT' },
+];
+
+export function DownloadButton({ documentId, disabled }: { documentId: string; disabled?: boolean }) {
   const handleDownload = async (format: string) => {
     const response = await fetch(`/api/documents/${documentId}/download?format=${format}`);
     if (!response.ok) return;
-
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url;
-    a.download = `document.${format}`;
-    a.click();
+    a.href = url; a.download = `document.${format}`; a.click();
     URL.revokeObjectURL(url);
   };
 
-  return (
-    <select
-      onChange={(e) => {
-        if (e.target.value) {
-          handleDownload(e.target.value);
-          e.target.value = '';
-        }
-      }}
-      disabled={disabled}
-      defaultValue=""
-    >
-      <option value="" disabled>
-        Download
-      </option>
-      <option value="pdf">PDF</option>
-      <option value="docx">DOCX</option>
-      <option value="txt">TXT</option>
-    </select>
-  );
+  return <Select options={OPTS} value="" onChange={handleDownload} placeholder="Download" disabled={disabled} />;
 }

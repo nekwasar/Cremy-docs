@@ -1,41 +1,20 @@
 'use client';
 
-interface DocumentToolbarProps {
-  documentTitle: string;
-  onUndo: () => void;
-  onRedo: () => void;
-  onBack: () => void;
-  onDownload: (format: string) => void;
-  canUndo: boolean;
-  canRedo: boolean;
-}
+import { Select } from './Select';
 
-export function DocumentToolbar({
-  documentTitle,
-  onUndo,
-  onRedo,
-  onBack,
-  onDownload,
-  canUndo,
-  canRedo,
-}: DocumentToolbarProps) {
+interface DownloadAction { documentId: string; disabled?: boolean }
+
+const OPTS = [
+  { value: 'pdf', label: 'PDF' },
+  { value: 'docx', label: 'DOCX' },
+  { value: 'txt', label: 'TXT' },
+  { value: 'md', label: 'Markdown' },
+];
+
+export function DocumentToolbar({ onDownload }: { onDownload: (format: string) => void }) {
   return (
     <div>
-      <button onClick={onBack}>← Back</button>
-      <h2>{documentTitle || 'Untitled Document'}</h2>
-      <div>
-        <button onClick={onUndo} disabled={!canUndo}>Undo</button>
-        <button onClick={onRedo} disabled={!canRedo}>Redo</button>
-      </div>
-      <div>
-        <select onChange={(e) => onDownload(e.target.value)} defaultValue="">
-          <option value="" disabled>Download</option>
-          <option value="pdf">PDF</option>
-          <option value="docx">DOCX</option>
-          <option value="txt">TXT</option>
-          <option value="md">Markdown</option>
-        </select>
-      </div>
+      <Select options={OPTS} value="" onChange={onDownload} placeholder="Download" />
     </div>
   );
 }

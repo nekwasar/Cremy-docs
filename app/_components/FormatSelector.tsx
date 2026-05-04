@@ -1,51 +1,19 @@
 'use client';
 
-import { ReactNode, useState } from 'react';
+import { Select } from './Select';
 
-interface FormatOption {
-  id: string;
-  name: string;
-}
+const OPTS = [
+  { value: 'auto', label: 'Auto' },
+  { value: 'pdf', label: 'PDF' },
+  { value: 'docx', label: 'DOCX' },
+  { value: 'txt', label: 'Plain Text' },
+];
 
 interface FormatSelectorProps {
   selected?: string;
   onChange?: (formatId: string) => void;
 }
 
-const formats: FormatOption[] = [
-  { id: 'auto', name: 'Auto' },
-  { id: 'pdf', name: 'PDF' },
-  { id: 'docx', name: 'DOCX' },
-  { id: 'txt', name: 'Plain Text' },
-];
-
-export function FormatSelector({
-  selected = 'auto',
-  onChange,
-}: FormatSelectorProps): ReactNode {
-  const [value, setValue] = useState(selected);
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newValue = e.target.value;
-    setValue(newValue);
-    onChange?.(newValue);
-  };
-
-  return (
-    <div>
-      <label htmlFor="format-select">Format</label>
-      <select
-        id="format-select"
-        value={value}
-        onChange={handleChange}
-       
-      >
-        {formats.map((fmt) => (
-          <option key={fmt.id} value={fmt.id}>
-            {fmt.name}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
+export function FormatSelector({ selected = 'auto', onChange }: FormatSelectorProps) {
+  return <Select options={OPTS} value={selected} onChange={(v) => onChange?.(v)} placeholder="Format" />;
 }

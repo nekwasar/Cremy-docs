@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useState } from 'react';
+import { Select } from './Select';
 
 type Tone = 'professional' | 'casual' | 'formal';
 
@@ -9,39 +9,12 @@ interface ToneSelectorProps {
   onChange?: (tone: Tone) => void;
 }
 
-const tones: { id: Tone; label: string }[] = [
-  { id: 'professional', label: 'Professional' },
-  { id: 'casual', label: 'Casual' },
-  { id: 'formal', label: 'Formal' },
+const OPTS = [
+  { value: 'professional', label: 'Professional' },
+  { value: 'casual', label: 'Casual' },
+  { value: 'formal', label: 'Formal' },
 ];
 
-export function ToneSelector({
-  selected = 'professional',
-  onChange,
-}: ToneSelectorProps): ReactNode {
-  const [value, setValue] = useState(selected);
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newValue = e.target.value as Tone;
-    setValue(newValue);
-    onChange?.(newValue);
-  };
-
-  return (
-    <div>
-      <label htmlFor="tone-select">Tone</label>
-      <select
-        id="tone-select"
-        value={value}
-        onChange={handleChange}
-       
-      >
-        {tones.map((tone) => (
-          <option key={tone.id} value={tone.id}>
-            {tone.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
+export function ToneSelector({ selected = 'professional', onChange }: ToneSelectorProps) {
+  return <Select options={OPTS} value={selected} onChange={(v) => onChange?.(v as Tone)} placeholder="Tone" />;
 }

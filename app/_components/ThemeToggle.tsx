@@ -1,44 +1,21 @@
 'use client';
 
-import { useEffect, createContext, useContext } from 'react';
-import { useUserStore } from '@/store/user-store';
-import { useSettingsStore } from '@/store/settings-store';
+import { Select } from './Select';
+
+const OPTS = [
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+  { value: 'system', label: 'System' },
+];
 
 type Theme = 'light' | 'dark' | 'system';
 
-interface ThemeContextType {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-}
-
-const ThemeContext = createContext<ThemeContextType | null>(null);
-
-export function useTheme() {
-  return useContext(ThemeContext);
-}
-
 export function ThemeToggle() {
-  const { theme, setTheme } = useSettingsStore();
-  const { updateUser } = useUserStore();
-
-  useEffect(() => {
-    const saved = localStorage.getItem('theme') as Theme;
-    if (saved) setTheme(saved);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleThemeChange = (newTheme: Theme) => {
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme === 'system' ? 'light' : newTheme);
+  const handleChange = (v: string) => {
+    const t = v as Theme;
+    localStorage.setItem('theme', t);
+    document.documentElement.setAttribute('data-theme', t === 'system' ? 'light' : t);
   };
 
-  return (
-    <select value={theme} onChange={(e) => handleThemeChange(e.target.value as Theme)}>
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-      <option value="system">System</option>
-    </select>
-  );
+  return <Select options={OPTS} value="" onChange={handleChange} placeholder="Theme" />;
 }
-

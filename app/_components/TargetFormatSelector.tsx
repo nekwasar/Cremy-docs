@@ -1,7 +1,6 @@
 'use client';
 
-import i from '@/styles/components/Input.module.css';
-import sl from '@/styles/components/Select.module.css';
+import { Select } from './Select';
 
 interface TargetFormatSelectorProps {
   sourceFormat: string;
@@ -19,24 +18,14 @@ const FORMAT_LABELS: Record<string, string> = {
   jpg: 'JPG', png: 'PNG', webp: 'WEBP',
 };
 
-export function TargetFormatSelector({ sourceFormat, value, onChange, disabled = false }: TargetFormatSelectorProps) {
-  const formats = Object.keys(FORMAT_LABELS).filter((f) => f !== sourceFormat);
+export function TargetFormatSelector({ sourceFormat, value, onChange, disabled }: TargetFormatSelectorProps) {
+  const opts = Object.keys(FORMAT_LABELS)
+    .filter(f => f !== sourceFormat)
+    .map(f => ({ value: f, label: FORMAT_LABELS[f] || f.toUpperCase() }));
 
   return (
     <div>
-      <label className={i.label}>Convert to:</label>
-      <select
-        className={`${i.input} ${i.soft} ${sl.trigger} ${sl.soft}`}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        disabled={disabled}
-      >
-        {formats.map((format) => (
-          <option key={format} value={format}>
-            {FORMAT_LABELS[format] || format.toUpperCase()}
-          </option>
-        ))}
-      </select>
+      <Select options={opts} value={value} onChange={onChange} placeholder="Convert to..." disabled={disabled} />
     </div>
   );
 }

@@ -1,59 +1,18 @@
 'use client';
 
-import Link from 'next/link';
-import { UndoButton } from './UndoButton';
-import { EditModeToggle } from './EditModeToggle';
+import { Select } from './Select';
 
-interface PreviewToolbarProps {
-  isFullEdit: boolean;
-  canUndo: boolean;
-  canRedo: boolean;
-  onToggleEdit: () => void;
-  onUndo: () => void;
-  onRedo: () => void;
-  onDownload: (format: string) => void;
-  onRegenerate: () => void;
-  onBack?: () => void;
-}
+const OPTS = [
+  { value: 'pdf', label: 'PDF' },
+  { value: 'docx', label: 'DOCX' },
+  { value: 'txt', label: 'TXT' },
+  { value: 'html', label: 'HTML' },
+];
 
-export function PreviewToolbar({
-  isFullEdit,
-  onToggleEdit,
-  onDownload,
-  onRegenerate,
-  onBack,
-}: PreviewToolbarProps) {
+export function PreviewToolbar({ onDownload }: { onDownload: (format: string) => void }) {
   return (
-    <div>
-      <div>
-        {onBack ? (
-          <button onClick={onBack} type="button">← Back</button>
-        ) : (
-          <Link href="/generate">← Back</Link>
-        )}
-      </div>
-
-      <div>
-        <EditModeToggle isFullEdit={isFullEdit} onToggle={onToggleEdit} />
-        <UndoButton />
-        <button type="button" onClick={onRegenerate}>Regenerate</button>
-
-        <select
-          onChange={(e) => {
-            if (e.target.value) {
-              onDownload(e.target.value);
-              e.target.value = '';
-            }
-          }}
-          defaultValue=""
-        >
-          <option value="" disabled>Download</option>
-          <option value="pdf">PDF</option>
-          <option value="docx">DOCX</option>
-          <option value="txt">TXT</option>
-          <option value="html">HTML</option>
-        </select>
-      </div>
+    <div style={{display:'flex',gap:'var(--space-3)',alignItems:'center'}}>
+      <Select options={OPTS} value="" onChange={onDownload} placeholder="Download" />
     </div>
   );
 }
