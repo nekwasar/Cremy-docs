@@ -4,7 +4,7 @@ const nextConfig = {
   swcMinify: true,
   
   // Body parser size limit
-  serverExternalPackages: [],
+  serverExternalPackages: ['mongoose'],
   
   // Environment variables for client-side
   env: {
