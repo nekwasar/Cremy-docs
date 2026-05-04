@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import c from '@/styles/components/Card.module.css';
 import i from '@/styles/components/Input.module.css';
-import sl from '@/styles/components/Select.module.css';
 
 interface Template {
   _id: string;
@@ -14,23 +13,9 @@ interface Template {
   format: string;
 }
 
-import { Select } from '../../_components/Select';
-
-const CATEGORY_OPTS = [
-  { value: '', label: 'All Categories' },
-  { value: 'Business', label: 'Business' },
-  { value: 'Academic', label: 'Academic' },
-  { value: 'Legal', label: 'Legal' },
-  { value: 'Personal', label: 'Personal' },
-  { value: 'Creative', label: 'Creative' },
-];
-
-const CATEGORIES = ['Business', 'Academic', 'Legal', 'Personal', 'Creative'];
-
 export default function TemplatesPage() {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -52,9 +37,7 @@ export default function TemplatesPage() {
   };
 
   const filtered = templates.filter((t) => {
-    const matchesSearch = !search || t.name.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = !category || t.category === category;
-    return matchesSearch && matchesCategory;
+    return !search || t.name.toLowerCase().includes(search.toLowerCase());
   });
 
   return (
@@ -70,8 +53,6 @@ export default function TemplatesPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-
-        <Select options={CATEGORY_OPTS} value={category} onChange={setCategory} placeholder="All Categories" />
       </div>
 
       {loading ? null : filtered.length > 0 ? (
