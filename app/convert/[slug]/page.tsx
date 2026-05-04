@@ -132,7 +132,6 @@ export default function ConvertSlugPage() {
         <div className={s.headerRow}>
           <Link href="/">Logo</Link>
           <CreditBalance />
-          <Link href="/dashboard">Account</Link>
         </div>
       </div>
 

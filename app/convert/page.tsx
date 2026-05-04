@@ -100,7 +100,6 @@ export default function ConvertPage() {
         <div className={s.headerRow}>
           <Link href="/">Logo</Link>
           <CreditBalance />
-          <Link href="/dashboard">Account</Link>
         </div>
       </div>
 

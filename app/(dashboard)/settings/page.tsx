@@ -33,7 +33,6 @@ export default function SettingsPage() {
   return (
     <div style={{maxWidth:'var(--container-lg)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
       <div>
-        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Account</span>
         <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)',margin:'0 var(--space-2)'}}>/</span>
         <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Settings</span>
       </div>

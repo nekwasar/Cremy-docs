@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
+import sb from '@/styles/components/Sidebar.module.css';
 
 export default function DashboardLayout({
   children,
@@ -7,34 +8,23 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div>
-      <aside>
-        <Link href="/">Cremy Docs</Link>
-        <nav>
-          <Link href="/dashboard">Dashboard</Link>
-          <Link href="/generate">Generate</Link>
-          <Link href="/convert">Convert</Link>
-          <Link href="/translate">Translate</Link>
-          <Link href="/voice">Voice</Link>
-          <Link href="/extract-text-from-pdf">Extract Text</Link>
-          <Link href="/merge-pdf">Merge PDF</Link>
-          <Link href="/split-pdf">Split PDF</Link>
-          <Link href="/compress-pdf">Compress</Link>
-          <Link href="/change-style">Change Style</Link>
-          <Link href="/credits">Credits</Link>
-          <Link href="/settings">Settings</Link>
-        </nav>
+    <div style={{display:'flex',minHeight:'100vh'}}>
+      <aside className={`${sb.sidebar} ${sb.soft}`}>
+        <div style={{padding:'var(--space-4) var(--space-5)',borderBottom:'1px solid var(--color-border)',fontWeight:'var(--weight-semibold)',fontSize:'var(--text-sm)'}}>Tools</div>
+        <Link href="/dashboard" className={sb.softItem}>Dashboard</Link>
+        <Link href="/generate" className={sb.softItem}>Generate</Link>
+        <Link href="/convert" className={sb.softItem}>Convert</Link>
+        <Link href="/translate" className={sb.softItem}>Translate</Link>
+        <Link href="/voice" className={sb.softItem}>Voice</Link>
+        <Link href="/extract-text-from-pdf" className={sb.softItem}>Extract Text</Link>
+        <Link href="/merge-pdf" className={sb.softItem}>Merge PDF</Link>
+        <Link href="/split-pdf" className={sb.softItem}>Split PDF</Link>
+        <Link href="/compress-pdf" className={sb.softItem}>Compress</Link>
+        <Link href="/change-style" className={sb.softItem}>Change Style</Link>
+        <Link href="/credits" className={sb.softItem}>Credits</Link>
+        <Link href="/settings" className={sb.softItem}>Settings</Link>
       </aside>
-      <div>
-        <header>
-          <div>
-            <span>💰</span>
-            
-          </div>
-          <div>
-            <button>Account</button>
-          </div>
-        </header>
+      <div style={{flex:1,minWidth:0}}>
         <Suspense fallback={null}>
           <main>{children}</main>
         </Suspense>

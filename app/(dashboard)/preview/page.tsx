@@ -167,7 +167,6 @@ export default function PreviewPage() {
       <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'var(--space-4)'}}>
         <Link href="/">Logo</Link>
         <CreditBalance />
-        <Link href="/dashboard">Account</Link>
       </div>
 
       <div style={{marginBottom:'var(--space-4)'}}>
