@@ -9,7 +9,6 @@ import { ConvertDownload } from '../_components/ConvertDownload';
 import { ConvertFreeNotice } from '../_components/ConvertFreeNotice';
 import { ConvertComplete } from '../_components/ConvertComplete';
 import { ConvertBreadcrumb } from '../_components/ConvertBreadcrumb';
-import { CreditBalance } from '../_components/CreditBalance';
 import { useConvertStore } from '@/store/convert-store';
 import { detectFormat } from '@/lib/format-detection';
 import { validateConvertFile } from '@/lib/format-validation';
@@ -97,18 +96,13 @@ export default function ConvertPage() {
   return (
     <div className={s.page}>
       <div className={s.header}>
-        <div className={s.headerRow}>
-          <Link href="/">Logo</Link>
-          <CreditBalance />
-        </div>
-      </div>
-
-      <ConvertBreadcrumb
+        <ConvertBreadcrumb
         items={[
           { label: 'Home', href: '/' },
           { label: 'Convert', href: '/convert' },
         ]}
-      />
+        />
+      </div>
 
       <h1>Free Online File Converter</h1>
       <ConvertFreeNotice />
