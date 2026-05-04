@@ -5,32 +5,24 @@ import Link from 'next/link';
 import { useGenerateStore } from '@/store/generate-store';
 import { useSocket } from '@/hooks/useSocket';
 import { useGeneration } from '@/hooks/useGeneration';
-import { GenerateInputBox } from '../../_components/GenerateInputBox';
-import { CreditEstimateDisplay } from '../../_components/CreditEstimateDisplay';
 import { DocStructureSelector } from '../../_components/DocStructureSelector';
-import { ExploreStylesButton } from '../../_components/ExploreStylesButton';
-import { AddImageButton } from '../../_components/AddImageButton';
-import { ClearInput } from '../../_components/ClearInput';
 import { TemplatePreviewModal } from '../../_components/TemplatePreviewModal';
-import { CreditBalance } from '../../_components/CreditBalance';
 import c from '@/styles/components/Card.module.css';
 import b from '@/styles/components/Button.module.css';
+import i from '@/styles/components/Input.module.css';
 
 export default function GeneratePage() {
   const {
     inputValue,
     selectedStructure,
     selectedTemplate,
-    images,
     isGenerating,
     creditEstimate,
     generatedDocumentId,
     isStreaming,
-    streamedContent,
     setInputValue,
     setStructure,
     setTemplate,
-    addImage,
     clearInput,
   } = useGenerateStore();
 
@@ -52,66 +44,62 @@ export default function GeneratePage() {
 
   return (
     <div style={{maxWidth:'var(--container-lg)',margin:'0 auto',padding:'var(--space-8) var(--space-6)'}}>
-      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'var(--space-4)'}}>
-        <Link href="/">Logo</Link>
-        <CreditBalance />
-        <Link href="/dashboard">Account</Link>
+      <div style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)',marginBottom:'var(--space-6)'}}>
+        <Link href="/">Home</Link>
+        <span style={{margin:'0 var(--space-2)'}}>/</span>
+        <span>Generate</span>
       </div>
 
-      <div>
-        <Link href="/" style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Home</Link>
-        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)',margin:'0 var(--space-2)'}}>/</span>
-        <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-muted)'}}>Generate</span>
-      </div>
-
-      <div style={{marginBottom:'var(--space-4)'}}>
-        <ExploreStylesButton onClick={() => setShowTemplates(true)} />
-      </div>
-
-      {isGenerating && isStreaming ? (
-        <div className={c.soft}>
-          <button className={b.soft} onClick={cancel}>Cancel</button>
-        </div>
-      ) : generatedDocumentId ? (
-        <div className={c.soft}>
-          <p>Document generated!</p>
-          <Link href={`/preview?doc=${generatedDocumentId}`} className={b.soft}>
-            View Document
-          </Link>
+      {generatedDocumentId ? (
+        <div className={`${c.card} ${c.soft}`} style={{textAlign:'center',padding:'var(--space-10)'}}>
+          <h2 style={{marginBottom:'var(--space-4)'}}>Document Generated</h2>
+          <Link href={`/preview?doc=${generatedDocumentId}`} className={`${b.btn} ${b.soft}`}>View Document</Link>
         </div>
       ) : (
-        <div className={c.soft}>
-          <GenerateInputBox
+        <div className={`${c.card} ${c.soft}`} style={{padding:'var(--space-8)'}}>
+          <textarea
+            className={`${i.input} ${i.soft} ${i.textarea}`}
             value={inputValue}
-            onChange={setInputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Describe what you want to create..."
             disabled={isGenerating}
+            style={{minHeight:'120px'}}
           />
 
           <div style={{marginTop:'var(--space-4)'}}>
-            <DocStructureSelector
-              value={selectedStructure}
-              onChange={setStructure}
-            />
+            <DocStructureSelector value={selectedStructure} onChange={setStructure} />
           </div>
 
-          <div style={{marginTop:'var(--space-4)'}}>
-            <AddImageButton
-              imageCount={images.length}
-              onImageAdd={addImage}
-            />
-          </div>
-
-          <div style={{marginTop:'var(--space-4)',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-            <ClearInput
-              hasContent={!!inputValue}
-              hasDocument={!!generatedDocumentId}
-              onClear={clearInput}
-            />
-
-            <CreditEstimateDisplay
-              credits={creditEstimate}
-              isLoading={isGenerating}
-            />
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginTop:'var(--space-4)',flexWrap:'wrap',gap:'var(--space-3)'}}>
+            <div style={{display:'flex',gap:'var(--space-3)'}}>
+              <button
+                type="button"
+                className={`${b.btn} ${b.minimal}`}
+                onClick={() => setShowTemplates(true)}
+              >
+                Explore Styles
+              </button>
+              <button
+                type="button"
+                className={`${b.btn} ${b.minimal}`}
+                onClick={clearInput}
+                disabled={!inputValue}
+              >
+                Clear
+              </button>
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:'var(--space-4)'}}>
+              <span style={{fontSize:'var(--text-sm)',color:'var(--color-text-secondary)'}}>
+                ~{creditEstimate} credits
+              </span>
+              {isGenerating ? (
+                <button className={`${b.btn} ${b.soft}`} onClick={cancel}>Cancel</button>
+              ) : (
+                <button className={`${b.btn} ${b.soft}`} onClick={handleGenerate} disabled={!inputValue.trim()}>
+                  Generate Document
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -119,7 +107,7 @@ export default function GeneratePage() {
       {showTemplates && (
         <TemplatePreviewModal
           template={previewTemplate}
-          onClose={() => setShowTemplates(false)}
+          onClose={() => { setShowTemplates(false); setPreviewTemplate(null); }}
           onUseTemplate={handleUseTemplate}
         />
       )}
