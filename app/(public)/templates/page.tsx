@@ -15,6 +15,17 @@ interface Template {
   format: string;
 }
 
+import { Select } from '../../_components/Select';
+
+const CATEGORY_OPTS = [
+  { value: '', label: 'All Categories' },
+  { value: 'Business', label: 'Business' },
+  { value: 'Academic', label: 'Academic' },
+  { value: 'Legal', label: 'Legal' },
+  { value: 'Personal', label: 'Personal' },
+  { value: 'Creative', label: 'Creative' },
+];
+
 const CATEGORIES = ['Business', 'Academic', 'Legal', 'Personal', 'Creative'];
 
 export default function TemplatesPage() {
@@ -61,17 +72,7 @@ export default function TemplatesPage() {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <select
-          className={`${i.input} ${i.soft}`}
-          style={{ width: 200 }}
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
-          <option value="">All Categories</option>
-          {CATEGORIES.map((cat) => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
+        <Select options={CATEGORY_OPTS} value={category} onChange={setCategory} placeholder="All Categories" />
       </div>
 
       {loading ? null : filtered.length > 0 ? (
