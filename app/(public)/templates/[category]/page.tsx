@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { TemplateGrid } from '../../../_components/TemplateGrid';
-import { CategoryFilters } from '../../../_components/CategoryFilters';
 import { TemplatePreviewModal } from '../../../_components/TemplatePreviewModal';
 import c from '@/styles/components/Card.module.css';
 import b from '@/styles/components/Button.module.css';
@@ -97,23 +96,6 @@ export default function TemplatesCategoryPage() {
         ← All Templates
       </Link>
       <h1 style={{ marginBottom: 'var(--space-4)' }}>{category} Templates</h1>
-
-      <CategoryFilters
-        onSort={setSortBy}
-        onFormat={setFormatFilter}
-        onPremium={setPremiumFilter}
-        onClear={() => {
-          setSearchQuery('');
-          setSortBy('popular');
-          setFormatFilter('');
-          setPremiumFilter(null);
-        }}
-        category={category}
-      />
-
-      <div style={{ marginBottom: 'var(--space-6)' }}>
-        <SearchBarLocal onSearch={setSearchQuery} />
-      </div>
 
       <TemplateGrid
         templates={mappedTemplates}
